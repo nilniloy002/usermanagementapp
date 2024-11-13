@@ -45,11 +45,8 @@ class LoginController extends Controller
      */
     public function login(LoginRequest $request)
     {
-        // In case that request throttling is enabled, we have to check if user can perform this request.
-        // We'll key this by the username and the IP address of the client making these requests into this application.
+        // Throttling check
         $throttles = setting('throttle_enabled');
-
-        //Redirect URL that can be passed as hidden field.
         $to = $request->has('to') ? "?to=" . $request->get('to') : '';
 
         if ($throttles && $this->hasTooManyLoginAttempts($request)) {
@@ -59,22 +56,16 @@ class LoginController extends Controller
         $credentials = $request->getCredentials();
 
         if (! Auth::validate($credentials)) {
-            // If the login attempt was unsuccessful we will increment the number of attempts
-            // to login and redirect the user back to the login form. Of course, when this
-            // user surpasses their maximum number of attempts they will get locked out.
             if ($throttles) {
                 $this->incrementLoginAttempts($request);
             }
-
-            return redirect()->to('login' . $to)
-                ->withErrors(trans('auth.failed'));
+            return redirect()->to('login' . $to)->withErrors(trans('auth.failed'));
         }
 
         $user = Auth::getProvider()->retrieveByCredentials($credentials);
 
         if ($user->isBanned()) {
-            return redirect()->to('login' . $to)
-                ->withErrors(__('Your account is banned by administrator.'));
+            return redirect()->to('login' . $to)->withErrors(__('Your account is banned by administrator.'));
         }
 
         Auth::login($user, setting('remember_me') && $request->get('remember'));
@@ -102,11 +93,8 @@ class LoginController extends Controller
 
         event(new LoggedIn);
 
-        if ($request->has('to')) {
-            return redirect()->to($request->get('to'));
-        }
-
-        return redirect()->intended();
+        // Always redirect to /dashboard after successful login
+        return redirect()->to('/dashboard');
     }
 
     /**

@@ -1,27 +1,32 @@
 <?php
 
-/**
- * Authentication
- */
+use Vanguard\Http\Controllers\CandidateResultController; 
+
+// Public route for candidate result page (outside of auth middleware)
+Route::get('/', [CandidateResultController::class, 'view'])->name('home'); // Use correct path for CandidateResultController
+Route::get('candidate-result', [CandidateResultController::class, 'view'])->name('candidate.result.view');
+Route::post('candidate-result/search', [CandidateResultController::class, 'search'])->name('candidate.result.search');
+
+
+// Authentication routes (stay inside auth middleware group)
 Route::get('login', 'Auth\LoginController@show');
 Route::post('login', 'Auth\LoginController@login');
 Route::get('logout', 'Auth\LoginController@logout')->name('auth.logout');
 
+// Registration routes with middleware
 Route::group(['middleware' => ['registration', 'guest']], function () {
     Route::get('register', 'Auth\RegisterController@show');
     Route::post('register', 'Auth\RegisterController@register');
 });
 
+// Other authentication-related routes...
 Route::emailVerification();
 
 Route::group(['middleware' => ['password-reset', 'guest']], function () {
     Route::resetPassword();
 });
 
-
-/**
- * Two-Factor Authentication
- */
+// Two-factor authentication routes inside auth middleware...
 Route::group(['middleware' => 'two-factor'], function () {
     Route::get('auth/two-factor-authentication', 'Auth\TwoFactorTokenController@show')->name('auth.token');
     Route::post('auth/two-factor-authentication', 'Auth\TwoFactorTokenController@update')->name('auth.token.validate');
@@ -46,7 +51,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
      * Dashboard
      */
 
-    Route::get('/', 'DashboardController@index')->name('dashboard');
+    //Route::get('/', 'DashboardController@index')->name('dashboard');
+    Route::get('dashboard', 'DashboardController@index')->name('dashboard');
 
     /**
      * User Profile
@@ -208,5 +214,58 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::put('employees/{employee}', 'EmployeeController@update')->name('employees.update');
     Route::delete('employees/{employee}', 'EmployeeController@destroy')->name('employees.destroy');
 
+    /**
+     * Admissions
+     */
+    Route::get('admissions', 'AdmissionController@index')->name('admissions.index');
+    Route::get('admissions/create', 'AdmissionController@create')->name('admissions.create');
+    Route::post('admissions', 'AdmissionController@store')->name('admissions.store');
+    Route::get('admissions/{admission}', 'AdmissionController@show')->name('admissions.show'); // New route for show action
+    Route::get('admissions/{admission}/edit', 'AdmissionController@edit')->name('admissions.edit');
+    Route::put('admissions/{admission}', 'AdmissionController@update')->name('admissions.update');
+    Route::delete('admissions/{admission}', 'AdmissionController@destroy')->name('admissions.destroy');
+    Route::get('admissions/print/{admission}', 'AdmissionController@print')->name('admissions.print');
+    Route::get('/api/courses/{id}','AdmissionController@getCourseDetails');
+    Route::get('/api/batches/course/{id}', 'AdmissionController@getBatchDetails');
 
+    Route::get('admissions/collect-due/{billId}', 'AdmissionController@showDueCollectionForm')->name('admissions.show-due-collection-form');
+    Route::post('admissions/collect-due/{id}', 'AdmissionController@collectDue')->name('admissions.collect-due');
+
+
+    /**
+     * Courses
+     */
+    Route::get('courses', 'CourseController@index')->name('courses.index');
+    Route::get('courses/create', 'CourseController@create')->name('courses.create');
+    Route::post('courses', 'CourseController@store')->name('courses.store');
+    Route::get('courses/{course}/edit',  'CourseController@edit')->name('courses.edit');
+    Route::put('courses/{course}', 'CourseController@update')->name('courses.update');
+    Route::delete('courses/{course}',  'CourseController@destroy')->name('courses.destroy');
+
+      /**
+     * Batches
+     */
+    Route::get('batches', 'BatchController@index')->name('batches.index');
+    Route::get('batches/create', 'BatchController@create')->name('batches.create');
+    Route::post('batches', 'BatchController@store')->name('batches.store');
+    Route::get('batches/{batch}/edit',  'BatchController@edit')->name('batches.edit');
+    Route::put('batches/{batch}', 'BatchController@update')->name('batches.update');
+    Route::delete('batches/{batch}',  'BatchController@destroy')->name('batches.destroy');
+
+
+    /**
+ * Mock Test Results
+ */
+    Route::get('mock-test-results', 'MockTestResultController@index')->name('mock_test_results.index');
+    Route::get('mock-test-results/create', 'MockTestResultController@create')->name('mock_test_results.create');
+    Route::post('mock-test-results', 'MockTestResultController@store')->name('mock_test_results.store');
+    Route::get('mock-test-results/{mockTestResult}/edit', 'MockTestResultController@edit')->name('mock_test_results.edit');
+    Route::put('mock-test-results/{mockTestResult}', 'MockTestResultController@update')->name('mock_test_results.update');
+    Route::delete('mock-test-results/{mockTestResult}', 'MockTestResultController@destroy')->name('mock_test_results.destroy');
+            // Import view route
+        Route::get('mock-test-results/import', 'MockTestResultController@importForm')->name('mock_test_results.import_form');
+
+    
+    // Import route for handling the form submission
+    Route::post('mock-test-results/import', 'MockTestResultController@import')->name('mock_test_results.import');
 });

@@ -38,15 +38,16 @@
         "laravel/framework": "^9.0",
         "laravel/sanctum": "^2.14.1",
         "laravel/socialite": "^5.0",
+        "laravel/tinker": "^2.7",
         "laravel/ui": "^3.0",
         "laravelcollective/html": "^6.3",
+        "maatwebsite/excel": "^3.1",
         "proengsoft/laravel-jsvalidation": "^4.0.0",
         "spatie/laravel-query-builder": "^5.0",
         "vanguardapp/activity-log": "^4.0",
         "vanguardapp/announcements": "^4.0",
         "vanguardapp/plugins": "^4.0",
-        "webpatser/laravel-countries": "dev-master",
-        "laravel/tinker": "^2.7"
+        "webpatser/laravel-countries": "dev-master"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.5",

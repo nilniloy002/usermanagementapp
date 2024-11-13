@@ -2,7 +2,7 @@
 
     <div class="navbar-brand-wrapper d-flex align-items-center justify-content-center">
         <a class="navbar-brand mr-0" href="{{ url('/') }}">
-            <img src="{{ url('assets/img/logo.png') }}" class="logo-lg" height="50" alt="{{ setting('app_name') }}">
+            <img src="{{ url('assets/img/stslogo.png') }}" class="logo-lg" height="50" alt="{{ setting('app_name') }}">
             <img src="{{ url('assets/img/logo-no-text.png') }}" class="logo-sm" height="50" alt="{{ setting('app_name') }}">
         </a>
     </div>
