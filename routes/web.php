@@ -14,10 +14,14 @@ Route::post('login', 'Auth\LoginController@login');
 Route::get('logout', 'Auth\LoginController@logout')->name('auth.logout');
 
 // Registration routes with middleware
-// Route::group(['middleware' => ['registration', 'guest']], function () {
-//     Route::get('register', 'Auth\RegisterController@show');
-//     Route::post('register', 'Auth\RegisterController@register');
-// });
+Route::group(['middleware' => ['registration', 'guest']], function () {
+    // Route::get('register', 'Auth\RegisterController@show');
+    // Route::post('register', 'Auth\RegisterController@register');
+
+    Route::get('register', function () {
+        return redirect('login');
+    });
+});
 
 // Other authentication-related routes...
 Route::emailVerification();
