@@ -17,9 +17,9 @@
     <meta property="og:url" content="{{ url()->current() }}">
     
     <!-- Favicon -->
-    <link rel="icon" href="{{ asset('path_to_favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="https://sts.institute/wp-content/uploads/2024/08/cropped-Logo-Fav.-Icon-02-192x192.png" type="image/x-icon">
 
-    <title>@lang('Candidate Result')</title>
+    <title>@lang('Check Candidate Mock Test Result')</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -75,7 +75,7 @@
             <!-- Submit Button -->
             <div class="mb-4">
                 <button type="submit" class="w-full py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
-                    @lang('Check Result')
+                    @lang('Get Result')
                 </button>
             </div>
 

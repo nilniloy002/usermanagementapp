@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>@yield('page-title') - {{ setting('app_name') }}</title>
-    <link rel="icon" type="image/png" href="{{ url('assets/img/icons/favicon.png') }}"/>
+    <link rel="icon" type="image/png" href="https://sts.institute/wp-content/uploads/2024/08/cropped-Logo-Fav.-Icon-02-192x192.png"/>
 
     {!! HTML::style('assets/css/app.css') !!}
     {!! HTML::style('assets/css/fontawesome-all.min.css') !!}

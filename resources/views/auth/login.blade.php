@@ -6,7 +6,7 @@
 
 <div class="col-md-8 col-lg-6 col-xl-5 mx-auto my-10p" id="login">
     <div class="text-center">
-        <img src="{{ url('assets/img/stslogo.png') }}" alt="{{ setting('app_name') }}" height="60">
+        <img src="https://sts.institute/wp-content/uploads/2024/08/Logo-v2-01.png" alt="{{ setting('app_name') }}" height="60">
     </div>
 
     <div class="card mt-5">

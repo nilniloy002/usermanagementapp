@@ -3,6 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Meta Title, Description, and Keywords -->
+    <meta name="title" content="Candidate Result">
+    <meta name="description" content="View your mock test results by entering the mock test date and mobile number. Get your test scores instantly.">
+    <meta name="keywords" content="mock test, test result, candidate result, exam result, mock test score, IELTS result">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Check Your Mock Test Result">
+    <meta property="og:description" content="View your mock test results by entering the mock test date and mobile number. Get your test scores instantly.">
+    <meta property="og:image" content="{{ asset('path_to_og_image.jpg') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="https://sts.institute/wp-content/uploads/2024/08/cropped-Logo-Fav.-Icon-02-192x192.png" type="image/x-icon">
+
     <title>@lang('Candidate Result')</title>
 
     <!-- Tailwind CSS CDN -->
@@ -91,11 +106,17 @@
                 </table>
             </div>
 
-            <!-- Print/PDF Button -->
-            <div class="mt-6 text-center">
+          <!-- Buttons Container for Print and Check Another Result -->
+            <div class="mt-6 text-center flex justify-center space-x-4">
+                <!-- Print/PDF Button -->
                 <button onclick="printResult()" class="print-button px-3 py-1 bg-[#192335] text-white text-sm font-thin rounded hover:bg-gray-700">
                     @lang('Print / Download PDF')
                 </button>
+
+                <!-- Check Another Result Button -->
+                <a href="{{ route('home') }}" class="px-3 py-1 bg-blue-600 text-white text-sm font-thin rounded hover:bg-blue-700">
+                    @lang('Check Another Result')
+                </a>
             </div>
 
 
