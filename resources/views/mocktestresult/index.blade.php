@@ -55,9 +55,13 @@
                                         <a href="{{ route('mock_test_results.edit', $result) }}" class="btn btn-icon" title="@lang('Edit Result')" data-toggle="tooltip" data-placement="top">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="{{ route('mock_test_results.destroy', $result) }}" class="btn btn-icon" title="@lang('Delete Result')" data-toggle="tooltip" data-placement="top" data-method="DELETE" data-confirm-title="@lang('Please Confirm')" data-confirm-text="@lang('Are you sure that you want to delete this result?')" data-confirm-delete="@lang('Yes, delete it!')">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
+                                        
+                                        <!-- Only Admin and Super Admin roles can see the delete button -->
+                                        @if(auth()->user()->role_id != 2) 
+                                            <a href="{{ route('mock_test_results.destroy', $result) }}" class="btn btn-icon" title="@lang('Delete Result')" data-toggle="tooltip" data-placement="top" data-method="DELETE" data-confirm-title="@lang('Please Confirm')" data-confirm-text="@lang('Are you sure that you want to delete this result?')" data-confirm-delete="@lang('Yes, delete it!')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

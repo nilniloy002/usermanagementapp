@@ -5,15 +5,16 @@
 @section('content')
 
 <div class="col-md-8 col-lg-6 col-xl-5 mx-auto my-10p" id="login">
-    <div class="text-center">
-        <img src="https://sts.institute/wp-content/uploads/2024/08/Logo-v2-01.png" alt="{{ setting('app_name') }}" height="60">
-    </div>
+    
 
     <div class="card mt-5">
         <div class="card-body">
-            <h5 class="card-title text-center mt-4 text-uppercase">
+            <!-- <h5 class="card-title text-center mt-4 text-uppercase">
                 @lang('Login')
-            </h5>
+            </h5> -->
+            <div class="text-center">
+        <img src="https://sts.institute/wp-content/uploads/2024/08/Logo-v2-01.png" alt="{{ setting('app_name') }}" height="50">
+    </div>
 
             <div class="p-4">
 
@@ -71,12 +72,12 @@
         </div>
     </div>
 
-    <div class="text-center text-muted">
+    <!-- <div class="text-center text-muted">
         @if (setting('reg_enabled'))
             @lang("Don't have an account?")
             <a class="font-weight-bold" href="<?= url("register") ?>">@lang('Sign Up')</a>
         @endif
-    </div>
+    </div> -->
 </div>
 
 @stop

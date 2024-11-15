@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Vanguard\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use Vanguard\Imports\MockTestResultImport;
+use Vanguard\User;
+use Vanguard\Role;
+use Vanguard\Permission;
 
 class MockTestResultController extends Controller
 {
@@ -69,12 +72,18 @@ class MockTestResultController extends Controller
     /**
      * Remove the specified mock test result from storage.
      */
-    public function destroy(MockTestResult $mockTestResult)
+    public function destroy($id)
     {
-        $mockTestResult->delete();
-
-        return redirect()->route('mock_test_results.index')->with('success', 'Mock test result deleted successfully.');
+        // Check if the user is not an Admin or Super Admin
+        if (auth()->user()->role_id == 2) {
+            return redirect()->back()->with('error', 'You do not have permission to delete this record.');
+        }
+    
+        // Proceed with deletion for Admin and Super Admin
+        MockTestResult::findOrFail($id)->delete();
+        return redirect()->route('mock_test_results.index')->with('success', 'Record deleted successfully.');
     }
+    
 
 
      /**
@@ -92,7 +101,7 @@ class MockTestResultController extends Controller
     {
         // Validate that the file is an Excel file
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv|max:2048', // Adjust max size if needed
+            'file' => 'required|mimes:xlsx,xls,csv|max:3072', // Adjust max size if needed
         ]);
 
         // Import the Excel file using the MockTestResultImport class
