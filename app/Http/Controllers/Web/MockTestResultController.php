@@ -28,7 +28,7 @@ class MockTestResultController extends Controller
                   ->orWhere('mobile', 'like', '%' . $search . '%');
         }
     
-        $results = $query->orderBy('mocktest_date', 'desc')->paginate(20);
+        $results = $query->orderBy('mocktest_date', 'desc')->paginate(25);
         
         return view('mocktestresult.index', compact('results'))->with('search', $search ?? '');
     }

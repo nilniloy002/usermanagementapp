@@ -18,7 +18,7 @@
             <div class="row mb-3 pb-3 border-bottom-light">
                 <div class="col-lg-8">
                     <form method="GET" action="{{ route('mock_test_results.index') }}" class="form-inline">
-                        <input type="text" name="search" value="{{ request('search') }}" class="form-control mr-2" placeholder="Search by name, mobile, or status">
+                        <input type="text" name="search" value="{{ request('search') }}" class="form-control mr-2" placeholder="Search by name or mobile">
                         <button type="submit" class="btn btn-primary">@lang('Search')</button>
                     </form>
                 </div>
