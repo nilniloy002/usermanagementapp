@@ -140,9 +140,13 @@
                         <a href="{{ route('mock_test_registrations.edit', $registration) }}" class="btn btn-icon" title="@lang('Edit Registration')">
                             <i class="fas fa-edit"></i>
                         </a>
+
+                        <!-- Only Admin and Super Admin roles can see the delete button -->
+                         @if (in_array(auth()->user()->role_id, [1, 3])) 
                         <a href="{{ route('mock_test_registrations.destroy', $registration) }}" class="btn btn-icon" title="@lang('Delete Registration')" data-method="DELETE" data-confirm-title="@lang('Please Confirm')" data-confirm-text="@lang('Are you sure?')" data-confirm-delete="@lang('Yes, delete it!')">
                     <i class="fas fa-trash"></i>
                         </a>
+                        @endif
                         <a href="{{ route('mock_test_registrations.token', $registration) }}" class="btn btn-icon" title="@lang('Generate Token')">
                             <i class="fas fa-print"></i>
                         </a>

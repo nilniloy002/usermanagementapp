@@ -25,7 +25,7 @@
             <!-- End Mock Registration section -->
         
             <!-- Start Mock Test section -->
-            @if (in_array(auth()->user()->role_id, [1, 3, 2])) {{-- Admin, SuperAdmin, IELTS --}}
+            @if (in_array(auth()->user()->role_id, [1, 3, 2])) {{-- Admin, SuperAdmin, IELTS Team --}}
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#mocktest-dropdown" data-toggle="collapse" aria-expanded="false">
                     <i class="fa fa-university"></i>

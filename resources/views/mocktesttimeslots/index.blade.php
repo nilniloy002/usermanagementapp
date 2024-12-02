@@ -62,9 +62,13 @@
                                         <a href="{{ route('mock_test_time_slots.edit', $slot) }}" class="btn btn-icon" title="@lang('Edit Mock Test Time Slot')" data-toggle="tooltip" data-placement="top">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <!-- Only Admin and Super Admin roles can see the delete button -->
+                         @if (in_array(auth()->user()->role_id, [1, 3])) 
                                         <a href="{{ route('mock_test_time_slots.destroy', $slot) }}" class="btn btn-icon" title="@lang('Delete Mock Test Time Slot')" data-toggle="tooltip" data-placement="top" data-method="DELETE" data-confirm-title="@lang('Please Confirm')" data-confirm-text="@lang('Are you sure that you want to delete this time slot?')" data-confirm-delete="@lang('Yes, delete it!')">
                                             <i class="fas fa-trash"></i>
                                         </a>
+
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

@@ -45,6 +45,8 @@
                                         <a href="{{ route('mock_test_statuses.edit', $status) }}" class="btn btn-icon" title="@lang('Edit Mock Test Status')" data-toggle="tooltip" data-placement="top">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                         <!-- Only Admin and Super Admin roles can see the delete button -->
+                         @if (in_array(auth()->user()->role_id, [1, 3]))
                                         <form action="{{ route('mock_test_statuses.destroy', $status) }}" method="POST" class="d-inline" data-confirm-title="@lang('Please Confirm')" data-confirm-text="@lang('Are you sure that you want to delete this mock test status?')" data-confirm-delete="@lang('Yes, delete it!')">
                                             @csrf
                                             @method('DELETE')
@@ -52,6 +54,8 @@
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
+
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
