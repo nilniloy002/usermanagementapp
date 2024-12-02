@@ -266,10 +266,71 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('mock-test-results/{mockTestResult}/edit', 'MockTestResultController@edit')->name('mock_test_results.edit');
     Route::put('mock-test-results/{mockTestResult}', 'MockTestResultController@update')->name('mock_test_results.update');
     Route::delete('mock-test-results/{mockTestResult}', 'MockTestResultController@destroy')->name('mock_test_results.destroy');
-            // Import view route
-        Route::get('mock-test-results/import', 'MockTestResultController@importForm')->name('mock_test_results.import_form');
-
+    // Import view route
+    Route::get('mock-test-results/import', 'MockTestResultController@importForm')->name('mock_test_results.import_form');
     
     // Import route for handling the form submission
     Route::post('mock-test-results/import', 'MockTestResultController@import')->name('mock_test_results.import');
+
+    /**
+     * Mock Test Time Slots
+     */
+    Route::get('mock-test-time-slots', 'MockTestTimeSlotController@index')->name('mock_test_time_slots.index');
+    Route::get('mock-test-time-slots/create', 'MockTestTimeSlotController@create')->name('mock_test_time_slots.create');
+    Route::post('mock-test-time-slots', 'MockTestTimeSlotController@store')->name('mock_test_time_slots.store');
+    Route::get('mock-test-time-slots/{mockTestTimeSlot}/edit', 'MockTestTimeSlotController@edit')->name('mock_test_time_slots.edit');
+    Route::put('mock-test-time-slots/{mockTestTimeSlot}', 'MockTestTimeSlotController@update')->name('mock_test_time_slots.update');
+    Route::delete('mock-test-time-slots/{mockTestTimeSlot}', 'MockTestTimeSlotController@destroy')->name('mock_test_time_slots.destroy');
+
+     /**
+     * Mock Status
+     */
+
+     Route::get('mock-test-statuses', 'MockTestStatusController@index')->name('mock_test_statuses.index');
+     Route::get('mock-test-statuses/create', 'MockTestStatusController@create')->name('mock_test_statuses.create');
+     Route::post('mock-test-statuses', 'MockTestStatusController@store')->name('mock_test_statuses.store');
+     Route::get('mock-test-statuses/{mockTestStatus}/edit', 'MockTestStatusController@edit')->name('mock_test_statuses.edit');
+     Route::put('mock-test-statuses/{mockTestStatus}', 'MockTestStatusController@update')->name('mock_test_statuses.update');
+     Route::delete('mock-test-statuses/{mockTestStatus}', 'MockTestStatusController@destroy')->name('mock_test_statuses.destroy');
+     
+
+        /**
+     * Mock Test Dates
+     */
+    Route::get('mock-test-dates', 'MockTestDateController@index')->name('mock_test_dates.index');
+    Route::get('mock-test-dates/create', 'MockTestDateController@create')->name('mock_test_dates.create');
+    Route::post('mock-test-dates', 'MockTestDateController@store')->name('mock_test_dates.store');
+    Route::get('mock-test-dates/{mockTestDate}/edit', 'MockTestDateController@edit')->name('mock_test_dates.edit');
+    Route::put('mock-test-dates/{mockTestDate}', 'MockTestDateController@update')->name('mock_test_dates.update');
+    Route::delete('mock-test-dates/{mockTestDate}', 'MockTestDateController@destroy')->name('mock_test_dates.destroy');
+
+        /**
+     * Mock Test Rooms
+     */
+    Route::get('mock-test-rooms', 'MockTestRoomController@index')->name('mock_test_rooms.index');
+    Route::get('mock-test-rooms/create', 'MockTestRoomController@create')->name('mock_test_rooms.create');
+    Route::post('mock-test-rooms', 'MockTestRoomController@store')->name('mock_test_rooms.store');
+    Route::get('mock-test-rooms/{mockTestRoom}/edit', 'MockTestRoomController@edit')->name('mock_test_rooms.edit');
+    Route::put('mock-test-rooms/{mockTestRoom}', 'MockTestRoomController@update')->name('mock_test_rooms.update');
+    Route::delete('mock-test-rooms/{mockTestRoom}', 'MockTestRoomController@destroy')->name('mock_test_rooms.destroy');
+
+        /**
+     * Mock Test Registrations
+     */
+    Route::get('mock-test-registrations', 'MockTestRegistrationController@index')->name('mock_test_registrations.index');
+    Route::get('mock-test-registrations/create', 'MockTestRegistrationController@create')->name('mock_test_registrations.create');
+    Route::post('mock-test-registrations', 'MockTestRegistrationController@store')->name('mock_test_registrations.store');
+    Route::get('mock-test-registrations/{mockTestRegistration}/edit', 'MockTestRegistrationController@edit')->name('mock_test_registrations.edit');
+    Route::put('mock-test-registrations/{mockTestRegistration}', 'MockTestRegistrationController@update')->name('mock_test_registrations.update');
+    Route::delete('mock-test-registrations/{mockTestRegistration}', 'MockTestRegistrationController@destroy')->name('mock_test_registrations.destroy');
+    Route::get('mock-test-registrations/{registration}/token', 'MockTestRegistrationController@generateToken')
+    ->name('mock_test_registrations.token');
+    Route::get('mock-test-registrations/{registration}/email', 'MockTestRegistrationController@sendEmail')->name('mock_test_registrations.email');
+
+
+
+
+    
+
+
 });
