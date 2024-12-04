@@ -22,6 +22,7 @@ return new class extends Migration
             $table->unsignedBigInteger('exam_status_id');
             $table->integer('no_of_mock_test');
             $table->integer('mock_test_no');
+            $table->string('invoice_no')->nullable();
             $table->string('lrw_time_slot');
             $table->unsignedBigInteger('speaking_time_slot_id')->nullable();
             $table->unsignedBigInteger('speaking_room_id')->nullable();

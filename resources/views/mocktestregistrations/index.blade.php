@@ -108,14 +108,15 @@
         <table id="registrations-table" class="table table-striped table-borderless display nowrap" style="width:100%">
         <thead>
             <tr>
-                <th>@lang('Entry Date')</th>
+                <th>@lang('C.D')</th>
+                <th>@lang('Invoice')</th>
                 <th>@lang('Name')</th>
-                <th>@lang('Mobile')</th>
+                <th>@lang('Mob.')</th>
                 <th>@lang('Exam Date')</th>
-                <th>@lang('Exam Status')</th>
+                <th>@lang('Purchase Status')</th>
                 <th>@lang('Exam Details')</th>
-                <th>@lang('No. of Mock Test')</th>
-                <th>@lang('Current Mock Test')</th>
+                <th>@lang('No. of MT')</th>
+                <th>@lang('Current MT')</th>
                 <th class="text-center">@lang('Actions')</th>
             </tr>
         </thead>
@@ -123,16 +124,28 @@
             @forelse ($mockTestRegistrations as $registration)
                 <tr>
                     <td>{{ $registration->created_at }}</td>
+                    <td>{{ $registration->invoice_no }}</td>
                     <td>{{ $registration->name }}</td>
                     <td>{{ $registration->mobile }}</td>
                     <td>{{ \Carbon\Carbon::parse($registration->mockTestDate->mocktest_date)->format('d-m-Y') }}</td>
                     <td>{{ $registration->examStatus->mock_status }}</td>
                     <td>
                         <strong>@lang('LRW Time'):</strong> {{ $registration->lrw_time_slot }}<br>
+                        
                         <strong>@lang('Speaking Time'):</strong> 
-                        {{ $registration->speakingTimeSlot?->time_range ?? '-' }}<br>
+                        @if ($registration->speaking_time_slot_id_another_day)
+                            @lang('Another Day')
+                        @else
+                            {{ $registration->speakingTimeSlot?->time_range ?? '-' }}
+                        @endif
+                        <br>
+                        
                         <strong>@lang('Room'):</strong> 
-                        {{ $registration->speakingRoom?->mocktest_room ?? '-' }}
+                        @if ($registration->speaking_time_slot_id_another_day)
+                            -
+                        @else
+                            {{ $registration->speakingRoom?->mocktest_room ?? '-' }}
+                        @endif
                     </td>
                     <td>{{ $registration->no_of_mock_test }}</td>
                     <td>{{ $registration->mock_test_no }}</td>

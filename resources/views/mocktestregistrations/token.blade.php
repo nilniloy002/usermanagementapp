@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@lang('Token Slip')</title>
+    <title>@lang('IELTS Mock Test Booking Token | STS')</title>
     <style>
         body {
             width: 3in;
@@ -69,7 +69,7 @@
     <!-- Header Section -->
     <div class="header">
         <img src="https://sts.institute/wp-content/uploads/2024/08/Logo-v2-01.png" alt="@lang('Logo')">
-        <h2>@lang('Mock Test Token')</h2>
+        <h2>@lang('IELTS Mock Test Booking Token')</h2>
         <p><strong>@lang('Exam Date'):</strong> {{ $details['examDate'] }}</p>
         
     </div>

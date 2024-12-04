@@ -16,6 +16,7 @@ class CreateMockTestRegistrationRequest extends FormRequest
             'exam_status_id' => 'required|exists:mock_test_statuses,id',
             'no_of_mock_test' => 'required|integer|min:1',
             'mock_test_no' => 'required|integer|min:1',
+            'invoice_no' => 'nullable|string|max:255',
             'lrw_time_slot' => 'required|string', // Ensure it's a valid time slot string
             'speaking_time_slot_id' => [
                 'nullable',

@@ -60,16 +60,18 @@
             </div>
 
             <!-- Exam Status -->
-            <select name="exam_status_id" id="exam_status_id" class="form-control">
-                <option value="">@lang('Select Candidate Status')</option>
-                @foreach ($statuses as $status)
-                    <option value="{{ $status->id }}" 
-                        {{ old('exam_status_id', $mockTestRegistration->exam_status_id ?? '') == $status->id ? 'selected' : '' }}>
-                        {{ $status->mock_status }}
-                    </option>
-                @endforeach
-            </select>
-
+            <div class="form-group">
+            <label for="invoice_no">@lang('Candidate Mock Test Purchase Status')</label>
+                <select name="exam_status_id" id="exam_status_id" class="form-control">
+                    <option value="">@lang('Select Candidate Status')</option>
+                    @foreach ($statuses as $status)
+                        <option value="{{ $status->id }}" 
+                            {{ old('exam_status_id', $mockTestRegistration->exam_status_id ?? '') == $status->id ? 'selected' : '' }}>
+                            {{ $status->mock_status }}
+                        </option>
+                    @endforeach
+                </select>
+        </div>
 
             <!-- Number of Mock Tests -->
             <div class="form-group">
@@ -83,6 +85,14 @@
                 <label for="mock_test_no">@lang('Current Mock Test No')</label>
                 <input type="number" name="mock_test_no" id="mock_test_no" class="form-control" 
                        value="{{ old('mock_test_no', $mockTestRegistration->mock_test_no ?? '') }}">
+            </div>
+
+            <!-- Invoice No -->
+            <div class="form-group">
+                <label for="invoice_no">@lang('Invoice No.')</label>
+                <p><small>(If the candidate has no invoice number, leave it blank or use "N/A")</small></p>
+                <input type="text" name="invoice_no" id="invoice_no" class="form-control" 
+                    value="{{ old('invoice_no', $mockTestRegistration->invoice_no ?? '') }}">
             </div>
 
             <!-- LRW Time Slot -->
@@ -115,10 +125,17 @@
                 <select name="speaking_time_slot_id" id="speaking_time_slot" class="form-control mt-2" 
                     {{ old('speaking_time_slot_id_another_day', $mockTestRegistration->speaking_time_slot_id_another_day ?? 0) == 1 ? 'disabled' : '' }}>
                     <option value="">@lang('Select Speaking Time Slot')</option>
+                    @foreach ($speakingTimeSlots as $slot)
+                        <option value="{{ $slot->id }}" 
+                            {{ (old('speaking_time_slot_id', $mockTestRegistration->speaking_time_slot_id ?? '') == $slot->id) ? 'selected' : '' }}>
+                            {{ $slot->time_range }}
+                        </option>
+                    @endforeach
                 </select>
                 <input type="hidden" name="speaking_time_slot_id_another_day" id="speaking_time_slot_id_another_day" 
-                       value="{{ old('speaking_time_slot_id_another_day', $mockTestRegistration->speaking_time_slot_id_another_day ?? 0) }}">
+                    value="{{ old('speaking_time_slot_id_another_day', $mockTestRegistration->speaking_time_slot_id_another_day ?? 0) }}">
             </div>
+
 
             <!-- Speaking Room -->
             <div class="form-group">
@@ -214,6 +231,7 @@
         // Speaking Day Selection Change
         $('input[name="speaking_day"]').on('change', function () {
             const selectedDay = $(this).val();
+            
             if (selectedDay === 'same_day') {
                 $('#lrw_time_slot').trigger('change');
                 speakingTimeSlotDropdown.prop('disabled', false);
@@ -221,7 +239,7 @@
                 speakingAnotherDayInput.val(0);
             } else {
                 speakingTimeSlotDropdown.empty().append('<option value="0">@lang("Another Day")</option>').prop('disabled', true);
-                speakingRoomDropdown.prop('disabled', true);
+                speakingRoomDropdown.prop('disabled', true).val('');  // Reset Speaking Room to blank
                 speakingAnotherDayInput.val(1);
             }
         });

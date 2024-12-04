@@ -68,29 +68,7 @@ class MockTestRegistrationController extends Controller
 
     public function create()
     {
-        //$dates = MockTestDate::where('status', 'On')->get();
-        // Fetch all dates with 'On' status
-        // Include the date only if:
-        // 1. Total registrations are less than or equal to 78
-        // 2. Morning slot registrations are less than or equal to 39
-        // 3. Evening slot registrations are less than or equal to 39
-        $dates = MockTestDate::where('status', 'On')->get()->filter(function ($date) {
-            // Count total registrations for the date
-            $totalRegistrations = MockTestRegistration::where('mock_test_date_id', $date->id)->count();
-
-            // Count registrations for the morning slot (10:30AM-02:30PM)
-            $morningSlotCount = MockTestRegistration::where('mock_test_date_id', $date->id)
-                ->where('lrw_time_slot', '10:30AM-02:30PM')
-                ->count();
-
-            // Count registrations for the evening slot (3:30PM-06:30PM)
-            $eveningSlotCount = MockTestRegistration::where('mock_test_date_id', $date->id)
-                ->where('lrw_time_slot', '03:30PM-06:30PM')
-                ->count();
-
-            return $totalRegistrations <= 78 && $morningSlotCount <= 39 && $eveningSlotCount <= 39;
-        });
-
+        $dates = MockTestDate::where('status', 'On')->get();
         $statuses = MockTestStatus::where('status', 'On')->get();
         $lrwTimeSlots = MockTestTimeSlot::where('slot_key', 'LRW Slot')->where('status', 'On')->get();
         $speakingTimeSlots = MockTestTimeSlot::whereIn('slot_key', ['Speaking Slot Morning', 'Speaking Slot Afternoon'])->where('status', 'On')->get();
@@ -152,24 +130,7 @@ class MockTestRegistrationController extends Controller
     {
         $mockTestRegistration = MockTestRegistration::with(['examStatus', 'speakingTimeSlot'])->findOrFail($id);
     
-        //$dates = MockTestDate::where('status', 'On')->get();
-        $dates = MockTestDate::where('status', 'On')->get()->filter(function ($date) {
-            // Count total registrations for the date
-            $totalRegistrations = MockTestRegistration::where('mock_test_date_id', $date->id)->count();
-
-            // Count registrations for the morning slot (10:30AM-02:30PM)
-            $morningSlotCount = MockTestRegistration::where('mock_test_date_id', $date->id)
-                ->where('lrw_time_slot', '10:30AM-02:30PM')
-                ->count();
-
-            // Count registrations for the evening slot (3:30PM-06:30PM)
-            $eveningSlotCount = MockTestRegistration::where('mock_test_date_id', $date->id)
-                ->where('lrw_time_slot', '03:30PM-06:30PM')
-                ->count();
-
-            return $totalRegistrations <= 78 && $morningSlotCount <= 39 && $eveningSlotCount <= 39;
-        });
-
+        $dates = MockTestDate::where('status', 'On')->get();
         $statuses = MockTestStatus::where('status', 'On')->get(); // For Candidate Status
         $lrwTimeSlots = MockTestTimeSlot::where('slot_key', 'LRW Slot')->where('status', 'On')->get();
         $speakingTimeSlots = MockTestTimeSlot::whereIn('slot_key', ['Speaking Slot Morning', 'Speaking Slot Afternoon'])->where('status', 'On')->get();
@@ -188,41 +149,35 @@ class MockTestRegistrationController extends Controller
     public function update(UpdateMockTestRegistrationRequest $request, $id)
     {
         $data = $request->validated();
-    
+
         // Assign default value if 'invoice_no' is not provided
         if (empty($data['invoice_no'])) {
             $data['invoice_no'] = 'N/A';
         }
-    
+
+
         $mockTest = MockTestRegistration::findOrFail($id);
-    
-        // Check if 'Another Day' is selected for Speaking Time Slot
-        if (!empty($data['speaking_time_slot_id_another_day']) && $data['speaking_time_slot_id_another_day'] == 1) {
-            // Set both speaking_room_id and speaking_time_slot_id to NULL when "Another Day" is selected
-            $data['speaking_room_id'] = null;
-            $data['speaking_time_slot_id'] = null;
-        }
-        // Validate room availability for Speaking Slots (if speaking_room_id is not NULL)
+
+        // Validate room availability for Speaking Slots
         if (!empty($data['speaking_time_slot_id']) && !empty($data['speaking_room_id'])) {
             $isRoomBooked = MockTestRegistration::where('mock_test_date_id', $data['mock_test_date_id'])
                 ->where('speaking_time_slot_id', $data['speaking_time_slot_id'])
                 ->where('speaking_room_id', $data['speaking_room_id'])
                 ->where('id', '!=', $id) // Exclude current registration
                 ->exists();
-    
+
             if ($isRoomBooked) {
                 return redirect()->back()->withErrors([
                     'speaking_room_id' => __('The selected room is already booked for this time slot.')
                 ]);
             }
         }
-    
+
         // Update the registration
         $mockTest->update($data);
-    
+
         return redirect()->route('mock_test_registrations.index')->with('success', __('Mock Test Registration updated successfully.'));
     }
-    
 
 
     /**
@@ -303,8 +258,9 @@ class MockTestRegistrationController extends Controller
     // Send Email Action
     public function sendEmail(MockTestRegistration $registration)
     {
-        $candidateEmail = $registration->email;
-        
+        //dd('hello');
+        $candidateEmail = $registration->email; // Assuming the 'email' field exists in the registration model.
+
         // Prepare details for the email
         $candidateNumber = substr($registration->mobile, -9);
         $details = [
@@ -316,18 +272,16 @@ class MockTestRegistrationController extends Controller
             'current_mock_test' => $registration->mock_test_no,
             'lrwTime' => $registration->lrw_time_slot,
             'speakingTime' => $registration->speakingTimeSlot?->time_range,
-            'speaking_time_slot_id_another_day' => $registration->speaking_time_slot_id_another_day,  // New field to check "Another Day"
             'room' => $registration->speakingRoom?->mocktest_room,
         ];
-    
+
         // Send the email
         Mail::send('mocktestregistrations.mocktest-token', compact('details'), function ($message) use ($candidateEmail) {
             $message->to($candidateEmail)
                     ->subject(__('IELTS Mock Test Booking Token | STS'))
                     ->from('mocktest@sts.institute', 'STS Institute');
         });
-    
+
         return redirect()->back()->with('success', __('Email sent successfully to the candidate.'));
     }
-    
 }
