@@ -30,9 +30,9 @@
         <img src="https://sts.institute/wp-content/uploads/2024/08/Logo-v2-01.png" alt="@lang('Logo')">
         <h2>@lang('IELTS Mock Test Booking Token | STS')</h2>
         @if(isset($details['lrwTime']) && $details['lrwTime'] == "10:30AM-02:30PM")
-            <h3>@lang('Reporting Time'): {{ $details['examDate'] }} | <span class="highlight">@lang('09:45 AM')</h3>
+            <h3>@lang('Reporting Date & Time'): {{ $details['examDate'] }} | <span class="highlight">@lang('09:45 AM')</h3>
         @else
-            <h3>@lang('Reporting Time'): {{ $details['examDate'] }} | <span class="highlight">@lang('02:45 PM')</h3>
+            <h3>@lang('Reporting Date & Time'): {{ $details['examDate'] }} | <span class="highlight">@lang('02:45 PM')</h3>
         @endif
     </div>
     <div class="content">
