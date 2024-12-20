@@ -15,19 +15,38 @@
             color: #666;
             margin-top: 20px;
         }
+        .highlight {
+            font-weight: bold;
+            color: #000;
+            background-color: #ffff99;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
     </style>
 </head>
 <body>
     <div class="header">
         <img src="https://sts.institute/wp-content/uploads/2024/08/Logo-v2-01.png" alt="@lang('Logo')">
         <h2>@lang('IELTS Mock Test Booking Token | STS')</h2>
+        @if(isset($details['lrwTime']) && $details['lrwTime'] == "10:30AM-02:30PM")
+            <h3>@lang('Reporting Time'): {{ $details['examDate'] }} | <span class="highlight">@lang('09:45 AM')</h3>
+        @else
+            <h3>@lang('Reporting Time'): {{ $details['examDate'] }} | <span class="highlight">@lang('02:45 PM')</h3>
+        @endif
     </div>
     <div class="content">
         <p>@lang('Dear') {{ $details['name'] }},</p>
         <p>@lang('Here are your mock test details:')</p>
         <ul>
             <li><strong>@lang('Exam Date'):</strong> {{ $details['examDate'] }}</li>
-            <li><strong>@lang('LRW Time'):</strong> {{ $details['lrwTime'] }}</li>
+            <!-- <li><strong>@lang('LRW Time'):</strong> {{ $details['lrwTime'] }}</li> -->
+            <li><strong>@lang('Reporting Time'):</strong> 
+                @if(isset($details['lrwTime']) && $details['lrwTime'] == "10:30AM-02:30PM")
+                09:45 AM
+                @else 02:45 PM
+                @endif
+            </li>
             
             <li><strong>@lang('Speaking Time'):</strong> 
                 @if ($details['speaking_time_slot_id_another_day'])

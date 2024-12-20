@@ -63,6 +63,14 @@
         span.editing-token {
             font-weight: bold;
         }
+        .highlight {
+            font-weight: bold;
+            color: #000;
+            background-color: #ffff99;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
     </style>
 </head>
 <body>
@@ -71,6 +79,12 @@
         <img src="https://sts.institute/wp-content/uploads/2024/08/Logo-v2-01.png" alt="@lang('Logo')">
         <h2>@lang('IELTS Mock Test Booking Token')</h2>
         <p><strong>@lang('Exam Date'):</strong> {{ $details['examDate'] }}</p>
+
+        @if(isset($details['lrwTime']) && $details['lrwTime'] == "10:30AM-02:30PM")
+        <p><strong>@lang('Reporting Time'):</strong> <span class="highlight">@lang('09:45 AM')</p>
+        @else
+        <p><strong>@lang('Reporting Time'):</strong> <span class="highlight">@lang('02:45 PM')</p>
+        @endif
         
     </div>
 
@@ -92,7 +106,7 @@
         <div class="details">
             <p><strong>@lang('No. of Mock Tests'):</strong> {{ $details['no_of_mock_test'] }}</p>
             <p><strong>@lang('Current Mock Test'):</strong> {{ $details['current_mock_test'] }}</p>
-            <p><strong>@lang('LRW Time'):</strong> <span class="editing-token">{{ $details['lrwTime'] }}</span></p>
+            <!-- <p><strong>@lang('LRW Time'):</strong> <span class="editing-token">{{ $details['lrwTime'] }}</span></p> -->
             <p><strong>@lang('Speaking Time'):</strong> 
                 @if ($details['speakingTimeAnotherDay'])
                     <em>@lang('Another Day')</em>
