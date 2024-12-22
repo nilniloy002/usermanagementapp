@@ -327,6 +327,15 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     ->name('mock_test_registrations.token');
     Route::get('mock-test-registrations/{registration}/email', 'MockTestRegistrationController@sendEmail')->name('mock_test_registrations.email');
 
+    /**
+     * Another Day Bookings
+     */
+    Route::get('another-days', 'AnotherDayController@index')->name('another_days.index');
+    Route::get('another-days/create', 'AnotherDayController@create')->name('another_days.create');
+    Route::post('another-days', 'AnotherDayController@store')->name('another_days.store');
+    Route::get('another-days/{anotherDay}/edit', 'AnotherDayController@edit')->name('another_days.edit');
+    Route::put('another-days/{anotherDay}', 'AnotherDayController@update')->name('another_days.update');
+    Route::delete('another-days/{anotherDay}', 'AnotherDayController@destroy')->name('another_days.destroy');
 
 
 

@@ -112,6 +112,7 @@
                 <th>@lang('Invoice')</th>
                 <th>@lang('Name')</th>
                 <th>@lang('Mob.')</th>
+                <th>@lang('Email.')</th>
                 <th>@lang('Exam Date')</th>
                 <th>@lang('Purchase Status')</th>
                 <th>@lang('Exam Details')</th>
@@ -127,6 +128,7 @@
                     <td>{{ $registration->invoice_no }}</td>
                     <td>{{ $registration->name }}</td>
                     <td>{{ $registration->mobile }}</td>
+                    <td>{{ $registration->email }}</td>
                     <td>{{ \Carbon\Carbon::parse($registration->mockTestDate->mocktest_date)->format('d-m-Y') }}</td>
                     <td>{{ $registration->examStatus->mock_status }}</td>
                     <td>
