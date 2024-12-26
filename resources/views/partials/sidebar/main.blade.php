@@ -34,6 +34,10 @@
                 <ul class="list-unstyled sub-menu collapse" id="mocktest-dropdown" style="">
                     <li class="nav-item"><a class="nav-link" href="{{ route('mock_test_results.index') }}"><i class="fas fa-users"></i><span>Result List</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('mock_test_results.import_form') }}"><i class="fa fa-plus"></i><span>Import Result</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('another_days.index') }}"><i class="fas fa-users"></i><span>Speaking List (AD)</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('another_days.import_form') }}"><i class="fa fa-plus"></i><span>Import Speaking(AD)</span></a></li>
+
+                    <li class="nav-item"><a class="nav-link" href="{{ route('another_days.email.report') }}"><i class="fa fa-envelope"></i><span>Track Email</span></a></li>
                 </ul>
             </li>
             @endif

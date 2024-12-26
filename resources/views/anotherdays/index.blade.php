@@ -34,7 +34,7 @@
                 <table class="table table-striped table-borderless">
                     <thead>
                         <tr>
-                            <th>@lang('ID')</th>
+                            <!-- <th>@lang('ID')</th> -->
                             <th>@lang('Speaking Date')</th>
                             <th>@lang('Candidate Email')</th>
                             <th>@lang('Speaking Time')</th>
@@ -48,7 +48,7 @@
                         @if ($anotherDays->count())
                             @foreach ($anotherDays as $anotherDay)
                                 <tr>
-                                    <td>{{ $anotherDay->id }}</td>
+                                    <!-- <td>{{ $anotherDay->id }}</td> -->
                                     <td>{{ \Carbon\Carbon::parse($anotherDay->speaking_date)->format('d-m-Y') }}</td>
                                     <td>{{ $anotherDay->candidate_email }}</td>
                                     <td>{{ $anotherDay->speaking_time }}</td>

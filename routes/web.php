@@ -336,6 +336,18 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('another-days/{anotherDay}/edit', 'AnotherDayController@edit')->name('another_days.edit');
     Route::put('another-days/{anotherDay}', 'AnotherDayController@update')->name('another_days.update');
     Route::delete('another-days/{anotherDay}', 'AnotherDayController@destroy')->name('another_days.destroy');
+    /**
+     * Another Day Import
+     */
+    Route::get('another-days/import', 'AnotherDayController@showImportForm')->name('another_days.import_form');
+    Route::post('another-days/import', 'AnotherDayController@import')->name('another_days.import');
+    Route::get('another-days/track-email', 'AnotherDayController@trackEmail')->name('another_days.email.track');
+
+
+    // Email report
+    Route::get('another-days/email-report', 'AnotherDayController@emailReport')->name('another_days.email.report');
+
+
 
 
 
