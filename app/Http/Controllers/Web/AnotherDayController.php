@@ -213,19 +213,24 @@ class AnotherDayController extends Controller
         ";
     
         try {
-            Mail::send([], [], function ($message) use ($data, $emailContent) {
+            $emailSubject = "Speaking Test Schedule | {$data['speaking_date']} | {$data['speaking_time']}";
+            
+            Mail::send([], [], function ($message) use ($data, $emailContent, $emailSubject) {
                 $message->from('mocktest@sts.institute', 'Speaking Test Schedule | STS')
                         ->to($data['candidate_email'])
+                        ->cc('stsittrainingmgt@gmail.com')
                         ->bcc($data['trainers_email'])
-                        ->subject('Speaking Test Schedule | STS')
+                        ->subject($emailSubject)
                         ->html($emailContent);
             });
     
-            $this->logEmail($anotherDayId, $data['candidate_email'], 'sent', 'Speaking Test Schedule', $emailContent);
+            $this->logEmail($anotherDayId, $data['candidate_email'], 'sent', $emailSubject, $emailContent);
         } catch (\Exception $e) {
-            $this->logEmail($anotherDayId, $data['candidate_email'], 'failed', 'Speaking Test Schedule', $emailContent);
+            $emailSubject = "Speaking Test Schedule | {$data['speaking_date']} | {$data['speaking_time']}";
+            $this->logEmail($anotherDayId, $data['candidate_email'], 'failed', $emailSubject, $emailContent);
         }
     }
+    
     
 
 

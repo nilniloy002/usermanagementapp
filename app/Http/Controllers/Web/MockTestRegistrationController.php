@@ -88,7 +88,7 @@ class MockTestRegistrationController extends Controller
                 ->where('lrw_time_slot', '03:30PM-06:30PM')
                 ->count();
 
-            return $totalRegistrations <= 78 && $morningSlotCount <= 39 && $eveningSlotCount <= 39;
+            return $totalRegistrations <= 78 || $morningSlotCount <= 39 || $eveningSlotCount <= 39;
         });
 
         $statuses = MockTestStatus::where('status', 'On')->get();
