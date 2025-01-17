@@ -66,6 +66,9 @@
             
             <li><strong>@lang('Candidate Number'):</strong> {{ $details['candidateNumber'] }}</li>
         </ul>
+
+        <p>@lang('Check your mock test results here:')
+        <strong><a href="https://mocktest.sts.institute">https://mocktest.sts.institute</a></strong></p>
         
     </div>
     <!-- Footer Section -->
@@ -73,6 +76,7 @@
         @lang('For any queries, please contact us at') 
         <a href="mailto:mocktest@sts.institute">mocktest@sts.institute</a>.
         <br>
+       
         @lang('Thank you for choosing STS Institute. Best wishes for your test!')
     </div>
 </body>
