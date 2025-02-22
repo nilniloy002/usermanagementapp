@@ -15,6 +15,8 @@ class MockTestRegistration extends Model
         'exam_status_id',
         'no_of_mock_test',
         'mock_test_no',
+        'booking_category',
+        'exam_type',
         'invoice_no', 
         'lrw_time_slot',
         'speaking_time_slot_id',

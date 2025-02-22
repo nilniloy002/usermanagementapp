@@ -26,6 +26,8 @@ class MockTestRegistrationController extends Controller
         // Retrieve filter values from the request
         $examDate = $request->input('exam_date');
         $lrwTime = $request->input('lrw_time');
+        $bookingCategory = $request->input('booking_category');
+        $examType = $request->input('exam_type');
     
         // Start query with base model
         $query = MockTestRegistration::with(['mockTestDate', 'examStatus', 'speakingTimeSlot', 'speakingRoom']);
@@ -41,26 +43,31 @@ class MockTestRegistrationController extends Controller
             $query->where('lrw_time_slot', $lrwTime);
         }
     
+        if ($bookingCategory) {
+            $query->where('booking_category', $bookingCategory);
+        }
+    
+        if ($examType) {
+            $query->where('exam_type', $examType);
+        }
+    
         // Order the results in descending order (e.g., by creation date)
         $query->orderBy('created_at', 'desc');
     
         // Paginate the results
         $totalRegistrations = $query->count(); // Get total count of all filtered records
-
+    
         //$mockTestRegistrations = $query->paginate(10);
         $mockTestRegistrations = $query->get();  // Fetch all records
-
-       
-        //dd($mockTestRegistrations);
     
         // Fetch distinct LRW times for the filter dropdown
         $lrwTimes = MockTestRegistration::distinct()->pluck('lrw_time_slot');
     
         // Fetch distinct exam dates from MockTestDate model for the filter dropdown
         $examDates = MockTestDate::distinct()->pluck('mocktest_date');
-        
+    
         // Return view with data
-        return view('mocktestregistrations.index', compact('totalRegistrations','mockTestRegistrations', 'lrwTimes', 'examDates'));
+        return view('mocktestregistrations.index', compact('totalRegistrations', 'mockTestRegistrations', 'lrwTimes', 'examDates'));
     }
     
     

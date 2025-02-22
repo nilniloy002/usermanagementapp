@@ -87,6 +87,27 @@
                        value="{{ old('mock_test_no', $mockTestRegistration->mock_test_no ?? '') }}">
             </div>
 
+            <!-- Booking Category -->
+        <div class="form-group">
+            <label for="booking_category">@lang('Booking Category')</label>
+            <select name="booking_category" id="booking_category" class="form-control">
+                <option value="">@lang('Select Booking Category')</option>
+                <option value="Student" {{ old('booking_category', $mockTestRegistration->booking_category ?? '') == 'Student' ? 'selected' : '' }}>@lang('Student')</option>
+                <option value="Outsider" {{ old('booking_category', $mockTestRegistration->booking_category ?? '') == 'Outsider' ? 'selected' : '' }}>@lang('Outsider')</option>
+            </select>
+        </div>
+
+        <!-- Exam Type -->
+        <div class="form-group">
+            <label for="exam_type">@lang('Exam Type')</label>
+            <select name="exam_type" id="exam_type" class="form-control">
+                <option value="">@lang('Select Exam Type')</option>
+                <option value="General" {{ old('exam_type', $mockTestRegistration->exam_type ?? '') == 'General' ? 'selected' : '' }}>@lang('General')</option>
+                <option value="Academic" {{ old('exam_type', $mockTestRegistration->exam_type ?? '') == 'Academic' ? 'selected' : '' }}>@lang('Academic')</option>
+            </select>
+        </div>
+
+
             <!-- Invoice No -->
             <div class="form-group">
                 <label for="invoice_no">@lang('Invoice No.')</label>

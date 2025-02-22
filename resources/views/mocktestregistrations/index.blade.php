@@ -18,12 +18,13 @@
 @include('partials.messages')
 
 <!-- Filters Section -->
+<!-- Filters Section -->
 <div class="card">
     <div class="card-body">
         <form action="{{ route('mock_test_registrations.index') }}" method="GET" class="mb-3">
             <div class="row">
                 <!-- Exam Date Filter -->
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label for="exam_date">@lang('Exam Date')</label>
                     <select name="exam_date" id="exam_date" class="form-control">
                         <option value="">@lang('All Exam Dates')</option>
@@ -36,7 +37,7 @@
                 </div>
 
                 <!-- LRW Time Filter -->
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label for="lrw_time">@lang('LRW Time')</label>
                     <select name="lrw_time" id="lrw_time" class="form-control">
                         <option value="">@lang('All LRW Times')</option>
@@ -48,8 +49,28 @@
                     </select>
                 </div>
 
+                <!-- Booking Category Filter -->
+                <div class="col-md-3">
+                    <label for="booking_category">@lang('Booking Category')</label>
+                    <select name="booking_category" id="booking_category" class="form-control">
+                        <option value="">@lang('All Booking Categories')</option>
+                        <option value="Student" {{ request('booking_category') == 'Student' ? 'selected' : '' }}>@lang('Student')</option>
+                        <option value="Outsider" {{ request('booking_category') == 'Outsider' ? 'selected' : '' }}>@lang('Outsider')</option>
+                    </select>
+                </div>
+
+                <!-- Exam Type Filter -->
+                <div class="col-md-3">
+                    <label for="exam_type">@lang('Exam Type')</label>
+                    <select name="exam_type" id="exam_type" class="form-control">
+                        <option value="">@lang('All Exam Types')</option>
+                        <option value="General" {{ request('exam_type') == 'General' ? 'selected' : '' }}>@lang('General')</option>
+                        <option value="Academic" {{ request('exam_type') == 'Academic' ? 'selected' : '' }}>@lang('Academic')</option>
+                    </select>
+                </div>
+
                 <!-- Filter and Reset Buttons -->
-                <div class="col-md-4 align-self-end">
+                <div class="col-md-12 mt-3">
                     <button type="submit" class="btn btn-primary btn-rounded">
                         <i class="fas fa-filter mr-2"></i> @lang('Filter')
                     </button>
@@ -63,7 +84,7 @@
 </div>
 
 <!-- Filters Summary -->
-@if(request('exam_date') || request('lrw_time'))
+@if(request('exam_date') || request('lrw_time') || request('booking_category') || request('exam_type'))
     <div class="alert alert-info d-flex justify-content-between align-items-center">
         <div>
             @lang('Filters Applied'):
@@ -72,6 +93,12 @@
             @endif
             @if(request('lrw_time'))
                 <strong>@lang('LRW Time'):</strong> {{ request('lrw_time') }}
+            @endif
+            @if(request('booking_category'))
+                <strong>@lang('Booking Category'):</strong> {{ request('booking_category') }}
+            @endif
+            @if(request('exam_type'))
+                <strong>@lang('Exam Type'):</strong> {{ request('exam_type') }}
             @endif
         </div>
         <!-- Enhanced Total Registrations Display -->
