@@ -75,7 +75,6 @@ class MockTestRegistrationController extends Controller
 
     public function create()
     {
-        //$dates = MockTestDate::where('status', 'On')->get();
         // Fetch all dates with 'On' status
         // Include the date only if:
         // 1. Total registrations are less than or equal to 78
@@ -84,20 +83,21 @@ class MockTestRegistrationController extends Controller
         $dates = MockTestDate::where('status', 'On')->get()->filter(function ($date) {
             // Count total registrations for the date
             $totalRegistrations = MockTestRegistration::where('mock_test_date_id', $date->id)->count();
-
+    
             // Count registrations for the morning slot (10:30AM-02:30PM)
             $morningSlotCount = MockTestRegistration::where('mock_test_date_id', $date->id)
                 ->where('lrw_time_slot', '10:30AM-02:30PM')
                 ->count();
-
+    
             // Count registrations for the evening slot (3:30PM-06:30PM)
             $eveningSlotCount = MockTestRegistration::where('mock_test_date_id', $date->id)
                 ->where('lrw_time_slot', '03:30PM-06:30PM')
                 ->count();
-
-            return $totalRegistrations <= 78 || $morningSlotCount <= 39 || $eveningSlotCount <= 39;
+    
+            // Apply all conditions using AND (&&)
+            return $totalRegistrations <= 78 && $morningSlotCount <= 39 && $eveningSlotCount <= 39;
         });
-
+    
         $statuses = MockTestStatus::where('status', 'On')->get();
         $lrwTimeSlots = MockTestTimeSlot::where('slot_key', 'LRW Slot')->where('status', 'On')->get();
         $speakingTimeSlots = MockTestTimeSlot::whereIn('slot_key', ['Speaking Slot Morning', 'Speaking Slot Afternoon'])->where('status', 'On')->get();
@@ -115,7 +115,7 @@ class MockTestRegistrationController extends Controller
                 $roomAvailability[$date->id][$slot->id] = $bookedRooms;
             }
         }
-
+    
         // Check LRW Time Slot availability
         $morningSlotAvailable = $this->checkLRWSlotAvailability('10:30AM-02:30PM');
         $eveningSlotAvailable = $this->checkLRWSlotAvailability('03:30PM-06:30PM');
@@ -157,33 +157,48 @@ class MockTestRegistrationController extends Controller
      */
     public function edit($id)
     {
+        // Fetch the mock test registration by ID
         $mockTestRegistration = MockTestRegistration::with(['examStatus', 'speakingTimeSlot'])->findOrFail($id);
     
-        //$dates = MockTestDate::where('status', 'On')->get();
+        // Fetch all dates with 'On' status and apply filtering logic
         $dates = MockTestDate::where('status', 'On')->get()->filter(function ($date) {
             // Count total registrations for the date
             $totalRegistrations = MockTestRegistration::where('mock_test_date_id', $date->id)->count();
-
+    
             // Count registrations for the morning slot (10:30AM-02:30PM)
             $morningSlotCount = MockTestRegistration::where('mock_test_date_id', $date->id)
                 ->where('lrw_time_slot', '10:30AM-02:30PM')
                 ->count();
-
+    
             // Count registrations for the evening slot (3:30PM-06:30PM)
             $eveningSlotCount = MockTestRegistration::where('mock_test_date_id', $date->id)
                 ->where('lrw_time_slot', '03:30PM-06:30PM')
                 ->count();
-
+    
+            // Apply all conditions using AND (&&)
             return $totalRegistrations <= 78 && $morningSlotCount <= 39 && $eveningSlotCount <= 39;
         });
-
+    
+        // Fetch other required data
         $statuses = MockTestStatus::where('status', 'On')->get(); // For Candidate Status
         $lrwTimeSlots = MockTestTimeSlot::where('slot_key', 'LRW Slot')->where('status', 'On')->get();
         $speakingTimeSlots = MockTestTimeSlot::whereIn('slot_key', ['Speaking Slot Morning', 'Speaking Slot Afternoon'])->where('status', 'On')->get();
         $rooms = MockTestRoom::where('status', 'On')->get();
     
-        $roomAvailability = $this->getRoomAvailability();
+        // Get room availability for each date and speaking time slot
+        $roomAvailability = [];
+        foreach ($dates as $date) {
+            $roomAvailability[$date->id] = [];
+            foreach ($speakingTimeSlots as $slot) {
+                $bookedRooms = MockTestRegistration::where('mock_test_date_id', $date->id)
+                    ->where('speaking_time_slot_id', $slot->id)
+                    ->pluck('speaking_room_id')
+                    ->toArray();
+                $roomAvailability[$date->id][$slot->id] = $bookedRooms;
+            }
+        }
     
+        // Return the view with all data
         return view('mocktestregistrations.add-edit', compact(
             'mockTestRegistration', 'dates', 'statuses', 'lrwTimeSlots', 
             'speakingTimeSlots', 'rooms', 'roomAvailability'
