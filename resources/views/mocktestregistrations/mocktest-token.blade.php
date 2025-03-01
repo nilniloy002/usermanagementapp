@@ -64,11 +64,28 @@
         <ul>
             <li><strong>@lang('Exam Date'):</strong> {{ $details['examDate'] }}</li>
             <!-- <li><strong>@lang('LRW Time'):</strong> {{ $details['lrwTime'] }}</li> -->
-            <li><strong>@lang('Reporting Time'):</strong> 
+            <!-- <li><strong>@lang('Reporting Time'):</strong> 
                 @if(isset($details['lrwTime']) && $details['lrwTime'] == "10:30AM-02:30PM")
                 09:45 AM
                 @else 02:45 PM
                 @endif
+            </li> -->
+
+            <li><strong>@lang('Reporting Time'):</strong> 
+                @php
+                    $specialExamDates = ['04-03-2025', '11-03-2025', '18-03-2025', '25-03-2025'];
+                    $reportingTime = '';
+
+                    if (isset($details['lrwTime']) && isset($details['examDate'])) {
+                        if ($details['lrwTime'] == "10:30AM-02:30PM") {
+                            $reportingTime = in_array($details['examDate'], $specialExamDates) ? '09:30 AM' : '09:45 AM';
+                        } elseif ($details['lrwTime'] == "3:30PM-6:30PM") {
+                            $reportingTime = in_array($details['examDate'], $specialExamDates) ? '01:30 PM' : '02:45 PM';
+                        }
+                    }
+                @endphp
+
+                {{ $reportingTime }}
             </li>
             
             <li><strong>@lang('Speaking Time'):</strong> 
