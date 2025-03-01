@@ -26,7 +26,7 @@
     </style>
 </head>
 <body>
-    <div class="header">
+    <!-- <div class="header">
         <img src="https://sts.institute/wp-content/uploads/2024/08/Logo-v2-01.png" alt="@lang('Logo')">
         <h2>@lang('IELTS Mock Test Booking Token | STS')</h2>
         @if(isset($details['lrwTime']) && $details['lrwTime'] == "10:30AM-02:30PM")
@@ -34,7 +34,30 @@
         @else
             <h3>@lang('Reporting Date & Time'): {{ $details['examDate'] }} | <span class="highlight">@lang('02:45 PM')</h3>
         @endif
+    </div> -->
+
+    <div class="header">
+    <img src="https://sts.institute/wp-content/uploads/2024/08/Logo-v2-01.png" alt="@lang('Logo')">
+    <h2>@lang('IELTS Mock Test Booking Token | STS')</h2>
+
+        @php
+            $specialExamDates = ['04-03-2025', '11-03-2025', '18-03-2025', '25-03-2025'];
+            $reportingTime = '';
+
+            if (isset($details['lrwTime']) && isset($details['examDate'])) {
+                if ($details['lrwTime'] == "10:30AM-02:30PM") {
+                    $reportingTime = in_array($details['examDate'], $specialExamDates) ? '09:30 AM' : '09:45 AM';
+                } elseif ($details['lrwTime'] == "3:30PM-6:30PM") {
+                    $reportingTime = in_array($details['examDate'], $specialExamDates) ? '01:30 PM' : '02:45 PM';
+                }
+            }
+        @endphp
+
+        <h3>@lang('Reporting Date & Time'): {{ $details['examDate'] }} | 
+            <span class="highlight">@lang($reportingTime)</span>
+        </h3>
     </div>
+
     <div class="content">
         <p>@lang('Dear') {{ $details['name'] }},</p>
         <p>@lang('Here are your mock test details:')</p>
