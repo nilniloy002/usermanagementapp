@@ -347,7 +347,8 @@ class MockTestRegistrationController extends Controller
                     ->subject(__('IELTS Mock Test Booking Token | STS'))
                     // ->from('mocktest@sts.institute', 'STS Institute');
                     // ->from('mocktestreg@sts.institute', 'STS Institute');
-                    ->from('dev@sts.institute', 'STS Institute');
+                    // ->from('dev@sts.institute', 'STS Institute');
+                    ->from('mocktestupdate@sts.institute', 'STS Institute');
         });
     
         return redirect()->back()->with('success', __('Email sent successfully to the candidate.'));
