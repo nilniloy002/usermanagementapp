@@ -63,15 +63,15 @@
         <p>@lang('Here are your mock test details:')</p>
         <ul>
             <li><strong>@lang('Exam Date'):</strong> {{ $details['examDate'] }}</li>
-            <!-- <li><strong>@lang('LRW Time'):</strong> {{ $details['lrwTime'] }}</li> -->
-            <!-- <li><strong>@lang('Reporting Time'):</strong> 
-                @if(isset($details['lrwTime']) && $details['lrwTime'] == "10:30AM-02:30PM")
-                09:45 AM
-                @else 02:45 PM
-                @endif
-            </li> -->
-
+            <li><strong>@lang('LRW Time'):</strong> {{ $details['lrwTime'] }}</li>
             <li><strong>@lang('Reporting Time'):</strong> 
+                @if(isset($details['lrwTime']) && $details['lrwTime'] == "10:30AM-02:30PM")
+                10:00 AM
+                @else 02:30 PM
+                @endif
+            </li>
+
+            <!-- <li><strong>@lang('Reporting Time'):</strong> 
                 @php
                     $specialExamDates = ['04-03-2025', '11-03-2025', '18-03-2025', '25-03-2025'];
                     $reportingTime = '';
@@ -86,7 +86,7 @@
                 @endphp
 
                 {{ $reportingTime }}
-            </li>
+            </li> -->
             
             <li><strong>@lang('Speaking Time'):</strong> 
                 @if ($details['speaking_time_slot_id_another_day'])
