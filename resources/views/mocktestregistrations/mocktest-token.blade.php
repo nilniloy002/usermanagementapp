@@ -48,7 +48,7 @@
                 if ($details['lrwTime'] == "10:30AM-02:30PM") {
                     $reportingTime = in_array($details['examDate'], $specialExamDates) ? '09:30 AM' : '09:45 AM';
                 } elseif ($details['lrwTime'] == "3:30PM-6:30PM") {
-                    $reportingTime = in_array($details['examDate'], $specialExamDates) ? '01:30 PM' : '02:45 PM';
+                    $reportingTime = in_array($details['examDate'], $specialExamDates) ? '01:30 PM' : '02:30 PM';
                 }
             }
         @endphp
@@ -63,10 +63,10 @@
         <p>@lang('Here are your mock test details:')</p>
         <ul>
             <li><strong>@lang('Exam Date'):</strong> {{ $details['examDate'] }}</li>
-            <li><strong>@lang('LRW Time'):</strong> {{ $details['lrwTime'] }}</li>
+            <!-- <li><strong>@lang('LRW Time'):</strong> {{ $details['lrwTime'] }}</li> -->
             <li><strong>@lang('Reporting Time'):</strong> 
                 @if(isset($details['lrwTime']) && $details['lrwTime'] == "10:30AM-02:30PM")
-                10:00 AM
+                09:45 AM
                 @else 02:30 PM
                 @endif
             </li>
