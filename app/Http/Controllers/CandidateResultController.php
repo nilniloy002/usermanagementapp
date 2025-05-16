@@ -37,6 +37,7 @@ class CandidateResultController extends Controller
         // Search for the candidate's result
         $result = MockTestResult::where('mocktest_date', $mockTestDate)
                                 ->where('mobile', $request->mobile)
+                                ->where('status', 'On') 
                                 ->first();
     
         // If no result found, redirect back with error
