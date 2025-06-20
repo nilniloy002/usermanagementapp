@@ -345,7 +345,7 @@ class MockTestRegistrationController extends Controller
         Mail::send('mocktestregistrations.mocktest-token', compact('details'), function ($message) use ($candidateEmail) {
             $message->to($candidateEmail)
                     ->subject(__('IELTS Mock Test Booking Token | STS'))
-                    ->from('mocktest@stsinstitute.site', 'STS Institute');
+                    ->from('regmocktest@sts.institute', 'STS Institute');
         });
     
         return redirect()->back()->with('success', __('Email sent successfully to the candidate.'));
