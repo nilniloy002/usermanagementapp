@@ -18,7 +18,7 @@ class UpdateMockTestRegistrationRequest extends FormRequest
             'email',
             'max:255',
             Rule::unique('mock_test_registrations')
-                ->ignore($this->route('mock_test_registration')->id)
+                ->ignore($this->route('mockTestRegistration')->id)
                 ->where(function ($query) {
                     return $query->where('mock_test_date_id', $this->input('mock_test_date_id'));
                 }),
