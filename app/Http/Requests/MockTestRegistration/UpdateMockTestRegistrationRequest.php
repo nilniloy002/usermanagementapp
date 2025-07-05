@@ -3,6 +3,7 @@
 namespace Vanguard\Http\Requests\MockTestRegistration;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateMockTestRegistrationRequest extends FormRequest
 {
