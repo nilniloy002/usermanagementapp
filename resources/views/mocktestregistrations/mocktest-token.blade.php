@@ -66,7 +66,7 @@
             <!-- <li><strong>@lang('LRW Time'):</strong> {{ $details['lrwTime'] }}</li> -->
             <li><strong>@lang('Reporting Time'):</strong> 
                 @if(isset($details['lrwTime']) && $details['lrwTime'] == "10:30AM-02:30PM")
-                09:45 AM
+                10:30 AM
                 @else 02:30 PM
                 @endif
             </li>
