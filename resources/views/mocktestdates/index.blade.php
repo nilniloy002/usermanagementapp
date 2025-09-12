@@ -31,6 +31,7 @@
                     <thead>
                         <tr>
                             <th class="min-width-150">@lang('Mock Test Date')</th>
+                            <th class="min-width-150">@lang('Exam Pattern')</th>
                             <th class="min-width-100">@lang('Status')</th>
                             <th class="text-center">@lang('Actions')</th>
                         </tr>
@@ -39,6 +40,7 @@
                         @forelse ($mockTestDates as $date)
                             <tr>
                             <td>{{ \Carbon\Carbon::parse($date->mocktest_date)->format('d-m-Y') }}</td>
+                                <td>{{ $date->exam_pattern }}</td>
                                 <td>{{ $date->status }}</td>
                                 <td class="text-center">
                                     <a href="{{ route('mock_test_dates.edit', $date) }}" class="btn btn-icon" title="@lang('Edit Mock Test Date')" data-toggle="tooltip" data-placement="top">

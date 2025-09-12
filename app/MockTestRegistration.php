@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class MockTestRegistration extends Model
 {
     protected $fillable = [
+        'exam_pattern', 
         'mock_test_date_id',
+        'test_venue', 
         'name',
         'email',
         'mobile',

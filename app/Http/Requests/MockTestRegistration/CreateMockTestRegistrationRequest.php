@@ -11,7 +11,9 @@ class CreateMockTestRegistrationRequest extends FormRequest
     public function rules()
     {
         return [
+            'exam_pattern' => 'required|in:IoP,IoC', 
             'mock_test_date_id' => 'required|exists:mock_test_dates,id',
+            'test_venue' => 'required|in:At the Venue,Online Platform', 
             'name' => 'required|string|max:255',
             // 'email' => 'required|email|max:255',
             'email' => [

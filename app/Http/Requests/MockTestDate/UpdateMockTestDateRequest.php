@@ -17,6 +17,8 @@ class UpdateMockTestDateRequest extends FormRequest
         return [
             'mocktest_date' => ['required', 'date'],
             'status' => ['required', 'in:On,Off'], // Status must be 'On' or 'Off'
+            'exam_pattern' => ['required', 'in:IoP,IoC'], // exam_pattern must be 'IoP'or 'IoC'
+
         ];
     }
 }

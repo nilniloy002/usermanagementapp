@@ -11,6 +11,7 @@ class MockTestDate extends Model
     
     protected $fillable = [
         'mocktest_date',
+        'exam_pattern',
         'status',
     ];
 }

@@ -27,6 +27,15 @@
                     <input type="date" name="mocktest_date" id="mocktest_date" class="form-control" value="{{ old('mocktest_date', $mockTestDate->mocktest_date ?? '') }}" required>
                 </div>
 
+                 <div class="form-group">
+                        <label for="exam_pattern">@lang('Exam Pattern')</label>
+                        <select name="exam_pattern" id="exam_pattern" class="form-control">
+                            <option value="">@lang('Select Exam Pattern')</option>
+                            <option value="IoP" {{ old('exam_pattern', $mockTestDate->exam_pattern ?? '') == 'IoP' ? 'selected' : '' }}>IoP</option>
+                            <option value="IoC" {{ old('exam_pattern', $mockTestDate->exam_pattern ?? '') == 'IoC' ? 'selected' : '' }}>IoC</option>
+                        </select>
+                    </div>
+
                 <div class="form-group">
                     <label for="status">@lang('Status')</label>
                     <select name="status" id="status" class="form-control">

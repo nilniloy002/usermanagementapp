@@ -16,6 +16,17 @@
 
 <div class="card">
     <div class="card-body">
+        <!-- Add Exam Pattern Selection at the top (for both create and edit forms) -->
+        <div class="form-group">
+            <label for="exam_pattern_filter">@lang('Exam Pattern')</label>
+            <select name="exam_pattern_filter" id="exam_pattern_filter" class="form-control" 
+                onchange="updateExamPattern(this.value, '{{ isset($mockTestRegistration) ? $mockTestRegistration->id : '' }}')">
+                <option value="IoP" {{ ($examPattern ?? 'IoP') == 'IoP' ? 'selected' : '' }}>IoP</option>
+                <option value="IoC" {{ ($examPattern ?? 'IoP') == 'IoC' ? 'selected' : '' }}>IoC</option>
+            </select>
+        </div>
+        <hr>
+
         <form action="{{ isset($mockTestRegistration) ? route('mock_test_registrations.update', $mockTestRegistration) : route('mock_test_registrations.store') }}" 
               method="POST" 
               id="mock-test-registration-form">
@@ -24,17 +35,35 @@
                 @method('PUT')
             @endif
 
+            <!-- Hidden field to store exam pattern -->
+            <input type="hidden" name="exam_pattern" id="exam_pattern" value="{{ $examPattern ?? 'IoP' }}">
+
             <!-- Mock Test Date -->
             <div class="form-group">
                 <label for="mock_test_date_id">@lang('Mock Test Date')</label>
-                <select name="mock_test_date_id" id="mock_test_date_id" class="form-control">
+                <select name="mock_test_date_id" id="mock_test_date_id" class="form-control" required>
                     <option value="">@lang('Select Mock Test Date')</option>
                     @foreach ($dates as $date)
                         <option value="{{ $date->id }}" 
-                            {{ isset($mockTestRegistration) && $mockTestRegistration->mock_test_date_id == $date->id ? 'selected' : '' }}>
-                            {{ \Carbon\Carbon::parse($date->mocktest_date)->format('d-m-Y') }}
+                            {{ (isset($mockTestRegistration) && $mockTestRegistration->mock_test_date_id == $date->id) || old('mock_test_date_id') == $date->id ? 'selected' : '' }}>
+                            {{ \Carbon\Carbon::parse($date->mocktest_date)->format('d-m-Y') }} ({{ $date->exam_pattern }})
                         </option>
                     @endforeach
+                </select>
+                @if(count($dates) === 0)
+                    <div class="alert alert-warning mt-2">
+                        @lang('No available dates for the selected exam pattern.')
+                    </div>
+                @endif
+            </div>
+
+            <!-- Test Venue -->
+            <div class="form-group">
+                <label for="test_venue">@lang('Test Venue')</label>
+                <select name="test_venue" id="test_venue" class="form-control" required>
+                    <option value="">@lang('Select Test Venue')</option>
+                    <option value="At the Venue" {{ old('test_venue', $mockTestRegistration->test_venue ?? '') == 'At the Venue' ? 'selected' : '' }}>@lang('At the Venue')</option>
+                    <option value="Online Platform" {{ old('test_venue', $mockTestRegistration->test_venue ?? '') == 'Online Platform' ? 'selected' : '' }}>@lang('Online Platform')</option>
                 </select>
             </div>
 
@@ -42,27 +71,27 @@
             <div class="form-group">
                 <label for="name">@lang('Name')</label>
                 <input type="text" name="name" id="name" class="form-control" 
-                       value="{{ old('name', $mockTestRegistration->name ?? '') }}">
+                       value="{{ old('name', $mockTestRegistration->name ?? '') }}" required>
             </div>
 
             <!-- Email -->
             <div class="form-group">
                 <label for="email">@lang('Email')</label>
                 <input type="email" name="email" id="email" class="form-control" 
-                       value="{{ old('email', $mockTestRegistration->email ?? '') }}">
+                       value="{{ old('email', $mockTestRegistration->email ?? '') }}" required>
             </div>
 
             <!-- Mobile -->
             <div class="form-group">
                 <label for="mobile">@lang('Mobile')</label>
                 <input type="text" name="mobile" id="mobile" class="form-control" 
-                       value="{{ old('mobile', $mockTestRegistration->mobile ?? '') }}">
+                       value="{{ old('mobile', $mockTestRegistration->mobile ?? '') }}" required>
             </div>
 
             <!-- Exam Status -->
             <div class="form-group">
-            <label for="invoice_no">@lang('Candidate Mock Test Purchase Status')</label>
-                <select name="exam_status_id" id="exam_status_id" class="form-control">
+                <label for="exam_status_id">@lang('Candidate Mock Test Purchase Status')</label>
+                <select name="exam_status_id" id="exam_status_id" class="form-control" required>
                     <option value="">@lang('Select Candidate Status')</option>
                     @foreach ($statuses as $status)
                         <option value="{{ $status->id }}" 
@@ -71,42 +100,41 @@
                         </option>
                     @endforeach
                 </select>
-        </div>
+            </div>
 
             <!-- Number of Mock Tests -->
             <div class="form-group">
                 <label for="no_of_mock_test">@lang('No. of Mock Tests')</label>
                 <input type="number" name="no_of_mock_test" id="no_of_mock_test" class="form-control" 
-                       value="{{ old('no_of_mock_test', $mockTestRegistration->no_of_mock_test ?? '') }}">
+                       value="{{ old('no_of_mock_test', $mockTestRegistration->no_of_mock_test ?? '') }}" required min="1">
             </div>
 
             <!-- Mock Test Number -->
             <div class="form-group">
                 <label for="mock_test_no">@lang('Current Mock Test No')</label>
                 <input type="number" name="mock_test_no" id="mock_test_no" class="form-control" 
-                       value="{{ old('mock_test_no', $mockTestRegistration->mock_test_no ?? '') }}">
+                       value="{{ old('mock_test_no', $mockTestRegistration->mock_test_no ?? '') }}" required min="1">
             </div>
 
             <!-- Booking Category -->
-        <div class="form-group">
-            <label for="booking_category">@lang('Booking Category')</label>
-            <select name="booking_category" id="booking_category" class="form-control">
-                <option value="">@lang('Select Booking Category')</option>
-                <option value="Student" {{ old('booking_category', $mockTestRegistration->booking_category ?? '') == 'Student' ? 'selected' : '' }}>@lang('Student')</option>
-                <option value="Outsider" {{ old('booking_category', $mockTestRegistration->booking_category ?? '') == 'Outsider' ? 'selected' : '' }}>@lang('Outsider')</option>
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="booking_category">@lang('Booking Category')</label>
+                <select name="booking_category" id="booking_category" class="form-control" required>
+                    <option value="">@lang('Select Booking Category')</option>
+                    <option value="Student" {{ old('booking_category', $mockTestRegistration->booking_category ?? '') == 'Student' ? 'selected' : '' }}>@lang('Student')</option>
+                    <option value="Outsider" {{ old('booking_category', $mockTestRegistration->booking_category ?? '') == 'Outsider' ? 'selected' : '' }}>@lang('Outsider')</option>
+                </select>
+            </div>
 
-        <!-- Exam Type -->
-        <div class="form-group">
-            <label for="exam_type">@lang('Exam Type')</label>
-            <select name="exam_type" id="exam_type" class="form-control">
-                <option value="">@lang('Select Exam Type')</option>
-                <option value="General" {{ old('exam_type', $mockTestRegistration->exam_type ?? '') == 'General' ? 'selected' : '' }}>@lang('General')</option>
-                <option value="Academic" {{ old('exam_type', $mockTestRegistration->exam_type ?? '') == 'Academic' ? 'selected' : '' }}>@lang('Academic')</option>
-            </select>
-        </div>
-
+            <!-- Exam Type -->
+            <div class="form-group">
+                <label for="exam_type">@lang('Exam Type')</label>
+                <select name="exam_type" id="exam_type" class="form-control" required>
+                    <option value="">@lang('Select Exam Type')</option>
+                    <option value="General" {{ old('exam_type', $mockTestRegistration->exam_type ?? '') == 'General' ? 'selected' : '' }}>@lang('General')</option>
+                    <option value="Academic" {{ old('exam_type', $mockTestRegistration->exam_type ?? '') == 'Academic' ? 'selected' : '' }}>@lang('Academic')</option>
+                </select>
+            </div>
 
             <!-- Invoice No -->
             <div class="form-group">
@@ -119,11 +147,11 @@
             <!-- LRW Time Slot -->
             <div class="form-group">
                 <label for="lrw_time_slot">@lang('LRW Time Slot')</label>
-                <select name="lrw_time_slot" id="lrw_time_slot" class="form-control">
+                <select name="lrw_time_slot" id="lrw_time_slot" class="form-control" required>
                     <option value="">@lang('Select LRW Time Slot')</option>
                     @foreach ($lrwTimeSlots as $slot)
                         <option value="{{ $slot->time_range }}" 
-                            {{ isset($mockTestRegistration) && $mockTestRegistration->lrw_time_slot == $slot->time_range ? 'selected' : '' }}>
+                            {{ (isset($mockTestRegistration) && $mockTestRegistration->lrw_time_slot == $slot->time_range) || old('lrw_time_slot') == $slot->time_range ? 'selected' : '' }}>
                             {{ $slot->time_range }}
                         </option>
                     @endforeach
@@ -136,7 +164,7 @@
                 <div class="form-check">
                     <input type="radio" name="speaking_day" id="speaking_same_day" value="same_day" class="form-check-input" 
                         {{ old('speaking_time_slot_id_another_day', $mockTestRegistration->speaking_time_slot_id_another_day ?? 0) == 0 ? 'checked' : '' }}>
-                    <label class="form-check-label" for="speaking_same_day">@lang('Same Day')</label>
+                    <label class="form-check-label" for 'speaking_same_day'>@lang('Same Day')</label>
                 </div>
                 <div class="form-check">
                     <input type="radio" name="speaking_day" id="speaking_another_day" value="another_day" class="form-check-input" 
@@ -157,7 +185,6 @@
                     value="{{ old('speaking_time_slot_id_another_day', $mockTestRegistration->speaking_time_slot_id_another_day ?? 0) }}">
             </div>
 
-
             <!-- Speaking Room -->
             <div class="form-group">
                 <label for="speaking_room_id">@lang('Speaking Room')</label>
@@ -166,7 +193,7 @@
                     <option value="">@lang('Select Speaking Room')</option>
                     @foreach ($rooms as $room)
                         <option value="{{ $room->id }}" 
-                            {{ isset($mockTestRegistration) && $mockTestRegistration->speaking_room_id == $room->id ? 'selected' : '' }}>
+                            {{ (isset($mockTestRegistration) && $mockTestRegistration->speaking_room_id == $room->id) || old('speaking_room_id') == $room->id ? 'selected' : '' }}>
                             {{ $room->mocktest_room }}
                         </option>
                     @endforeach
@@ -176,9 +203,9 @@
             <!-- Status -->
             <div class="form-group">
                 <label for="status">@lang('Status')</label>
-                <select name="status" id="status" class="form-control">
-                    <option value="On" {{ isset($mockTestRegistration) && $mockTestRegistration->status == 'On' ? 'selected' : '' }}>@lang('On')</option>
-                    <option value="Off" {{ isset($mockTestRegistration) && $mockTestRegistration->status == 'Off' ? 'selected' : '' }}>@lang('Off')</option>
+                <select name="status" id="status" class="form-control" required>
+                    <option value="On" {{ (isset($mockTestRegistration) && $mockTestRegistration->status == 'On') || old('status') == 'On' ? 'selected' : '' }}>@lang('On')</option>
+                    <option value="Off" {{ (isset($mockTestRegistration) && $mockTestRegistration->status == 'Off') || old('status') == 'Off' ? 'selected' : '' }}>@lang('Off')</option>
                 </select>
             </div>
 
@@ -186,6 +213,11 @@
             <button type="submit" class="btn btn-primary">
                 {{ isset($mockTestRegistration) ? __('Update') : __('Create') }}
             </button>
+            
+            <!-- Cancel Button -->
+            <a href="{{ route('mock_test_registrations.index') }}" class="btn btn-secondary">
+                @lang('Cancel')
+            </a>
         </form>
     </div>
 </div>
@@ -200,6 +232,19 @@
     @endif
 
     <script>
+    function updateExamPattern(pattern, registrationId = '') {
+        let url = '';
+        if (registrationId) {
+            // Edit mode - redirect to edit page with new exam pattern
+            url = '{{ route("mock_test_registrations.edit", ":id") }}?exam_pattern=' + pattern;
+            url = url.replace(':id', registrationId);
+        } else {
+            // Create mode - redirect to create page with new exam pattern
+            url = '{{ route("mock_test_registrations.create") }}?exam_pattern=' + pattern;
+        }
+        window.location.href = url;
+    }
+
     $(document).ready(function () {
         const speakingTimeSlotDropdown = $('#speaking_time_slot');
         const speakingRoomDropdown = $('#speaking_room_id');
@@ -281,7 +326,11 @@
         if (speakingTimeSlotDropdown.val()) {
             speakingTimeSlotDropdown.trigger('change');
         }
+        
+        // Update the hidden exam pattern field when the form is submitted
+        $('#mock-test-registration-form').submit(function() {
+            $('#exam_pattern').val($('#exam_pattern_filter').val());
+        });
     });
-</script>
-
+    </script>
 @stop

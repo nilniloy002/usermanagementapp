@@ -36,6 +36,15 @@
                     </select>
                 </div>
 
+                <div class="col-md-3">
+                    <label for="exam_pattern">@lang('Exam Pattern')</label>
+                    <select name="exam_pattern" id="exam_pattern" class="form-control">
+                        <option value="">@lang('All Exam Patterns')</option>
+                        <option value="IoP" {{ request('exam_pattern') == 'IoP' ? 'selected' : '' }}>IoP</option>
+                        <option value="IoC" {{ request('exam_pattern') == 'IoC' ? 'selected' : '' }}>IoC</option>
+                    </select>
+                </div>
+
                 <!-- LRW Time Filter -->
                 <div class="col-md-3">
                     <label for="lrw_time">@lang('LRW Time')</label>

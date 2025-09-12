@@ -12,7 +12,7 @@ class MockTestDateController extends Controller
 {
     public function index()
     {
-        $mockTestDates = MockTestDate::paginate(10);
+        $mockTestDates = MockTestDate::orderBy('created_at', 'desc')->paginate(10);
         return view('mocktestdates.index', compact('mockTestDates'));
     }
 
