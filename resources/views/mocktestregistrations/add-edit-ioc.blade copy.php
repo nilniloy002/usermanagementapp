@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('page-title', isset($mockTestRegistration) ? __('Edit IoP Mock Test Registration') : __('Add IoP Mock Test Registration'))
-@section('page-heading', isset($mockTestRegistration) ? __('Edit IoP Mock Test Registration') : __('Add IoP Mock Test Registration'))
+@section('page-title', isset($mockTestRegistration) ? __('Edit Mock Test Registration') : __('Add Mock Test Registration'))
+@section('page-heading', isset($mockTestRegistration) ? __('Edit Mock Test Registration') : __('Add Mock Test Registration'))
 
 @section('breadcrumbs')
     <li class="breadcrumb-item">
-        <a href="{{ route('mock_test_registrations.index') }}">@lang('IoP Mock Test Registrations')</a>
+        <a href="{{ route('mock_test_registrations.indexioc') }}">@lang('Mock Test Registrations')</a>
     </li>
     <li class="breadcrumb-item active">
         {{ isset($mockTestRegistration) ? __('Edit') : __('Add') }}
@@ -16,7 +16,18 @@
 
 <div class="card">
     <div class="card-body">
-        <form action="{{ isset($mockTestRegistration) ? route('mock_test_registrations.update', $mockTestRegistration) : route('mock_test_registrations.store') }}" 
+        <!-- Add Exam Pattern Selection at the top (for both create and edit forms) -->
+        <!-- <div class="form-group">
+            <label for="exam_pattern_filter">@lang('Exam Pattern')</label>
+            <select name="exam_pattern_filter" id="exam_pattern_filter" class="form-control" 
+                onchange="updateExamPattern(this.value, '{{ isset($mockTestRegistration) ? $mockTestRegistration->id : '' }}')">
+                <option value="IoP" {{ ($examPattern ?? 'IoP') == 'IoP' ? 'selected' : '' }}>IoP</option>
+                <option value="IoC" {{ ($examPattern ?? 'IoP') == 'IoC' ? 'selected' : '' }}>IoC</option>
+            </select>
+        </div> -->
+        <!-- <hr> -->
+
+        <form action="{{ isset($mockTestRegistration) ? route('mock_test_registrations.updateioc', $mockTestRegistration) : route('mock_test_registrations.storeioc') }}" 
               method="POST" 
               id="mock-test-registration-form">
             @csrf
@@ -25,13 +36,13 @@
             @endif
 
             <!-- Hidden field to store exam pattern -->
-            <input type="hidden" name="exam_pattern" id="exam_pattern" value="{{ $examPattern ?? 'IoC' }}">
+            <input type="hidden" name="exam_pattern" id="exam_pattern" value="{{ $examPattern ?? 'IoP' }}">
 
             <!-- Mock Test Date -->
             <div class="form-group">
-                <label for="mock_test_date_id">@lang('IoP Mock Test Date')</label>
+                <label for="mock_test_date_id">@lang('Mock Test Date')</label>
                 <select name="mock_test_date_id" id="mock_test_date_id" class="form-control" required>
-                    <option value="">@lang('Select IoP Mock Test Date')</option>
+                    <option value="">@lang('Select Mock Test Date')</option>
                     @foreach ($dates as $date)
                         <option value="{{ $date->id }}" 
                             {{ (isset($mockTestRegistration) && $mockTestRegistration->mock_test_date_id == $date->id) || old('mock_test_date_id') == $date->id ? 'selected' : '' }}>
@@ -52,7 +63,7 @@
                 <select name="test_venue" id="test_venue" class="form-control" required>
                     <option value="">@lang('Select Test Venue')</option>
                     <option value="At the Venue" {{ old('test_venue', $mockTestRegistration->test_venue ?? '') == 'At the Venue' ? 'selected' : '' }}>@lang('At the Venue')</option>
-                    <!-- <option value="Online Platform" {{ old('test_venue', $mockTestRegistration->test_venue ?? '') == 'Online Platform' ? 'selected' : '' }}>@lang('Online Platform')</option> -->
+                    <option value="Online Platform" {{ old('test_venue', $mockTestRegistration->test_venue ?? '') == 'Online Platform' ? 'selected' : '' }}>@lang('Online Platform')</option>
                 </select>
             </div>
 
@@ -155,11 +166,11 @@
                         {{ old('speaking_time_slot_id_another_day', $mockTestRegistration->speaking_time_slot_id_another_day ?? 0) == 0 ? 'checked' : '' }}>
                     <label class="form-check-label" for 'speaking_same_day'>@lang('Same Day')</label>
                 </div>
-                <div class="form-check">
+                <!-- <div class="form-check">
                     <input type="radio" name="speaking_day" id="speaking_another_day" value="another_day" class="form-check-input" 
                         {{ old('speaking_time_slot_id_another_day', $mockTestRegistration->speaking_time_slot_id_another_day ?? 0) == 1 ? 'checked' : '' }}>
                     <label class="form-check-label" for="speaking_another_day">@lang('Another Day')</label>
-                </div>
+                </div> -->
                 <select name="speaking_time_slot_id" id="speaking_time_slot" class="form-control mt-2" 
                     {{ old('speaking_time_slot_id_another_day', $mockTestRegistration->speaking_time_slot_id_another_day ?? 0) == 1 ? 'disabled' : '' }}>
                     <option value="">@lang('Select Speaking Time Slot')</option>
@@ -204,7 +215,7 @@
             </button>
             
             <!-- Cancel Button -->
-            <a href="{{ route('mock_test_registrations.index') }}" class="btn btn-secondary">
+            <a href="{{ route('mock_test_registrations.indexioc') }}" class="btn btn-secondary">
                 @lang('Cancel')
             </a>
         </form>
@@ -221,20 +232,33 @@
     @endif
 
     <script>
+    function updateExamPattern(pattern, registrationId = '') {
+        let url = '';
+        if (registrationId) {
+            // Edit mode - redirect to edit page with new exam pattern
+            url = '{{ route("mock_test_registrations.edit", ":id") }}?exam_pattern=' + pattern;
+            url = url.replace(':id', registrationId);
+        } else {
+            // Create mode - redirect to create page with new exam pattern
+            url = '{{ route("mock_test_registrations.createioc") }}?exam_pattern=' + pattern;
+        }
+        window.location.href = url;
+    }
+
     $(document).ready(function () {
         const speakingTimeSlotDropdown = $('#speaking_time_slot');
         const speakingRoomDropdown = $('#speaking_room_id');
         const speakingAnotherDayInput = $('#speaking_time_slot_id_another_day');
         const roomAvailability = @json($roomAvailability); // Pass availability data from the controller
 
-               // Populate Speaking Slots based on LRW time slot
+        // Populate Speaking Slots based on LRW time slot
         function populateSpeakingSlots(lrwTimeSlot) {
             let speakingSlots = [];
 
-            if (lrwTimeSlot === '10:30AM-02:30PM') {
-                speakingSlots = @json($speakingTimeSlots->where('slot_key', 'Speaking Slot Afternoon')->pluck('id', 'time_range'));
-            } else if (lrwTimeSlot === '3:30PM-6:30PM') {
-                speakingSlots = @json($speakingTimeSlots->where('slot_key', 'Speaking Slot Morning')->pluck('id', 'time_range'));
+            if (lrwTimeSlot === '11:00AM-02:00PM') {
+                speakingSlots = @json($speakingTimeSlots->where('slot_key', 'IoC Speaking Slot Afternoon')->pluck('id', 'time_range'));
+            } else if (lrwTimeSlot === '02:00PM-05:00PM') {
+                speakingSlots = @json($speakingTimeSlots->where('slot_key', 'IoC Speaking Slot Morning')->pluck('id', 'time_range'));
             }
 
             speakingTimeSlotDropdown.empty().append('<option value="">@lang("Select Speaking Time Slot")</option>');
@@ -242,7 +266,6 @@
                 speakingTimeSlotDropdown.append(`<option value="${id}">${timeRange}</option>`);
             });
         }
-
 
         // Check Room Availability and Update Options
         function updateRoomAvailability(date, timeSlot) {
@@ -303,6 +326,11 @@
         if (speakingTimeSlotDropdown.val()) {
             speakingTimeSlotDropdown.trigger('change');
         }
+        
+        // Update the hidden exam pattern field when the form is submitted
+        $('#mock-test-registration-form').submit(function() {
+            $('#exam_pattern').val($('#exam_pattern_filter').val());
+        });
     });
     </script>
 @stop

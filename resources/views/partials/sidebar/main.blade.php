@@ -6,7 +6,7 @@
          @endforeach
          <!-- Start Mock Registration section -->
          @if (in_array(auth()->user()->role_id, [1, 3, 4])) {{-- Admin, SuperAdmin, OperationTeam --}}
-         <li class="nav-item"><a class="nav-link" href="{{ route('departments.index') }}"><i class="fa fa-building"></i><span>Departments</span></a></li>
+         <!-- <li class="nav-item"><a class="nav-link" href="{{ route('departments.index') }}"><i class="fa fa-building"></i><span>Departments</span></a></li>
          <li class="nav-item"><a class="nav-link" href="{{ route('employees.index') }}"><i class="fa fa-building"></i><span>Employees</span></a></li>
       
          <li class="nav-item">
@@ -38,14 +38,15 @@
                <li class="nav-item"><a class="nav-link" href="{{ route('batches.index') }}"><i class="fa fa-building"></i><span>All Batches</span></a></li>
                <li class="nav-item"><a class="nav-link" href="{{ route('batches.create') }}"><i class="fa fa-building"></i><span>Add Batch</span></a></li>
             </ul>
-         </li>
+         </li> -->
          <li class="nav-item">
          <a class="nav-link collapsed" href="#mockreg-dropdown" data-toggle="collapse" aria-expanded="false">
          <i class="fa fa-file"></i>
          <span>Mock Registration</span>
          </a>
          <ul class="list-unstyled sub-menu collapse" id="mockreg-dropdown" style="">
-            <li class="nav-item"><a class="nav-link" href="{{ route('mock_test_registrations.index') }}"><i class="fa fa-plus"></i><span>Book Mock Test</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('mock_test_registrations.index') }}"><i class="fa fa-plus"></i><span>Book IoP Mock Test</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('mock_test_registrations.indexioc') }}"><i class="fa fa-plus"></i><span>Book IoC Mock Test</span></a></li>
             <li class="nav-item"><a class="nav-link" href="{{ route('mock_test_dates.index') }}"><i class="fa fa-calendar"></i><span>Mock Dates</span></a></li>
             <li class="nav-item"><a class="nav-link" href="{{ route('mock_test_time_slots.index') }}"><i class="fa fa-clock"></i><span>Time Slot</span></a></li>
             <li class="nav-item"><a class="nav-link" href="{{ route('mock_test_rooms.index') }}"><i class="fa fa-building"></i><span>Speaking Rooms</span></a></li>

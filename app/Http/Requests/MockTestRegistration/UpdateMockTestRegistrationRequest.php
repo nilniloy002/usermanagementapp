@@ -33,7 +33,7 @@ class UpdateMockTestRegistrationRequest extends FormRequest
             'booking_category' => 'required|string|max:255', // Added field
             'exam_type' => 'required|string|max:255', // Added field
             'invoice_no' => 'nullable|string|max:255',
-            'lrw_time_slot' => 'required|string', // Ensure it's a valid time slot string
+            'lrw_time_slot' => 'nullable|string', // Ensure it's a valid time slot string
             'speaking_time_slot_id' => [
                 'nullable',
                 'exists:mock_test_time_slots,id',

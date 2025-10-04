@@ -323,10 +323,22 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('mock-test-registrations/{mockTestRegistration}/edit', 'MockTestRegistrationController@edit')->name('mock_test_registrations.edit');
     Route::put('mock-test-registrations/{mockTestRegistration}', 'MockTestRegistrationController@update')->name('mock_test_registrations.update');
     Route::delete('mock-test-registrations/{mockTestRegistration}', 'MockTestRegistrationController@destroy')->name('mock_test_registrations.destroy');
+    
     Route::get('mock-test-registrations/{registration}/token', 'MockTestRegistrationController@generateToken')
     ->name('mock_test_registrations.token');
     Route::get('mock-test-registrations/{registration}/email', 'MockTestRegistrationController@sendEmail')->name('mock_test_registrations.email');
 
+     /**
+     * Mock Test Registrations IoC
+     */
+    Route::get('mock-test-registrations-ioc', 'MockTestRegistrationController@indexIoc')->name('mock_test_registrations.indexioc');
+    
+    Route::get('mock-test-registrations/createioc', 'MockTestRegistrationController@createIoc')->name('mock_test_registrations.createioc');
+    Route::post('mock-test-registrations-ioc', 'MockTestRegistrationController@storeIoc')->name('mock_test_registrations.storeioc');
+    
+    Route::get('mock-test-registrations/{mockTestRegistration}/editioc', 'MockTestRegistrationController@editIoc')->name('mock_test_registrations.editioc');
+    Route::put('mock-test-registrations/{mockTestRegistration}', 'MockTestRegistrationController@updateIoc')->name('mock_test_registrations.updateioc');
+    
     /**
      * Another Day Bookings
      */

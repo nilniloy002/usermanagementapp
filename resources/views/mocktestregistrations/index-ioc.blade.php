@@ -4,12 +4,12 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
 @endsection
 
-@section('page-title', __('IoP Mock Test Registrations'))
-@section('page-heading', __('IoP Mock Test Registrations'))
+@section('page-title', __('IoC Mock Test Registrations'))
+@section('page-heading', __('Ioc Mock Test Registrations'))
 
 @section('breadcrumbs')
     <li class="breadcrumb-item active">
-        @lang('IoP Mock Test Registrations')
+        @lang('IoC Mock Test Registrations')
     </li>
 @stop
 
@@ -18,9 +18,10 @@
 @include('partials.messages')
 
 <!-- Filters Section -->
+<!-- Filters Section -->
 <div class="card">
     <div class="card-body">
-        <form action="{{ route('mock_test_registrations.index') }}" method="GET" class="mb-3">
+        <form action="{{ route('mock_test_registrations.indexioc') }}" method="GET" class="mb-3">
             <div class="row">
                 <!-- Exam Date Filter -->
                 <div class="col-md-3">
@@ -82,7 +83,7 @@
                     <button type="submit" class="btn btn-primary btn-rounded">
                         <i class="fas fa-filter mr-2"></i> @lang('Filter')
                     </button>
-                    <a href="{{ route('mock_test_registrations.index') }}" class="btn btn-secondary btn-rounded">
+                    <a href="{{ route('mock_test_registrations.indexioc') }}" class="btn btn-secondary btn-rounded">
                         @lang('Reset')
                     </a>
                 </div>
@@ -130,9 +131,9 @@
         <div class="row mb-3 pb-3 border-bottom-light">
             <div class="col-lg-12">
                 <div class="float-right">
-                    <a href="{{ route('mock_test_registrations.create') }}" class="btn btn-primary btn-rounded">
+                    <a href="{{ route('mock_test_registrations.createioc') }}" class="btn btn-primary btn-rounded">
                         <i class="fas fa-plus mr-2"></i>
-                        @lang('Add Mock Test Registration')
+                        @lang('Add IoC Mock Test Registration')
                     </a>
                 </div>
             </div>
@@ -187,7 +188,7 @@
                     <td>{{ $registration->no_of_mock_test }}</td>
                     <td>{{ $registration->mock_test_no }}</td>
                     <td class="text-center">
-                        <a href="{{ route('mock_test_registrations.edit', $registration) }}" class="btn btn-icon" title="@lang('Edit Registration')">
+                        <a href="{{ route('mock_test_registrations.editioc', $registration) }}" class="btn btn-icon" title="@lang('Edit Registration')">
                             <i class="fas fa-edit"></i>
                         </a>
 
