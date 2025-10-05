@@ -22,6 +22,14 @@
             padding: 2px 4px;
             border-radius: 3px;
         }
+          .highlightlate {
+            font-weight: bold;
+            color: #ffffffff;
+            background-color: #ea0000ff;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
 
     </style>
 </head>
@@ -39,7 +47,7 @@
     <div class="header">
     <img src="https://sts.institute/wp-content/uploads/2024/08/Logo-v2-01.png" alt="@lang('Logo')">
     <h2>@lang('IELTS Mock Test Booking Token | STS')</h2>
-
+<!-- 
         @php
             $specialExamDates = ['04-03-2025', '11-03-2025', '18-03-2025', '25-03-2025'];
             $reportingTime = '';
@@ -51,11 +59,14 @@
                     $reportingTime = in_array($details['examDate'], $specialExamDates) ? '01:30 PM' : '02:30 PM';
                 }
             }
-        @endphp
+        @endphp -->
 
-        <h3>@lang('Reporting Date & Time'): {{ $details['examDate'] }} | 
-            <span class="highlight">@lang($reportingTime)</span>
+        <!-- <h3>@lang('Exam Date & Time'): {{ $details['examDate'] }} |  -->
+        <h3>@lang('Exam Date'): {{ $details['examDate'] }} 
+            <!-- <span class="highlight">{{ $details['lrwTime'] }}</span> -->
         </h3>
+
+        <p><span class="highlightlate">Be at the venue 30 minutes before your exam begins.</p>
     </div>
 
     <div class="content">
@@ -63,13 +74,13 @@
         <p>@lang('Here are your mock test details:')</p>
         <ul>
             <li><strong>@lang('Exam Date'):</strong> {{ $details['examDate'] }}</li>
-            <!-- <li><strong>@lang('LRW Time'):</strong> {{ $details['lrwTime'] }}</li> -->
-            <li><strong>@lang('Reporting Time'):</strong> 
+            <li><strong>@lang('LRW Time'):</strong> <span class="highlight">{{ $details['lrwTime'] }}</span></li>
+            <!-- <li><strong>@lang('Reporting Time'):</strong> 
                 @if(isset($details['lrwTime']) && $details['lrwTime'] == "10:30AM-02:30PM")
                 10:30 AM
                 @else 02:30 PM
                 @endif
-            </li>
+            </li> -->
 
             <!-- <li><strong>@lang('Reporting Time'):</strong> 
                 @php
@@ -92,7 +103,7 @@
                 @if ($details['speaking_time_slot_id_another_day'])
                     @lang('Another Day')
                 @else
-                    {{ $details['speakingTime'] ?? '-' }}
+                    <span class="highlight">{{ $details['speakingTime'] ?? '-' }}</span>
                 @endif
             </li>
 

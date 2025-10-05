@@ -71,6 +71,14 @@
             border-radius: 3px;
         }
 
+          .highlightlate {
+            font-weight: bold;
+            color: #ffffffff;
+            background-color: #ea0000ff;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
     </style>
 </head>
 <body>
@@ -79,12 +87,14 @@
         <img src="https://sts.institute/wp-content/uploads/2024/08/Logo-v2-01.png" alt="@lang('Logo')">
         <h2>@lang('IELTS Mock Test Booking Token')</h2>
         <p><strong>@lang('Exam Date'):</strong> {{ $details['examDate'] }}</p>
+        <p><strong>@lang('LRW Time'):</strong> <span class="highlight">{{ $details['lrwTime'] }}</p>
 
-        @if(isset($details['lrwTime']) && $details['lrwTime'] == "10:30AM-02:30PM")
+        <!-- @if(isset($details['lrwTime']) && $details['lrwTime'] == "10:30AM-02:30PM")
         <p><strong>@lang('Reporting Time'):</strong> <span class="highlight">@lang('09:45 AM')</p>
         @else
         <p><strong>@lang('Reporting Time'):</strong> <span class="highlight">@lang('02:45 PM')</p>
-        @endif
+        @endif -->
+
         
     </div>
 
@@ -122,7 +132,8 @@
 
     <!-- Footer Section -->
     <div class="footer">
-        <p>@lang('Please bring this token on your mock test date.')</p>
+                <p><span class="highlightlate">Be at the venue 30 minutes before your exam begins.</p>
+        <!-- <p>@lang('Please bring this token on your mock test date.')</p> -->
     </div>
 </body>
 </html>
