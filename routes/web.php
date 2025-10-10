@@ -1,12 +1,17 @@
 <?php
 
 use Vanguard\Http\Controllers\CandidateResultController; 
+use Vanguard\Http\Controllers\StudentAdmissionController;
 
 // Public route for candidate result page (outside of auth middleware)
 Route::get('/', [CandidateResultController::class, 'view'])->name('home'); // Use correct path for CandidateResultController
 Route::get('candidate-result', [CandidateResultController::class, 'view'])->name('candidate.result.view');
 Route::post('candidate-result/search', [CandidateResultController::class, 'search'])->name('candidate.result.search');
-
+// Student Admission Public routes
+Route::get('/student-admission', [StudentAdmissionController::class, 'studentAdmissionFrontend'])->name('admission.form');
+Route::post('/student-admission', [StudentAdmissionController::class, 'store'])->name('admission.submit');
+Route::get('/admission/success/{id}', [StudentAdmissionController::class, 'success'])->name('admission.success');
+// Test if the route exists
 
 // Authentication routes (stay inside auth middleware group)
 Route::get('login', 'Auth\LoginController@show');
