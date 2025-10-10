@@ -3,9 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Admission Form</title>
+    <title>Student Admission Form - STS Institute</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Apply for courses at STS Institute - IELTS, PTE, English Foundation, and Kids English. Start your educational journey with us today.">
+    <meta name="keywords" content="student admission, IELTS course, PTE course, English Foundation, Kids English, STS Institute">
+    <meta name="author" content="STS Institute">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Student Admission Form - STS Institute">
+    <meta property="og:description" content="Apply for courses at STS Institute - IELTS, PTE, English Foundation, and Kids English.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="https://sts.institute/wp-content/uploads/2024/08/cropped-Logo-Fav.-Icon-02-192x192.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="https://sts.institute/wp-content/uploads/2024/08/cropped-Logo-Fav.-Icon-02-192x192.png">
+    
+    <!-- Stylesheets -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         .camera-container {
             width: 100%;
@@ -51,12 +70,26 @@
             opacity: 0.6;
             pointer-events: none;
         }
+        .header-logo {
+            height: 50px;
+            width: auto;
+        }
+        @media (max-width: 768px) {
+            .header-logo {
+                height: 40px;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen py-8">
     <div class="max-w-4xl mx-auto px-4">
-        <!-- Header -->
+        <!-- Header with Logo -->
         <div class="text-center mb-10">
+            <div class="flex justify-center mb-6">
+                <img src="https://sourceforces-img.sgp1.cdn.digitaloceanspaces.com/sts-logo.png" 
+                     alt="STS Institute Logo" 
+                     class="header-logo">
+            </div>
             <h1 class="text-3xl font-bold text-indigo-700">Student Admission Form</h1>
             <p class="text-gray-600 mt-2">Please fill out all the required information accurately</p>
         </div>
@@ -244,6 +277,7 @@
         <!-- Footer Note -->
         <div class="text-center mt-8 text-gray-500 text-sm">
             <p>All information provided will be kept confidential and used solely for admission purposes.</p>
+            <p class="mt-2">© 2024 STS Institute. All rights reserved.</p>
         </div>
     </div>
 
