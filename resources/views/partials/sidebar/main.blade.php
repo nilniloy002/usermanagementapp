@@ -29,7 +29,7 @@
                <li class="nav-item"><a class="nav-link" href="{{ route('courses.create') }}"><i class="fa fa-building"></i><span>Add Course</span></a></li>
             </ul>
          </li>
-         <!-- <li class="nav-item">
+         <li class="nav-item">
             <a class="nav-link collapsed" href="#batch-dropdown" data-toggle="collapse" aria-expanded="false">
             <i class="fas fa-cogs"></i>
             <span>Batches</span>
@@ -38,7 +38,7 @@
                <li class="nav-item"><a class="nav-link" href="{{ route('batches.index') }}"><i class="fa fa-building"></i><span>All Batches</span></a></li>
                <li class="nav-item"><a class="nav-link" href="{{ route('batches.create') }}"><i class="fa fa-building"></i><span>Add Batch</span></a></li>
             </ul>
-         </li>  -->
+         </li> 
          <li class="nav-item">
          <a class="nav-link collapsed" href="#mockreg-dropdown" data-toggle="collapse" aria-expanded="false">
          <i class="fa fa-file"></i>

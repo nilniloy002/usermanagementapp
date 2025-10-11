@@ -6,27 +6,32 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateBatchRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, mixed>
-     */
     public function rules()
     {
+        $batchId = $this->route('batches')->id;
+        
         return [
-            
-            //'name' => 'required|string|max:255',
+            'batch_code' => 'required|string|max:255|unique:batches,batch_code,' . $batchId,
+            'course_id' => 'required|exists:courses,id',
+            'status' => 'required|in:On,Off',
+            'total_seat' => 'required|integer|min:1|max:1000',
+        ];
+    }
 
+    public function messages()
+    {
+        return [
+            'batch_code.required' => 'The batch code field is required.',
+            'batch_code.unique' => 'This batch code already exists. Please use a unique batch code.',
+            'total_seat.required' => 'The total seats field is required.',
+            'total_seat.integer' => 'The total seats must be a number.',
+            'total_seat.min' => 'The total seats must be at least 1.',
+            'total_seat.max' => 'The total seats may not be greater than 1000.',
         ];
     }
 }

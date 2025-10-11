@@ -1,5 +1,3 @@
-<!-- index.blade.php -->
-
 @extends('layouts.app')
 
 @section('page-title', __('Batches'))
@@ -34,8 +32,10 @@
                         <tr>
                             <th class="min-width-100">@lang('Batch Code')</th>
                             <th class="min-width-100">@lang('Course')</th>
-                            <th class="min-width-100">@lang('Status')</th>
-                            <th class="text-center">@lang('Actions')</th>
+                            <th class="min-width-80">@lang('Total Seats')</th>
+                            <th class="min-width-80">@lang('Available')</th>
+                            <th class="min-width-80">@lang('Status')</th>
+                            <th class="text-center min-width-150">@lang('Actions')</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -44,7 +44,19 @@
                                 <tr>
                                     <td>{{ $batch->batch_code }}</td>
                                     <td>{{ $batch->course->course_name }}</td>
-                                    <td>{{ $batch->status }}</td>
+                                    <td>
+                                        <span class="badge badge-info">{{ $batch->total_seat }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-{{ $batch->has_available_seats ? 'success' : 'danger' }}">
+                                            {{ $batch->available_seats }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-{{ $batch->status == 'On' ? 'success' : 'secondary' }}">
+                                            {{ $batch->status }}
+                                        </span>
+                                    </td>
                                     <td class="text-center">
                                         <a href="{{ route('batches.edit', $batch) }}" class="btn btn-icon" title="@lang('Edit Batch')" data-toggle="tooltip" data-placement="top">
                                             <i class="fas fa-edit"></i>
@@ -57,7 +69,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="4"><em>@lang('No batches found.')</em></td>
+                                <td colspan="6"><em>@lang('No batches found.')</em></td>
                             </tr>
                         @endif
                     </tbody>

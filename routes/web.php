@@ -260,7 +260,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('batches/{batch}/edit',  'BatchController@edit')->name('batches.edit');
     Route::put('batches/{batch}', 'BatchController@update')->name('batches.update');
     Route::delete('batches/{batch}',  'BatchController@destroy')->name('batches.destroy');
-
+    Route::get('batches/check-code', 'BatchController@checkBatchCode')->name('batches.check-code');
 
     /**
  * Mock Test Results

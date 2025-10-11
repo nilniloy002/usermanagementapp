@@ -42,10 +42,30 @@
                                name="batch_code"
                                placeholder="@lang('Batch Code')"
                                value="{{ $edit ? $batch->batch_code : old('batch_code') }}" required>
+                        <div id="batch-code-feedback" class="invalid-feedback" style="display: none;">
+                            This batch code already exists. Please use a different code.
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="course_id">@lang('Course')</label>
                         {!! Form::select('course_id', $courses->pluck('course_name', 'id'), $edit ? $batch->course_id : old('course_id'), ['class' => 'form-control', 'id' => 'course_id']) !!}
+                    </div>
+
+                     <!-- Add Total Seat Field -->
+                    <div class="form-group">
+                        <label for="total_seat">@lang('Total Seats')</label>
+                        <input type="number"
+                               class="form-control input-solid"
+                               id="total_seat"
+                               name="total_seat"
+                               placeholder="@lang('Enter total number of seats')"
+                               min="1"
+                               max="1000"
+                               value="{{ $edit ? $batch->total_seat : old('total_seat', 30) }}" 
+                               required>
+                        <small class="form-text text-muted">
+                            @lang('Maximum number of students that can enroll in this batch.')
+                        </small>
                     </div>
                     <div class="form-group">
                         <label for="status">@lang('Status')</label>
@@ -56,7 +76,7 @@
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary">
+    <button type="submit" class="btn btn-primary" id="submit-btn">
         {{ __($edit ? 'Update Batch' : 'Create Batch') }}
     </button>
 
@@ -70,3 +90,48 @@
         {!! JsValidator::formRequest('Vanguard\Http\Requests\Batch\CreateBatchRequest', '#batch-form') !!}
     @endif
 </script>
+    <script>
+        // Real-time batch code validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const batchCodeInput = document.getElementById('batch_code');
+            const feedbackElement = document.getElementById('batch-code-feedback');
+            const submitBtn = document.getElementById('submit-btn');
+            let validationTimeout;
+
+            batchCodeInput.addEventListener('input', function() {
+                clearTimeout(validationTimeout);
+                
+                // Remove previous validation states
+                batchCodeInput.classList.remove('is-invalid', 'is-valid');
+                feedbackElement.style.display = 'none';
+                submitBtn.disabled = false;
+
+                const batchCode = this.value.trim();
+                
+                if (batchCode.length > 0) {
+                    validationTimeout = setTimeout(() => {
+                        checkBatchCode(batchCode);
+                    }, 500);
+                }
+            });
+
+            function checkBatchCode(batchCode) {
+                fetch('{{ route("batches.check-code") }}?batch_code=' + encodeURIComponent(batchCode))
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exists) {
+                            batchCodeInput.classList.add('is-invalid');
+                            feedbackElement.style.display = 'block';
+                            submitBtn.disabled = true;
+                        } else {
+                            batchCodeInput.classList.add('is-valid');
+                            feedbackElement.style.display = 'none';
+                            submitBtn.disabled = false;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking batch code:', error);
+                    });
+            }
+        });
+    </script>

@@ -51,4 +51,19 @@ class BatchController extends Controller
 
         return redirect()->route('batches.index')->with('success', 'Batch deleted successfully.');
     }
+    //     public function checkBatchCode(Request $request)
+    // {
+    //     $batchCode = $request->get('batch_code');
+    //     $exists = Batch::where('batch_code', $batchCode)->exists();
+        
+    //     return response()->json(['exists' => $exists]);
+    // }
+
+    public function checkBatchCode(Request $request)
+    {
+        $batchCode = $request->get('batch_code');
+        $exists = Batch::where('batch_code', $batchCode)->exists();
+        
+        return response()->json(['exists' => $exists]);
+    }
 }
