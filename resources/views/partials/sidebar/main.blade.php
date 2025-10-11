@@ -6,10 +6,10 @@
          @endforeach
          <!-- Start Mock Registration section -->
          @if (in_array(auth()->user()->role_id, [1, 3, 4])) {{-- Admin, SuperAdmin, OperationTeam --}}
-         <!-- <li class="nav-item"><a class="nav-link" href="{{ route('departments.index') }}"><i class="fa fa-building"></i><span>Departments</span></a></li>
-         <li class="nav-item"><a class="nav-link" href="{{ route('employees.index') }}"><i class="fa fa-building"></i><span>Employees</span></a></li>
+         <!-- <li class="nav-item"><a class="nav-link" href="{{ route('departments.index') }}"><i class="fa fa-building"></i><span>Departments</span></a></li> -->
+         <!-- <li class="nav-item"><a class="nav-link" href="{{ route('employees.index') }}"><i class="fa fa-building"></i><span>Employees</span></a></li> -->
       
-         <li class="nav-item">
+         <!-- <li class="nav-item">
             <a class="nav-link collapsed" href="#admission-dropdown" data-toggle="collapse" aria-expanded="false">
             <i class="fa fa-university"></i>
             <span>Admissions</span>
@@ -18,7 +18,7 @@
                <li class="nav-item"><a class="nav-link" href="{{ route('admissions.index') }}"><i class="fas fa-users"></i><span>Admission List</span></a></li>
                <li class="nav-item"><a class="nav-link" href="{{ route('admissions.create') }}"><i class="fa fa-plus"></i><span>New Admission</span></a></li>
             </ul>
-         </li>
+         </li> -->
          <li class="nav-item">
             <a class="nav-link collapsed" href="#course-dropdown" data-toggle="collapse" aria-expanded="false">
             <i class="fas fa-cogs"></i>
@@ -29,7 +29,7 @@
                <li class="nav-item"><a class="nav-link" href="{{ route('courses.create') }}"><i class="fa fa-building"></i><span>Add Course</span></a></li>
             </ul>
          </li>
-         <li class="nav-item">
+         <!-- <li class="nav-item">
             <a class="nav-link collapsed" href="#batch-dropdown" data-toggle="collapse" aria-expanded="false">
             <i class="fas fa-cogs"></i>
             <span>Batches</span>
@@ -38,7 +38,7 @@
                <li class="nav-item"><a class="nav-link" href="{{ route('batches.index') }}"><i class="fa fa-building"></i><span>All Batches</span></a></li>
                <li class="nav-item"><a class="nav-link" href="{{ route('batches.create') }}"><i class="fa fa-building"></i><span>Add Batch</span></a></li>
             </ul>
-         </li> -->
+         </li>  -->
          <li class="nav-item">
          <a class="nav-link collapsed" href="#mockreg-dropdown" data-toggle="collapse" aria-expanded="false">
          <i class="fa fa-file"></i>

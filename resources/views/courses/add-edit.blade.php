@@ -53,15 +53,6 @@
                                value="{{ $edit ? $course->course_fee : old('course_fee') }}" required>
                     </div>
                     <div class="form-group">
-                        <label for="admission_fee">@lang('Admission Fee')</label>
-                        <input type="text"
-                               class="form-control input-solid"
-                               id="admission_fee"
-                               name="admission_fee"
-                               placeholder="@lang('Admission Fee')"
-                               value="{{ $edit ? $course->admission_fee : old('admission_fee') }}" required>
-                    </div>
-                    <div class="form-group">
                         <label for="status">@lang('Status')</label>
                         {!! Form::select('status', ['On' => 'On', 'Off' => 'Off'], $edit ? $course->status : 'Off', ['class' => 'form-control']) !!}
                     </div>

@@ -15,14 +15,34 @@
         
         <h1 class="text-2xl font-bold text-gray-800 mb-2">Application Submitted Successfully!</h1>
         
-        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+        <!-- <div class="bg-gray-50 rounded-lg p-4 mb-6">
             <p class="text-gray-600 mb-2">Your application number:</p>
             <p class="text-xl font-bold text-indigo-600">{{ $admission->application_number }}</p>
-        </div>
+        </div> -->
         
-        <p class="text-gray-600 mb-6">
+        
+            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+        <p class="text-gray-600 mb-2">Your application number:</p>
+        <p class="text-xl font-bold text-indigo-600">{{ $admission->application_number }}</p>
+        
+        <div class="mt-3 pt-3 border-t border-gray-200">
+            <div class="flex justify-between">
+                <span class="text-gray-600">Selected Course:</span>
+                <span class="font-semibold">{{ $admission->course_name }}</span>
+            </div>
+            <div class="flex justify-between mt-1">
+                <span class="text-gray-600">Course Fee:</span>
+                <span class="font-bold text-green-600">৳{{ number_format($admission->course_fee, 2) }}</span>
+            </div>
+
+           
+        </div>
+   
+    </div>
+          <p class="text-gray-600 mb-6">
             Thank you for submitting your application. We will review your information and contact you shortly.
         </p>
+
         
         <div class="space-y-3">
             <a href="{{ route('admission.form') }}" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg transition">

@@ -111,11 +111,53 @@
                             <input type="text" id="name" name="name" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
                         </div>
                         
-                        <!-- DOB -->
+                <!-- DOB with Three Dropdowns -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth <span class="text-red-500">*</span></label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <!-- Day -->
                         <div>
-                            <label for="dob" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth <span class="text-red-500">*</span></label>
-                            <input type="date" id="dob" name="dob" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                            <!-- <label for="dob_day" class="block text-xs text-gray-500 mb-1">Day</label> -->
+                            <select id="dob_day" name="dob_day" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                                <option value="" disabled selected>Day</option>
+                                @for($i = 1; $i <= 31; $i++)
+                                    <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}">{{ $i }}</option>
+                                @endfor
+                            </select>
                         </div>
+                        
+                        <!-- Month -->
+                        <div>
+                            <!-- <label for="dob_month" class="block text-xs text-gray-500 mb-1">Month</label> -->
+                            <select id="dob_month" name="dob_month" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                                <option value="" disabled selected>Month</option>
+                                @php
+                                    $months = [
+                                        '01' => 'January', '02' => 'February', '03' => 'March', '04' => 'April',
+                                        '05' => 'May', '06' => 'June', '07' => 'July', '08' => 'August',
+                                        '09' => 'September', '10' => 'October', '11' => 'November', '12' => 'December'
+                                    ];
+                                @endphp
+                                @foreach($months as $key => $month)
+                                    <option value="{{ $key }}">{{ $month }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <!-- Year -->
+                        <div>
+                            <!-- <label for="dob_year" class="block text-xs text-gray-500 mb-1">Year</label> -->
+                            <select id="dob_year" name="dob_year" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                                <option value="" disabled selected>Year</option>
+                                @for($i = date('Y') - 10; $i >= date('Y') - 70; $i--)
+                                    <option value="{{ $i }}">{{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Hidden field to store the final date -->
+                    <input type="hidden" id="dob" name="dob">
+                </div>
                         
                         <!-- Gender -->
                         <div>
@@ -163,14 +205,50 @@
                     <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">Course Selection</h2>
                     
                     <div>
-                        <label for="course" class="block text-sm font-medium text-gray-700 mb-1">Course/Program Applied for <span class="text-red-500">*</span></label>
-                        <select id="course" name="course" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                            <option value="" disabled selected>Select a course</option>
-                            <option value="ielts">IELTS</option>
-                            <option value="pte">PTE</option>
-                            <option value="english_foundation">English Foundation</option>
-                            <option value="kids_english">Kids English</option>
-                        </select>
+                        <label for="course_id" class="block text-sm font-medium text-gray-700 mb-1">Course/Program Applied for <span class="text-red-500">*</span></label>
+                        
+                        @if($courses->count() > 0)
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                @foreach($courses as $course)
+                                    <label class="course-option relative flex cursor-pointer rounded-lg border border-gray-300 p-4 focus:outline-none hover:border-indigo-500 transition-colors">
+                                        <input type="radio" name="course_id" value="{{ $course->id }}" class="sr-only" required>
+                                        <div class="flex w-full items-center justify-between">
+                                            <div class="flex items-center">
+                                                <div class="text-sm">
+                                                    <p class="font-medium text-gray-900">{{ $course->course_name }}</p>
+                                                    <p class="text-gray-500 mt-1">Fee: ৳{{ number_format($course->course_fee, 2) }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 text-green-600">
+                                                    <i class="fas fa-check-circle h-5 w-5"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
+                            
+                            <!-- Selected Course Fee Display -->
+                            <div id="selectedCourseInfo" class="mt-4 p-4 bg-blue-50 rounded-lg hidden">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <span class="text-sm text-gray-600">Selected Course:</span>
+                                        <span id="selectedCourseName" class="font-semibold text-blue-700 ml-2"></span>
+                                    </div>
+                                    <div>
+                                        <span class="text-sm text-gray-600">Course Fee:</span>
+                                        <span id="selectedCourseFee" class="font-bold text-green-600 ml-2"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="text-center py-8 bg-yellow-50 rounded-lg">
+                                <i class="fas fa-exclamation-triangle text-yellow-500 text-2xl mb-2"></i>
+                                <p class="text-yellow-700">No courses are currently available for admission.</p>
+                                <p class="text-yellow-600 text-sm mt-1">Please check back later or contact administration.</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
                 
@@ -557,6 +635,96 @@
             if (!token) {
                 console.warn('CSRF token not found in form. This may cause submission issues.');
             }
+        });
+
+        // Course selection functionality
+        function initializeCourseSelection() {
+            const courseOptions = document.querySelectorAll('input[name="course_id"]');
+            const selectedCourseInfo = document.getElementById('selectedCourseInfo');
+            const selectedCourseName = document.getElementById('selectedCourseName');
+            const selectedCourseFee = document.getElementById('selectedCourseFee');
+            
+            courseOptions.forEach(option => {
+                option.addEventListener('change', function() {
+                    // Remove selected class from all course options
+                    document.querySelectorAll('.course-option').forEach(opt => {
+                        opt.classList.remove('selected', 'border-indigo-500', 'bg-blue-50');
+                        opt.classList.add('border-gray-300');
+                    });
+                    
+                    // Add selected class to clicked option
+                    if (this.checked) {
+                        const courseOption = this.closest('.course-option');
+                        courseOption.classList.add('selected', 'border-indigo-500', 'bg-blue-50');
+                        courseOption.classList.remove('border-gray-300');
+                        
+                        // Get course details
+                        const courseName = courseOption.querySelector('.font-medium').textContent;
+                        const courseFee = courseOption.querySelector('.text-gray-500').textContent.replace('Fee: ', '');
+                        
+                        // Update selected course info
+                        selectedCourseName.textContent = courseName;
+                        selectedCourseFee.textContent = courseFee;
+                        selectedCourseInfo.classList.remove('hidden');
+                    }
+                });
+            });
+            
+            // Initialize course option styling
+            document.querySelectorAll('.course-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const radioInput = this.querySelector('input[type="radio"]');
+                    if (radioInput) {
+                        radioInput.checked = true;
+                        
+                        // Trigger change event
+                        const event = new Event('change');
+                        radioInput.dispatchEvent(event);
+                    }
+                });
+            });
+        }
+
+        // Initialize course selection when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCourseSelection();
+        });
+
+        // DOB dropdown functionality for Option 1
+        function initializeDobSelection() {
+            const daySelect = document.getElementById('dob_day');
+            const monthSelect = document.getElementById('dob_month');
+            const yearSelect = document.getElementById('dob_year');
+            const dobHidden = document.getElementById('dob');
+
+            function updateDob() {
+                const day = daySelect.value;
+                const month = monthSelect.value;
+                const year = yearSelect.value;
+                
+                if (day && month && year) {
+                    // Validate the date (e.g., February 30th)
+                    const date = new Date(year, month - 1, day);
+                    if (date.getDate() == day && date.getMonth() == month - 1 && date.getFullYear() == year) {
+                        const formattedDate = `${year}-${month}-${day}`;
+                        dobHidden.value = formattedDate;
+                    } else {
+                        dobHidden.value = '';
+                        alert('Please select a valid date.');
+                    }
+                } else {
+                    dobHidden.value = '';
+                }
+            }
+
+            daySelect.addEventListener('change', updateDob);
+            monthSelect.addEventListener('change', updateDob);
+            yearSelect.addEventListener('change', updateDob);
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDobSelection();
         });
     </script>
 </body>

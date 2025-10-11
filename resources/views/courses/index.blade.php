@@ -34,7 +34,6 @@
                         <tr>
                             <th class="min-width-100">@lang('Course Name')</th>
                             <th class="min-width-100">@lang('Course Fee')</th>
-                            <th class="min-width-100">@lang('Admission Fee')</th>
                             <th class="min-width-100">@lang('Status')</th>
                             <th class="text-center">@lang('Actions')</th>
                         </tr>
@@ -45,7 +44,6 @@
                                 <tr>
                                     <td>{{ $course->course_name }}</td>
                                     <td>{{ $course->course_fee }}</td>
-                                    <td>{{ $course->admission_fee }}</td>
                                     <td>{{ $course->status }}</td>
                                     <td class="text-center">
                                         <a href="{{ route('courses.edit', $course) }}" class="btn btn-icon" title="@lang('Edit Course')" data-toggle="tooltip" data-placement="top">

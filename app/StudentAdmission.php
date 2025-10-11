@@ -1,10 +1,10 @@
 <?php
-// app/Models/StudentAdmission.php
 
 namespace Vanguard;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Vanguard\Course;
 
 class StudentAdmission extends Model
 {
@@ -18,7 +18,7 @@ class StudentAdmission extends Model
         'emergency_mobile',
         'email',
         'address',
-        'course',
+        'course_id', // Add course_id
         'photo_data',
         'payment_method',
         'transaction_id',
@@ -30,6 +30,14 @@ class StudentAdmission extends Model
     protected $casts = [
         'dob' => 'date',
     ];
+
+    /**
+     * Relationship with Course
+     */
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
 
     /**
      * Boot function to generate application number
@@ -61,6 +69,22 @@ class StudentAdmission extends Model
     }
 
     /**
+     * Accessor for course name
+     */
+    public function getCourseNameAttribute()
+    {
+        return $this->course ? $this->course->course_name : 'N/A';
+    }
+
+    /**
+     * Accessor for course fee
+     */
+    public function getCourseFeeAttribute()
+    {
+        return $this->course ? $this->course->course_fee : 0;
+    }
+
+    /**
      * Scope for pending applications
      */
     public function scopePending($query)
@@ -74,20 +98,6 @@ class StudentAdmission extends Model
     public function scopeApproved($query)
     {
         return $query->where('status', 'approved');
-    }
-
-    /**
-     * Get course name in readable format
-     */
-    public function getCourseNameAttribute()
-    {
-        return match($this->course) {
-            'ielts' => 'IELTS',
-            'pte' => 'PTE',
-            'english_foundation' => 'English Foundation',
-            'kids_english' => 'Kids English',
-            default => $this->course
-        };
     }
 
     /**
