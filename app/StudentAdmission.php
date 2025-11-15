@@ -4,7 +4,7 @@ namespace Vanguard;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Vanguard\Course;
+use Storage;
 
 class StudentAdmission extends Model
 {
@@ -18,25 +18,50 @@ class StudentAdmission extends Model
         'emergency_mobile',
         'email',
         'address',
-        'course_id', // Add course_id
+        'course_id',
+        'batch_id',
         'photo_data',
         'payment_method',
         'transaction_id',
         'serial_number',
+        'deposit_amount',
+        'discount_amount',
+        'due_amount',
+        'next_due_date',
+        'remarks',
         'application_number',
-        'status'
+        'student_id',
+        'status',
+        'approved_at'
     ];
 
     protected $casts = [
         'dob' => 'date',
+        'next_due_date' => 'date',
+        'approved_at' => 'datetime',
+        'deposit_amount' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'due_amount' => 'decimal:2',
+    ];
+
+    protected $attributes = [
+        'status' => 'pending',
+        'deposit_amount' => 0,
+        'discount_amount' => 0,
+        'due_amount' => 0,
     ];
 
     /**
-     * Relationship with Course
+     * Relationships
      */
     public function course()
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function batch()
+    {
+        return $this->belongsTo(Batch::class);
     }
 
     /**
@@ -69,47 +94,90 @@ class StudentAdmission extends Model
     }
 
     /**
-     * Accessor for course name
+     * Generate unique student ID
+     */
+    public static function generateStudentId()
+    {
+        $prefix = 'STU';
+        $year = date('y');
+        
+        do {
+            $random = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+            $studentId = "{$prefix}{$year}{$random}";
+        } while (static::where('student_id', $studentId)->exists());
+
+        return $studentId;
+    }
+
+    /**
+     * Accessors
      */
     public function getCourseNameAttribute()
     {
         return $this->course ? $this->course->course_name : 'N/A';
     }
 
-    /**
-     * Accessor for course fee
-     */
     public function getCourseFeeAttribute()
     {
         return $this->course ? $this->course->course_fee : 0;
     }
 
-    /**
-     * Scope for pending applications
-     */
-    public function scopePending($query)
+    public function getBatchCodeAttribute()
     {
-        return $query->where('status', 'pending');
+        return $this->batch ? $this->batch->batch_code : 'N/A';
     }
 
-    /**
-     * Scope for approved applications
-     */
-    public function scopeApproved($query)
+    public function getTotalPayableAttribute()
     {
-        return $query->where('status', 'approved');
+        return $this->course_fee - $this->discount_amount;
     }
 
-    /**
-     * Get payment method in readable format
-     */
+    public function getIsApprovedAttribute()
+    {
+        return $this->status === 'approved';
+    }
+
     public function getPaymentMethodNameAttribute()
     {
         return match($this->payment_method) {
             'cash' => 'Cash',
             'bkash' => 'bKash',
             'bank' => 'Bank',
-            default => $this->payment_method
+            default => ucfirst($this->payment_method)
         };
+    }
+
+    public function getPhotoUrlAttribute()
+    {
+        if ($this->photo_data && Storage::disk('public')->exists($this->photo_data)) {
+            return Storage::disk('public')->url($this->photo_data);
+        }
+        return null;
+    }
+
+    /**
+     * Scopes
+     */
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('status', 'rejected');
+    }
+
+    /**
+     * Check if payment is completed
+     */
+    public function getIsPaymentCompletedAttribute()
+    {
+        return $this->due_amount <= 0;
     }
 }

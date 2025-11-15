@@ -13,7 +13,9 @@ class Batch extends Model
         'batch_code', 
         'course_id', 
         'status',
-        'total_seat' // Add this
+        'total_seat',
+        'enrolled_students', // Make sure this is included
+
     ];
 
     public function course()
@@ -21,13 +23,25 @@ class Batch extends Model
         return $this->belongsTo(Course::class);
     }
 
+    public function studentAdmissions()
+    {
+        return $this->hasMany(StudentAdmission::class);
+    }
+
+    /**
+     * Get enrolled students count
+     */
+    public function getEnrolledCountAttribute()
+    {
+        return $this->studentAdmissions()->where('status', 'approved')->count();
+    }
+
     /**
      * Get available seats (calculated attribute)
      */
     public function getAvailableSeatsAttribute()
     {
-        // You can later calculate this based on enrolled students
-        return $this->total_seat;
+        return max(0, $this->total_seat - $this->enrolled_count);
     }
 
     /**
@@ -36,5 +50,13 @@ class Batch extends Model
     public function getHasAvailableSeatsAttribute()
     {
         return $this->available_seats > 0;
+    }
+
+    /**
+     * Scope for active batches
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'On');
     }
 }

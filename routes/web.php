@@ -7,11 +7,12 @@ use Vanguard\Http\Controllers\StudentAdmissionController;
 Route::get('/', [CandidateResultController::class, 'view'])->name('home'); // Use correct path for CandidateResultController
 Route::get('candidate-result', [CandidateResultController::class, 'view'])->name('candidate.result.view');
 Route::post('candidate-result/search', [CandidateResultController::class, 'search'])->name('candidate.result.search');
+
 // Student Admission Public routes
-Route::get('/student-admission', [StudentAdmissionController::class, 'studentAdmissionFrontend'])->name('admission.form');
+Route::get('/form/student-admission', [StudentAdmissionController::class, 'studentAdmissionFrontend'])->name('admission.form');
 Route::post('/student-admission', [StudentAdmissionController::class, 'store'])->name('admission.submit');
 Route::get('/admission/success/{id}', [StudentAdmissionController::class, 'success'])->name('admission.success');
-// Test if the route exists
+
 
 // Authentication routes (stay inside auth middleware group)
 Route::get('login', 'Auth\LoginController@show');
@@ -240,7 +241,57 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('admissions/collect-due/{billId}', 'AdmissionController@showDueCollectionForm')->name('admissions.show-due-collection-form');
     Route::post('admissions/collect-due/{id}', 'AdmissionController@collectDue')->name('admissions.collect-due');
 
+    /**
+         * Student Admissions Admin Routes - MOVE THESE INSIDE AUTH
+         */
+        // Route::get('student-admissions', [StudentAdmissionController::class, 'index'])
+        //     ->name('student-admissions.index');
 
+        // Route::get('student-admissions/{id}', [StudentAdmissionController::class, 'show'])
+        //     ->name('student-admissions.show');
+
+        // Route::post('student-admissions/{id}/status', [StudentAdmissionController::class, 'updateStatus'])
+        //     ->name('student-admissions.update-status');
+
+        // Route::delete('student-admissions/{id}', [StudentAdmissionController::class, 'destroy'])
+        //     ->name('student-admissions.destroy');
+
+        // Route::post('student-admissions/{id}/approve', [StudentAdmissionController::class, 'approveAdmission'])
+        //     ->name('student-admissions.approve');
+
+        // Route::get('student-admissions/{id}/batches', [StudentAdmissionController::class, 'getCourseBatches'])
+        //     ->name('student-admissions.course-batches');
+
+        // Student Admissions Admin Routes
+        Route::get('student-admissions', [StudentAdmissionController::class, 'index'])
+            ->name('student-admissions.index');
+
+        Route::get('student-admissions/{id}', [StudentAdmissionController::class, 'show'])
+            ->name('student-admissions.show');
+
+        Route::post('student-admissions/{id}/status', [StudentAdmissionController::class, 'updateStatus'])
+            ->name('student-admissions.update-status');
+
+        Route::delete('student-admissions/{id}', [StudentAdmissionController::class, 'destroy'])
+            ->name('student-admissions.destroy');
+
+        Route::post('student-admissions/{id}/approve', [StudentAdmissionController::class, 'approveAdmission'])
+            ->name('student-admissions.approve');
+
+        Route::get('student-admissions/{id}/batches', [StudentAdmissionController::class, 'getCourseBatches'])
+            ->name('student-admissions.course-batches');
+
+            // Student ID Card Routes within StudentAdmissionController
+        Route::get('student-admissions/{id}/id-card', [StudentAdmissionController::class, 'showIdCard'])
+            ->name('student-admissions.id-card');
+
+        Route::get('student-admissions/{id}/download-id-card', [StudentAdmissionController::class, 'downloadIdCardPdf'])
+            ->name('student-admissions.download-id-card');
+        Route::get('student-admissions/{id}/download-id-card-image', [StudentAdmissionController::class, 'downloadIdCardImage'])
+    ->name('student-admissions.download-id-card-image');
+
+        Route::post('student-admissions/bulk-id-cards', [StudentAdmissionController::class, 'bulkIdCards'])
+            ->name('student-admissions.bulk-id-cards');
     /**
      * Courses
      */
@@ -322,28 +373,51 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         /**
      * Mock Test Registrations
      */
+    // Route::get('mock-test-registrations', 'MockTestRegistrationController@index')->name('mock_test_registrations.index');
+    // Route::get('mock-test-registrations/create', 'MockTestRegistrationController@create')->name('mock_test_registrations.create');
+    // Route::post('mock-test-registrations', 'MockTestRegistrationController@store')->name('mock_test_registrations.store');
+    // Route::get('mock-test-registrations/{mockTestRegistration}/edit', 'MockTestRegistrationController@edit')->name('mock_test_registrations.edit');
+    // Route::put('mock-test-registrations/{mockTestRegistration}', 'MockTestRegistrationController@update')->name('mock_test_registrations.update');
+    // Route::delete('mock-test-registrations/{mockTestRegistration}', 'MockTestRegistrationController@destroy')->name('mock_test_registrations.destroy');
+    
+    // Route::get('mock-test-registrations/{registration}/token', 'MockTestRegistrationController@generateToken')
+    // ->name('mock_test_registrations.token');
+    // Route::get('mock-test-registrations/{registration}/email', 'MockTestRegistrationController@sendEmail')->name('mock_test_registrations.email');
+
+    //  /**
+    //  * Mock Test Registrations IoC
+    //  */
+    // Route::get('mock-test-registrations-ioc', 'MockTestRegistrationController@indexIoc')->name('mock_test_registrations.indexioc');
+    
+    // Route::get('mock-test-registrations/createioc', 'MockTestRegistrationController@createIoc')->name('mock_test_registrations.createioc');
+    // Route::post('mock-test-registrations-ioc', 'MockTestRegistrationController@storeIoc')->name('mock_test_registrations.storeioc');
+    
+    // Route::get('mock-test-registrations/{mockTestRegistration}/editioc', 'MockTestRegistrationController@editIoc')->name('mock_test_registrations.editioc');
+    // // Route::put('mock-test-registrations/{mockTestRegistration}', 'MockTestRegistrationController@updateIoc')->name('mock_test_registrations.updateioc');
+    // Route::put('mock-test-registrations/{mockTestRegistration}/updateioc', 'MockTestRegistrationController@updateIoc')->name('mock_test_registrations.updateioc');
+    
+    
+        /**
+     * Mock Test Registrations
+     */
     Route::get('mock-test-registrations', 'MockTestRegistrationController@index')->name('mock_test_registrations.index');
     Route::get('mock-test-registrations/create', 'MockTestRegistrationController@create')->name('mock_test_registrations.create');
     Route::post('mock-test-registrations', 'MockTestRegistrationController@store')->name('mock_test_registrations.store');
     Route::get('mock-test-registrations/{mockTestRegistration}/edit', 'MockTestRegistrationController@edit')->name('mock_test_registrations.edit');
     Route::put('mock-test-registrations/{mockTestRegistration}', 'MockTestRegistrationController@update')->name('mock_test_registrations.update');
     Route::delete('mock-test-registrations/{mockTestRegistration}', 'MockTestRegistrationController@destroy')->name('mock_test_registrations.destroy');
-    
-    Route::get('mock-test-registrations/{registration}/token', 'MockTestRegistrationController@generateToken')
-    ->name('mock_test_registrations.token');
+
+    // Additional routes
+    Route::get('mock-test-registrations/{registration}/token', 'MockTestRegistrationController@generateToken')->name('mock_test_registrations.token');
     Route::get('mock-test-registrations/{registration}/email', 'MockTestRegistrationController@sendEmail')->name('mock_test_registrations.email');
 
-     /**
-     * Mock Test Registrations IoC
-     */
-    Route::get('mock-test-registrations-ioc', 'MockTestRegistrationController@indexIoc')->name('mock_test_registrations.indexioc');
-    
+    // IoC routes
+    Route::get('mock-test-registrations-ioc', 'MockTestRegistrationController@indexioc')->name('mock_test_registrations.indexioc');
     Route::get('mock-test-registrations/createioc', 'MockTestRegistrationController@createIoc')->name('mock_test_registrations.createioc');
     Route::post('mock-test-registrations-ioc', 'MockTestRegistrationController@storeIoc')->name('mock_test_registrations.storeioc');
-    
     Route::get('mock-test-registrations/{mockTestRegistration}/editioc', 'MockTestRegistrationController@editIoc')->name('mock_test_registrations.editioc');
-    Route::put('mock-test-registrations/{mockTestRegistration}', 'MockTestRegistrationController@updateIoc')->name('mock_test_registrations.updateioc');
-    
+    Route::put('mock-test-registrations/{mockTestRegistration}/updateioc', 'MockTestRegistrationController@updateIoc')->name('mock_test_registrations.updateioc');
+        
     /**
      * Another Day Bookings
      */
@@ -363,12 +437,5 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
     // Email report
     Route::get('another-days/email-report', 'AnotherDayController@emailReport')->name('another_days.email.report');
-
-
-
-
-
-    
-
 
 });
