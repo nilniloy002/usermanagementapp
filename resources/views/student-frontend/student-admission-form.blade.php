@@ -66,6 +66,10 @@
             border-color: #4f46e5;
             background-color: #f8faff;
         }
+        .course-option.selected {
+            border-color: #4f46e5;
+            background-color: #f0f9ff;
+        }
         .loading {
             opacity: 0.6;
             pointer-events: none;
@@ -96,8 +100,8 @@
 
         <!-- Form Container -->
         <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <form id="admissionForm" class="p-6 md:p-8"  enctype="multipart/form-data">
-                <!-- CSRF Token - Make sure it's properly rendered -->
+            <form id="admissionForm" class="p-6 md:p-8" enctype="multipart/form-data">
+                <!-- CSRF Token -->
                 <input type="hidden" name="_token" id="csrf_token" value="<?php echo csrf_token(); ?>">
 
                 <!-- Personal Information Section -->
@@ -111,53 +115,50 @@
                             <input type="text" id="name" name="name" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
                         </div>
                         
-                <!-- DOB with Three Dropdowns -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth <span class="text-red-500">*</span></label>
-                    <div class="grid grid-cols-3 gap-3">
-                        <!-- Day -->
+                        <!-- DOB with Three Dropdowns -->
                         <div>
-                            <!-- <label for="dob_day" class="block text-xs text-gray-500 mb-1">Day</label> -->
-                            <select id="dob_day" name="dob_day" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                                <option value="" disabled selected>Day</option>
-                                @for($i = 1; $i <= 31; $i++)
-                                    <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}">{{ $i }}</option>
-                                @endfor
-                            </select>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth <span class="text-red-500">*</span></label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <!-- Day -->
+                                <div>
+                                    <select id="dob_day" name="dob_day" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                                        <option value="" disabled selected>Day</option>
+                                        @for($i = 1; $i <= 31; $i++)
+                                            <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}">{{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                                
+                                <!-- Month -->
+                                <div>
+                                    <select id="dob_month" name="dob_month" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                                        <option value="" disabled selected>Month</option>
+                                        @php
+                                            $months = [
+                                                '01' => 'January', '02' => 'February', '03' => 'March', '04' => 'April',
+                                                '05' => 'May', '06' => 'June', '07' => 'July', '08' => 'August',
+                                                '09' => 'September', '10' => 'October', '11' => 'November', '12' => 'December'
+                                            ];
+                                        @endphp
+                                        @foreach($months as $key => $month)
+                                            <option value="{{ $key }}">{{ $month }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                
+                                <!-- Year -->
+                                <div>
+                                    <select id="dob_year" name="dob_year" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                                        <option value="" disabled selected>Year</option>
+                                        @for($i = date('Y') - 10; $i >= date('Y') - 70; $i--)
+                                            <option value="{{ $i }}">{{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- Hidden field to store the final date -->
+                            <input type="hidden" id="dob" name="dob">
                         </div>
-                        
-                        <!-- Month -->
-                        <div>
-                            <!-- <label for="dob_month" class="block text-xs text-gray-500 mb-1">Month</label> -->
-                            <select id="dob_month" name="dob_month" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                                <option value="" disabled selected>Month</option>
-                                @php
-                                    $months = [
-                                        '01' => 'January', '02' => 'February', '03' => 'March', '04' => 'April',
-                                        '05' => 'May', '06' => 'June', '07' => 'July', '08' => 'August',
-                                        '09' => 'September', '10' => 'October', '11' => 'November', '12' => 'December'
-                                    ];
-                                @endphp
-                                @foreach($months as $key => $month)
-                                    <option value="{{ $key }}">{{ $month }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        
-                        <!-- Year -->
-                        <div>
-                            <!-- <label for="dob_year" class="block text-xs text-gray-500 mb-1">Year</label> -->
-                            <select id="dob_year" name="dob_year" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                                <option value="" disabled selected>Year</option>
-                                @for($i = date('Y') - 10; $i >= date('Y') - 70; $i--)
-                                    <option value="{{ $i }}">{{ $i }}</option>
-                                @endfor
-                            </select>
-                        </div>
-                    </div>
-                    <!-- Hidden field to store the final date -->
-                    <input type="hidden" id="dob" name="dob">
-                </div>
                         
                         <!-- Gender -->
                         <div>
@@ -197,6 +198,31 @@
                     <div class="mt-6">
                         <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address <span class="text-red-500">*</span></label>
                         <textarea id="address" name="address" rows="3" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></textarea>
+                    </div>
+                    
+                    <!-- Educational Background -->
+                    <div class="mt-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Educational Background <span class="text-red-500">*</span></label>
+                        <select id="educational_background" name="educational_background" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                            <option value="" disabled selected>Select Educational Background</option>
+                            <option value="SSC">SSC</option>
+                            <option value="HSC">HSC</option>
+                            <option value="bachelor">Bachelor / Honours / Graduation</option>
+                            <option value="masters">Master's / Post Graduation</option>
+                            <option value="others">Others</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Other Education Field (Initially Hidden) -->
+                    <div id="otherEducationContainer" class="mt-6 hidden">
+                        <label for="other_education" class="block text-sm font-medium text-gray-700 mb-1">Specify Educational Background <span class="text-red-500">*</span></label>
+                        <input type="text" id="other_education" name="other_education" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="e.g., Diploma, O-Level, A-Level, etc.">
+                    </div>
+                    
+                    <!-- Academic Year -->
+                    <div class="mt-6">
+                        <label for="academic_year" class="block text-sm font-medium text-gray-700 mb-1">Academic Year <span class="text-red-500">*</span></label>
+                        <input type="text" id="academic_year" name="academic_year" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="e.g., 2024-2025, Final Year, 2nd Year, etc.">
                     </div>
                 </div>
                 
@@ -510,132 +536,55 @@
             });
         });
 
-        // Form submission with AJAX
-        document.getElementById('admissionForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            // Validate photo
-            if (!photoData.value) {
-                alert('Please take a picture before submitting the form.');
-                return;
-            }
-            
-            // Show loading state
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Submitting...';
-            submitBtn.disabled = true;
-            this.classList.add('loading');
-            
-            try {
-                const formData = new FormData(this);
-                const csrfToken = getCsrfToken();
-                
-                if (!csrfToken) {
-                    throw new Error('CSRF token not found. Please refresh the page and try again.');
+        // Educational Background toggle
+        function initializeEducationField() {
+            const educationSelect = document.getElementById('educational_background');
+            const otherEducationContainer = document.getElementById('otherEducationContainer');
+            const otherEducationInput = document.getElementById('other_education');
+
+            educationSelect.addEventListener('change', function() {
+                if (this.value === 'others') {
+                    otherEducationContainer.classList.remove('hidden');
+                    otherEducationInput.required = true;
+                } else {
+                    otherEducationContainer.classList.add('hidden');
+                    otherEducationInput.required = false;
+                    otherEducationInput.value = '';
                 }
+            });
+        }
+
+        // DOB dropdown functionality
+        function initializeDobSelection() {
+            const daySelect = document.getElementById('dob_day');
+            const monthSelect = document.getElementById('dob_month');
+            const yearSelect = document.getElementById('dob_year');
+            const dobHidden = document.getElementById('dob');
+
+            function updateDob() {
+                const day = daySelect.value;
+                const month = monthSelect.value;
+                const year = yearSelect.value;
                 
-                console.log('Submitting form with CSRF token:', csrfToken.substring(0, 10) + '...');
-                console.log('Form data entries:');
-                for (let [key, value] of formData.entries()) {
-                    if (key === 'photo_data') {
-                        console.log(key + ':', value.substring(0, 50) + '...');
+                if (day && month && year) {
+                    // Validate the date
+                    const date = new Date(year, month - 1, day);
+                    if (date.getDate() == day && date.getMonth() == month - 1 && date.getFullYear() == year) {
+                        const formattedDate = `${year}-${month}-${day}`;
+                        dobHidden.value = formattedDate;
                     } else {
-                        console.log(key + ':', value);
-                    }
-                }
-                
-                // Use FormData directly instead of JSON to avoid issues
-                const response = await fetch('/student-admission', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json',
-                    },
-                    body: formData  // Use FormData directly
-                });
-                
-                console.log('Response status:', response.status);
-                
-                const result = await response.json();
-                console.log('Result:', result);
-                
-                if (response.status === 422) {
-                    // Validation errors
-                    let errorMessage = 'Please fix the following errors:\n';
-                    
-                    if (result.errors) {
-                        for (const field in result.errors) {
-                            errorMessage += `• ${result.errors[field][0]}\n`;
-                        }
-                    } else {
-                        errorMessage = result.message || 'Please check your form and try again.';
-                    }
-                    
-                    alert(errorMessage);
-                    return;
-                }
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                if (result.success) {
-                    alert('Application submitted successfully! Your application number: ' + result.application_number);
-                    // Reset form
-                    this.reset();
-                    photoData.value = '';
-                    capturedImage.style.display = 'none';
-                    placeholderText.style.display = 'flex';
-                    retakePhotoBtn.classList.add('hidden');
-                    startCameraBtn.classList.remove('hidden');
-                    
-                    // Reset payment extra fields
-                    bkashExtra.style.display = 'none';
-                    bankExtra.style.display = 'none';
-                    
-                    // Remove selected class from payment options
-                    document.querySelectorAll('.payment-option').forEach(opt => {
-                        opt.classList.remove('selected');
-                    });
-                    
-                    // Redirect if needed
-                    if (result.redirect_url) {
-                        window.location.href = result.redirect_url;
+                        dobHidden.value = '';
+                        alert('Please select a valid date.');
                     }
                 } else {
-                    alert(result.message || 'Failed to submit application. Please try again.');
+                    dobHidden.value = '';
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred: ' + error.message);
-            } finally {
-                // Reset button state
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-                this.classList.remove('loading');
             }
-        });
-        // Initialize payment option styling
-        document.querySelectorAll('.payment-option').forEach(option => {
-            option.addEventListener('click', function() {
-                document.querySelectorAll('.payment-option').forEach(opt => {
-                    opt.classList.remove('selected');
-                });
-                this.classList.add('selected');
-            });
-        });
 
-        // Debug: Check if CSRF token is available on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const token = getCsrfToken();
-            console.log('CSRF Token on load:', token ? token.substring(0, 10) + '...' : 'NOT FOUND');
-            
-            // If token not found, try to get it from Laravel
-            if (!token) {
-                console.warn('CSRF token not found in form. This may cause submission issues.');
-            }
-        });
+            daySelect.addEventListener('change', updateDob);
+            monthSelect.addEventListener('change', updateDob);
+            yearSelect.addEventListener('change', updateDob);
+        }
 
         // Course selection functionality
         function initializeCourseSelection() {
@@ -685,45 +634,184 @@
             });
         }
 
-        // Initialize course selection when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeCourseSelection();
-        });
-
-        // DOB dropdown functionality for Option 1
-        function initializeDobSelection() {
-            const daySelect = document.getElementById('dob_day');
-            const monthSelect = document.getElementById('dob_month');
-            const yearSelect = document.getElementById('dob_year');
-            const dobHidden = document.getElementById('dob');
-
-            function updateDob() {
-                const day = daySelect.value;
-                const month = monthSelect.value;
-                const year = yearSelect.value;
-                
-                if (day && month && year) {
-                    // Validate the date (e.g., February 30th)
-                    const date = new Date(year, month - 1, day);
-                    if (date.getDate() == day && date.getMonth() == month - 1 && date.getFullYear() == year) {
-                        const formattedDate = `${year}-${month}-${day}`;
-                        dobHidden.value = formattedDate;
-                    } else {
-                        dobHidden.value = '';
-                        alert('Please select a valid date.');
-                    }
-                } else {
-                    dobHidden.value = '';
+        // Form submission with AJAX
+        document.getElementById('admissionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Validate all required fields
+            const requiredFields = [
+                'name', 'dob', 'gender', 'mobile', 'emergency_mobile', 
+                'email', 'address', 'educational_background', 'academic_year',
+                'course_id', 'payment_method', 'photo_data'
+            ];
+            
+            let isValid = true;
+            let errorMessage = '';
+            
+            // Check if DOB is properly set
+            const dobField = document.getElementById('dob');
+            if (!dobField.value) {
+                isValid = false;
+                errorMessage += '• Please select a valid date of birth.\n';
+            }
+            
+            // Check educational background
+            const educationSelect = document.getElementById('educational_background');
+            if (educationSelect.value === 'others') {
+                const otherEducation = document.getElementById('other_education');
+                if (!otherEducation.value.trim()) {
+                    isValid = false;
+                    errorMessage += '• Please specify your educational background.\n';
                 }
             }
+            
+            // Check photo
+            if (!photoData.value) {
+                isValid = false;
+                errorMessage += '• Please take a picture before submitting the form.\n';
+            }
+            
+            // Check payment method extra fields
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+            if (paymentMethod) {
+                if (paymentMethod.value === 'bkash') {
+                    const txnId = document.getElementById('txn_id');
+                    if (!txnId.value.trim()) {
+                        isValid = false;
+                        errorMessage += '• Transaction ID is required for bKash payments.\n';
+                    }
+                } else if (paymentMethod.value === 'bank') {
+                    const serialNumber = document.getElementById('serial_number');
+                    if (!serialNumber.value.trim()) {
+                        isValid = false;
+                        errorMessage += '• Serial number is required for Bank payments.\n';
+                    }
+                }
+            }
+            
+            if (!isValid) {
+                alert('Please fix the following errors:\n' + errorMessage);
+                return;
+            }
+            
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Submitting...';
+            submitBtn.disabled = true;
+            this.classList.add('loading');
+            
+            try {
+                const formData = new FormData(this);
+                const csrfToken = getCsrfToken();
+                
+                if (!csrfToken) {
+                    throw new Error('CSRF token not found. Please refresh the page and try again.');
+                }
+                
+                console.log('Submitting form with CSRF token:', csrfToken.substring(0, 10) + '...');
+                
+                const response = await fetch('/student-admission', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
+                
+                console.log('Response status:', response.status);
+                
+                const result = await response.json();
+                console.log('Result:', result);
+                
+                if (response.status === 422) {
+                    // Validation errors
+                    let errorMessage = 'Please fix the following errors:\n';
+                    
+                    if (result.errors) {
+                        for (const field in result.errors) {
+                            errorMessage += `• ${result.errors[field][0]}\n`;
+                        }
+                    } else {
+                        errorMessage = result.message || 'Please check your form and try again.';
+                    }
+                    
+                    alert(errorMessage);
+                    return;
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                if (result.success) {
+                    alert('Application submitted successfully! Your application number: ' + result.application_number);
+                    // Reset form
+                    this.reset();
+                    photoData.value = '';
+                    capturedImage.style.display = 'none';
+                    placeholderText.style.display = 'flex';
+                    retakePhotoBtn.classList.add('hidden');
+                    startCameraBtn.classList.remove('hidden');
+                    
+                    // Reset educational background fields
+                    document.getElementById('otherEducationContainer').classList.add('hidden');
+                    document.getElementById('other_education').value = '';
+                    
+                    // Reset payment extra fields
+                    bkashExtra.style.display = 'none';
+                    bankExtra.style.display = 'none';
+                    
+                    // Reset selected course info
+                    document.getElementById('selectedCourseInfo').classList.add('hidden');
+                    
+                    // Remove selected class from payment and course options
+                    document.querySelectorAll('.payment-option, .course-option').forEach(opt => {
+                        opt.classList.remove('selected', 'border-indigo-500', 'bg-blue-50');
+                    });
+                    
+                    // Redirect if needed
+                    if (result.redirect_url) {
+                        window.location.href = result.redirect_url;
+                    }
+                } else {
+                    alert(result.message || 'Failed to submit application. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred: ' + error.message);
+            } finally {
+                // Reset button state
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                this.classList.remove('loading');
+            }
+        });
 
-            daySelect.addEventListener('change', updateDob);
-            monthSelect.addEventListener('change', updateDob);
-            yearSelect.addEventListener('change', updateDob);
-        }
+        // Initialize payment option styling
+        document.querySelectorAll('.payment-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.payment-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.classList.add('selected');
+            });
+        });
 
-        // Initialize when DOM is loaded
+        // Initialize all functionalities when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
+            // Debug: Check if CSRF token is available on page load
+            const token = getCsrfToken();
+            console.log('CSRF Token on load:', token ? token.substring(0, 10) + '...' : 'NOT FOUND');
+            
+            if (!token) {
+                console.warn('CSRF token not found in form. This may cause submission issues.');
+            }
+            
+            // Initialize all components
+            initializeEducationField();
+            initializeCourseSelection();
             initializeDobSelection();
         });
     </script>

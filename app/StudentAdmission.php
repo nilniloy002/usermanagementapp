@@ -18,6 +18,9 @@ class StudentAdmission extends Model
         'emergency_mobile',
         'email',
         'address',
+        'educational_background', // Added
+        'other_education',        // Added
+        'academic_year',          // Added
         'course_id',
         'batch_id',
         'photo_data',
@@ -210,6 +213,26 @@ class StudentAdmission extends Model
     public function getRemarksAttribute()
     {
         return $this->payment ? $this->payment->remarks : null;
+    }
+
+    /**
+     * Get educational background display text
+     */
+    public function getEducationalBackgroundTextAttribute()
+    {
+        $educationOptions = [
+            'SSC' => 'SSC',
+            'HSC' => 'HSC',
+            'bachelor' => 'Bachelor / Honours / Graduation',
+            'masters' => 'Master\'s / Post Graduation',
+            'others' => 'Others'
+        ];
+
+        if ($this->educational_background === 'others' && $this->other_education) {
+            return $this->other_education;
+        }
+
+        return $educationOptions[$this->educational_background] ?? 'N/A';
     }
 
     /**
