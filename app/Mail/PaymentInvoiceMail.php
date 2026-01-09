@@ -34,10 +34,14 @@ class PaymentInvoiceMail extends Mailable
      */
     public function build()
     {
+        $ccAddresses = [
+            'devjit.sts@gmail.com',
+        ];
         $studentName = $this->payment->studentAdmission->name ?? 'Student';
         $invoiceNumber = $this->payment->id;
         
         return $this->subject("Payment Invoice #{$invoiceNumber} - STS Institute")
+            ->cc($ccAddresses)
             ->view('emails.payment-invoice-email')
             ->attachData($this->pdfContent, "payment-invoice-{$invoiceNumber}.pdf", [
                 'mime' => 'application/pdf',

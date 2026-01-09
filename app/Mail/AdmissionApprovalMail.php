@@ -29,7 +29,12 @@ class AdmissionApprovalMail extends Mailable
      */
     public function build()
     {
+        $ccAddresses = [
+        'devjit.sts@gmail.com',
+        // 'another.email@sts.institute',
+    ];
         return $this->from('regmockteststs@sts.institute', 'STS Institute')
+                    ->cc($ccAddresses)
                     ->subject('Admission Approved - ' . $this->student->student_id)
                     ->view('emails.admission-approval')
                     ->attachData($this->invoicePdf, 'invoice-' . $this->student->student_id . '.pdf', [
