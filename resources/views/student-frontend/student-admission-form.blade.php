@@ -83,6 +83,28 @@
                 height: 40px;
             }
         }
+
+    .course-option {
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .course-option:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    .unselected-icon {
+        transition: color 0.2s ease-in-out;
+    }
+    
+    .selected-icon {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+    }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen py-8">
@@ -227,6 +249,7 @@
                 </div>
                 
                 <!-- Course Selection Section -->
+                <!-- Course Selection Section -->
                 <div class="mb-10">
                     <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">Course Selection</h2>
                     
@@ -246,7 +269,10 @@
                                                 </div>
                                             </div>
                                             <div class="flex items-center">
-                                                <div class="flex-shrink-0 text-green-600">
+                                                <div class="flex-shrink-0 text-gray-300 unselected-icon">
+                                                    <i class="fas fa-check-circle h-5 w-5"></i>
+                                                </div>
+                                                <div class="flex-shrink-0 text-green-600 selected-icon hidden">
                                                     <i class="fas fa-check-circle h-5 w-5"></i>
                                                 </div>
                                             </div>
@@ -587,25 +613,91 @@
         }
 
         // Course selection functionality
+        // function initializeCourseSelection() {
+        //     const courseOptions = document.querySelectorAll('input[name="course_id"]');
+        //     const selectedCourseInfo = document.getElementById('selectedCourseInfo');
+        //     const selectedCourseName = document.getElementById('selectedCourseName');
+        //     const selectedCourseFee = document.getElementById('selectedCourseFee');
+            
+        //     courseOptions.forEach(option => {
+        //         option.addEventListener('change', function() {
+        //             // Remove selected class from all course options
+        //             document.querySelectorAll('.course-option').forEach(opt => {
+        //                 opt.classList.remove('selected', 'border-indigo-500', 'bg-blue-50');
+        //                 opt.classList.add('border-gray-300');
+        //             });
+                    
+        //             // Add selected class to clicked option
+        //             if (this.checked) {
+        //                 const courseOption = this.closest('.course-option');
+        //                 courseOption.classList.add('selected', 'border-indigo-500', 'bg-blue-50');
+        //                 courseOption.classList.remove('border-gray-300');
+                        
+        //                 // Get course details
+        //                 const courseName = courseOption.querySelector('.font-medium').textContent;
+        //                 const courseFee = courseOption.querySelector('.text-gray-500').textContent.replace('Fee: ', '');
+                        
+        //                 // Update selected course info
+        //                 selectedCourseName.textContent = courseName;
+        //                 selectedCourseFee.textContent = courseFee;
+        //                 selectedCourseInfo.classList.remove('hidden');
+        //             }
+        //         });
+        //     });
+            
+        //     // Initialize course option styling
+        //     document.querySelectorAll('.course-option').forEach(option => {
+        //         option.addEventListener('click', function() {
+        //             const radioInput = this.querySelector('input[type="radio"]');
+        //             if (radioInput) {
+        //                 radioInput.checked = true;
+                        
+        //                 // Trigger change event
+        //                 const event = new Event('change');
+        //                 radioInput.dispatchEvent(event);
+        //             }
+        //         });
+        //     });
+        // }
+
+        // Course selection functionality
         function initializeCourseSelection() {
             const courseOptions = document.querySelectorAll('input[name="course_id"]');
             const selectedCourseInfo = document.getElementById('selectedCourseInfo');
             const selectedCourseName = document.getElementById('selectedCourseName');
             const selectedCourseFee = document.getElementById('selectedCourseFee');
             
+            // Function to reset all icons and styles
+            function resetAllCourseOptions() {
+                document.querySelectorAll('.course-option').forEach(option => {
+                    // Remove visual selection styles
+                    option.classList.remove('selected', 'border-indigo-500', 'bg-blue-50');
+                    option.classList.add('border-gray-300');
+                    
+                    // Reset icons: show unselected, hide selected
+                    const unselectedIcon = option.querySelector('.unselected-icon');
+                    const selectedIcon = option.querySelector('.selected-icon');
+                    if (unselectedIcon) unselectedIcon.classList.remove('hidden');
+                    if (selectedIcon) selectedIcon.classList.add('hidden');
+                });
+            }
+            
             courseOptions.forEach(option => {
                 option.addEventListener('change', function() {
-                    // Remove selected class from all course options
-                    document.querySelectorAll('.course-option').forEach(opt => {
-                        opt.classList.remove('selected', 'border-indigo-500', 'bg-blue-50');
-                        opt.classList.add('border-gray-300');
-                    });
+                    // Reset all options first
+                    resetAllCourseOptions();
                     
-                    // Add selected class to clicked option
+                    // Add selected styles and show green check icon for the selected option
                     if (this.checked) {
                         const courseOption = this.closest('.course-option');
                         courseOption.classList.add('selected', 'border-indigo-500', 'bg-blue-50');
                         courseOption.classList.remove('border-gray-300');
+                        
+                        // Switch icons: hide gray check, show green check
+                        const unselectedIcon = courseOption.querySelector('.unselected-icon');
+                        const selectedIcon = courseOption.querySelector('.selected-icon');
+                        if (unselectedIcon) unselectedIcon.classList.add('hidden');
+                        if (selectedIcon) selectedIcon.classList.remove('hidden');
                         
                         // Get course details
                         const courseName = courseOption.querySelector('.font-medium').textContent;
@@ -619,11 +711,12 @@
                 });
             });
             
-            // Initialize course option styling
+            // Initialize course option click handling
             document.querySelectorAll('.course-option').forEach(option => {
                 option.addEventListener('click', function() {
                     const radioInput = this.querySelector('input[type="radio"]');
                     if (radioInput) {
+                        // Set checked state
                         radioInput.checked = true;
                         
                         // Trigger change event
@@ -633,6 +726,7 @@
                 });
             });
         }
+
 
         // Form submission with AJAX
         document.getElementById('admissionForm').addEventListener('submit', async function(e) {
