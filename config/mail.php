@@ -84,7 +84,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'noreply@umanagerapp.test'),
-        'name' => env('MAIL_FROM_NAME', 'UManagerAPP')
+        'name' => env('MAIL_FROM_NAME', 'STS Institute')
     ],
 
     /*

@@ -67,6 +67,17 @@
                             @lang('Maximum number of students that can enroll in this batch.')
                         </small>
                     </div>
+
+                    <div class="form-group">
+                        <label for="batch_schedule">@lang('Batch Schedule')</label>
+                        <input type="text"
+                               class="form-control input-solid"
+                               id="batch_schedule"
+                               name="batch_schedule"
+                               placeholder="@lang('Batch Schedule')"
+                               value="{{ $edit ? $batch->batch_schedule : old('batch_schedule') }}" required>
+                    </div>
+
                     <div class="form-group">
                         <label for="status">@lang('Status')</label>
                         {!! Form::select('status', ['On' => 'On', 'Off' => 'Off'], $edit ? $batch->status : 'Off', ['class' => 'form-control']) !!}

@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('page-title', __('Student Admissions'))
-@section('page-heading', __('Student Admissions'))
+@section('page-title', __('Pending Student Admissions'))
+@section('page-heading', __('Pending Student Admissions'))
 
 @section('breadcrumbs')
     <li class="breadcrumb-item active">
-        @lang('Student Admissions')
+        @lang('Pending Student Admissions')
     </li>
 @stop
 
@@ -19,11 +19,11 @@
                     <thead>
                     <tr>
                         <th class="min-width-100">@lang('Application No.')</th>
-                        <th class="min-width-80">@lang('Photo')</th>
+                        <th class="min-width-100">@lang('Photo')</th>
                         <th class="min-width-150">@lang('Student Details')</th>
-                        <th class="min-width-120">@lang('Course')</th>
-                        <th class="min-width-120">@lang('Payment Info')</th>
-                        <th class="min-width-80">@lang('Status')</th>
+                        <th class="min-width-100">@lang('Course')</th>
+                        <th class="min-width-100">@lang('Payment Method')</th>
+                        <th class="min-width-100">@lang('Status')</th>
                         <th class="text-center min-width-150">@lang('Actions')</th>
                     </tr>
                     </thead>
@@ -50,19 +50,19 @@
                                             <img src="{{ $imageUrl }}" 
                                                 alt="Student Photo" 
                                                 class="img-thumbnail" 
-                                                width="60" 
-                                                height="60"
+                                                width="150" 
+                                                height="150"
                                                 style="object-fit: cover; border-radius: 2px;">
                                         @else
                                             <div class="no-photo bg-light rounded d-flex align-items-center justify-content-center" 
-                                                style="width: 60px; height: 60px; border: 1px solid #dee2e6;">
+                                                style="width: 50px; height: 50px; border: 1px solid #dee2e6;">
                                                 <i class="fas fa-user text-muted"></i>
-                                                <small class="text-muted ml-1 d-none d-sm-block">No photo</small>
+                                                <small class="text-muted ml-1">File missing</small>
                                             </div>
                                         @endif
                                     @else
                                         <div class="no-photo bg-light rounded d-flex align-items-center justify-content-center" 
-                                            style="width: 60px; height: 60px; border: 1px solid #dee2e6;">
+                                            style="width: 50px; height: 50px; border: 1px solid #dee2e6;">
                                             <i class="fas fa-user text-muted"></i>
                                         </div>
                                     @endif
@@ -70,71 +70,25 @@
                                 <td>
                                     <strong>{{ $application->name }}</strong><br>
                                     <small class="text-muted">
-                                        <i class="fas fa-phone-alt mr-1"></i>{{ $application->mobile }}<br>
-                                        <i class="fas fa-envelope mr-1"></i>{{ $application->email }}<br>
-                                        <i class="fas fa-user-shield mr-1"></i>{{ $application->emergency_mobile }}
+                                        Mobile: {{ $application->mobile }}<br>
+                                        Email: {{ $application->email }}<br>
+                                        Guardian: {{ $application->emergency_mobile }}
                                     </small>
                                 </td>
                                 <td>
                                     <strong>{{ $application->course_name }}</strong><br>
-                                    <span class="text-success font-weight-bold">৳{{ number_format($application->course_fee, 2) }}</span>
+                                    <span class="text-success">৳{{ number_format($application->course_fee, 2) }}</span>
                                     @if($application->batch_code && $application->batch_code != 'N/A')
-                                        <br><small class="text-info"><i class="fas fa-users mr-1"></i>{{ $application->batch_code }}</small>
+                                        <br><small class="text-info">Batch: {{ $application->batch_code }}</small>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($application->payment)
-                                        <!-- Payment Method -->
-                                        <span class="badge badge-{{ 
-                                            $application->payment->payment_method == 'cash' ? 'success' : 
-                                            ($application->payment->payment_method == 'bkash' ? 'primary' : 'info') 
-                                        }}">
-                                            {{ $application->payment->payment_method_name }}
-                                        </span>
-                                        
-                                        <!-- Payment Received By -->
-                                        @if($application->payment->payment_received_by)
-                                            <br><small class="text-muted">
-                                                <i class="fas fa-user-check mr-1"></i>Received by: {{ $application->payment->payment_received_by }}
-                                            </small>
-                                        @endif
-                                        
-                                        <!-- Transaction ID -->
-                                        @if($application->payment->transaction_id)
-                                            <br><small><i class="fas fa-receipt mr-1"></i>{{ $application->payment->transaction_id }}</small>
-                                        @endif
-                                        
-                                        <!-- Serial Number -->
-                                        @if($application->payment->serial_number)
-                                            <br><small><i class="fas fa-hashtag mr-1"></i>{{ $application->payment->serial_number }}</small>
-                                        @endif
-                                        
-                                        <!-- Financial Summary -->
-                                        <div class="mt-2">
-                                            @if($application->payment->deposit_amount > 0)
-                                                <small class="d-block text-success">
-                                                    <i class="fas fa-money-bill-wave mr-1"></i>Deposit: ৳{{ number_format($application->payment->deposit_amount, 2) }}
-                                                </small>
-                                            @endif
-                                            
-                                            @if($application->payment->discount_amount > 0)
-                                                <small class="d-block text-danger">
-                                                    <i class="fas fa-tag mr-1"></i>Discount: -৳{{ number_format($application->payment->discount_amount, 2) }}
-                                                </small>
-                                            @endif
-                                            
-                                            @if($application->payment->due_amount > 0)
-                                                <small class="d-block text-warning">
-                                                    <i class="fas fa-clock mr-1"></i>Due: ৳{{ number_format($application->payment->due_amount, 2) }}
-                                                </small>
-                                            @else
-                                                <small class="d-block text-success">
-                                                    <i class="fas fa-check-circle mr-1"></i>Paid in Full
-                                                </small>
-                                            @endif
-                                        </div>
-                                    @else
-                                        <span class="badge badge-secondary">No Payment</span>
+                                    <span class="badge badge-info">{{ $application->payment_method_name }}</span>
+                                    @if($application->transaction_id)
+                                        <br><small>Txn: {{ $application->transaction_id }}</small>
+                                    @endif
+                                    @if($application->serial_number)
+                                        <br><small>Ref: {{ $application->serial_number }}</small>
                                     @endif
                                 </td>
                                 <td>
@@ -145,11 +99,10 @@
                                         {{ ucfirst($application->status) }}
                                     </span>
                                     @if($application->approved_at)
-                                        <br><small class="text-muted">{{ $application->approved_at->format('d-m-Y') }}</small>
+                                        <br><small>{{ $application->approved_at->format('d-m-Y') }}</small>
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <!-- View Button -->
                                     <a href="{{ route('student-admissions.show', $application) }}" 
                                        class="btn btn-icon btn-sm btn-info" 
                                        title="@lang('View Application')" 
@@ -157,75 +110,38 @@
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     
-                                    <!-- Approve Button (only for pending applications) -->
-                                    @if($application->status == 'pending')
-                                        <button type="button" 
-                                                class="btn btn-icon btn-sm btn-success" 
-                                                title="@lang('Approve Admission')"
-                                                data-toggle="modal" 
-                                                data-target="#admissionModal"
-                                                data-application-id="{{ $application->id }}"
-                                                data-course-id="{{ $application->course_id }}"
-                                                data-course-fee="{{ $application->course->course_fee ?? 0 }}"
-                                                data-student-name="{{ $application->name }}"
-                                                data-application-number="{{ $application->application_number }}"
-                                                data-course-name="{{ $application->course->course_name ?? 'N/A' }}">
-                                            <i class="fas fa-user-graduate"></i>
-                                        </button>
-                                    @endif
-                                    
-                                    <!-- ID Card Buttons (only for approved applications) -->
-                                    @if($application->status == 'approved')
-                                        <a href="{{ route('student-admissions.id-card', $application) }}" 
-                                           class="btn btn-icon btn-sm btn-primary" 
-                                           title="@lang('View ID Card')"
-                                           data-toggle="tooltip">
-                                            <i class="fas fa-id-card"></i>
-                                        </a>
-                                        <a href="{{ route('student-admissions.download-id-card', $application) }}" 
-                                           class="btn btn-icon btn-sm btn-success" 
-                                           title="@lang('Download ID Card')"
-                                           data-toggle="tooltip">
-                                            <i class="fas fa-download"></i>
-                                        </a>
-                                    @endif
+@if($application->status == 'pending')
+    <button type="button" 
+            class="btn btn-icon btn-sm btn-success" 
+            title="@lang('Approve Admission')"
+            data-toggle="modal" 
+            data-target="#admissionModal"
+            data-application-id="{{ $application->id }}"
+            data-course-id="{{ $application->course_id }}"
+            data-course-fee="{{ $application->course->course_fee ?? 0 }}"
+            data-student-name="{{ $application->name }}"
+            data-application-number="{{ $application->application_number }}"
+            data-course-name="{{ $application->course->course_name ?? 'N/A' }}">
+        <i class="fas fa-user-graduate"></i>
+    </button>
+@endif
+@if($application->status == 'approved')
+    <!-- ID Card Buttons -->
+    <a href="{{ route('student-admissions.id-card', $application) }}" 
+       class="btn btn-icon btn-sm btn-primary" 
+       title="@lang('View ID Card')"
+       data-toggle="tooltip">
+        <i class="fas fa-id-card"></i>
+    </a>
+    <a href="{{ route('student-admissions.download-id-card', $application) }}" 
+       class="btn btn-icon btn-sm btn-success" 
+       title="@lang('Download ID Card')"
+       data-toggle="tooltip">
+        <i class="fas fa-download"></i>
+    </a>
+@endif
 
-                                    <!-- Status Update Dropdown -->
-                                    <div class="btn-group">
-                                        <button type="button" 
-                                                class="btn btn-icon btn-sm btn-secondary dropdown-toggle" 
-                                                data-toggle="dropdown" 
-                                                aria-haspopup="true" 
-                                                aria-expanded="false"
-                                                title="@lang('Update Status')">
-                                            <i class="fas fa-cog"></i>
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-right">
-                                            <form action="{{ route('student-admissions.update-status', $application) }}" 
-                                                  method="POST" 
-                                                  class="d-inline">
-                                                @csrf
-                                                <button type="submit" 
-                                                        name="status" 
-                                                        value="approved" 
-                                                        class="dropdown-item text-success {{ $application->status == 'approved' ? 'disabled' : '' }}">
-                                                    <i class="fas fa-check mr-2"></i>Approve
-                                                </button>
-                                                <button type="submit" 
-                                                        name="status" 
-                                                        value="rejected" 
-                                                        class="dropdown-item text-danger {{ $application->status == 'rejected' ? 'disabled' : '' }}">
-                                                    <i class="fas fa-times mr-2"></i>Reject
-                                                </button>
-                                                <button type="submit" 
-                                                        name="status" 
-                                                        value="pending" 
-                                                        class="dropdown-item text-warning {{ $application->status == 'pending' ? 'disabled' : '' }}">
-                                                    <i class="fas fa-clock mr-2"></i>Pending
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
+                                
 
                                     <!-- Delete Button -->
                                     <a href="{{ route('student-admissions.destroy', $application) }}" 
@@ -264,31 +180,32 @@
     </div>
 
     <!-- Admission Modal -->
-    <div class="modal fade" id="admissionModal" tabindex="-1" role="dialog" aria-labelledby="admissionModalLabel">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title" id="admissionModalLabel">
-                        <i class="fas fa-user-graduate mr-2"></i>Approve Admission
-                    </h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Data will be loaded here by JavaScript -->
-                    <div id="modalContent">
-                        <div class="text-center py-4">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="sr-only">Loading...</span>
-                            </div>
-                            <p class="mt-2">Loading application data...</p>
+<!-- Admission Modal - SIMPLIFIED -->
+<div class="modal fade" id="admissionModal" tabindex="-1" role="dialog" aria-labelledby="admissionModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="admissionModalLabel">
+                    <i class="fas fa-user-graduate mr-2"></i>Approve Admission
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Data will be loaded here by JavaScript -->
+                <div id="modalContent">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
                         </div>
+                        <p class="mt-2">Loading application data...</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 @stop
 
 @section('scripts')
@@ -301,9 +218,7 @@
                 'copy', 'excel', 'pdf', 'print'
             ],
             "pageLength": 25,
-            "order": [[0, "desc"]],
-            "responsive": true,
-            "autoWidth": false
+            "order": [[0, "desc"]]
         });
 
         // Get CSRF token
@@ -520,51 +435,50 @@
             console.log('=== MODAL LOADED SUCCESSFULLY ===');
         });
 
-        function loadBatches(applicationId, courseFee) {
-            console.log('Loading batches for application:', applicationId);
+       function loadBatches(applicationId, courseFee) {
+    console.log('Loading batches for application:', applicationId);
+    
+    const baseUrl = '{{ url("/") }}';
+    const batchesUrl = `${baseUrl}/student-admissions/${applicationId}/batches`;
+    
+    $.ajax({
+        url: batchesUrl,
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': getCsrfToken(),
+            'Accept': 'application/json'
+        },
+        success: function (response) {
+            console.log('Batches loaded:', response);
             
-            const baseUrl = '{{ url("/") }}';
-            const batchesUrl = `${baseUrl}/student-admissions/${applicationId}/batches`;
+            const batchSelect = $('#batchSelect');
+            batchSelect.empty();
             
-            $.ajax({
-                url: batchesUrl,
-                method: 'GET',
-                headers: {
-                    'X-CSRF-TOKEN': getCsrfToken(),
-                    'Accept': 'application/json'
-                },
-                success: function (response) {
-                    console.log('Batches loaded:', response);
-                    
-                    const batchSelect = $('#batchSelect');
-                    batchSelect.empty();
-                    
-                    if (response && response.length > 0) {
-                        batchSelect.append('<option value="">Select a batch</option>');
-                        $.each(response, function (index, batch) {
-                            const isAvailable = batch.available_seats > 0;
-                            batchSelect.append(
-                                '<option value="' + batch.id + '" ' +
-                                'data-available="' + batch.available_seats + '" ' +
-                                'data-total="' + batch.total_seat + '" ' +
-                                (!isAvailable ? 'disabled' : '') + '>' + 
-                                batch.batch_code + ' (Available: ' + batch.available_seats + '/' + batch.total_seat + ')' +
-                                (!isAvailable ? ' - FULL' : '') +
-                                '</option>'
-                            );
-                        });
-                    } else {
-                        batchSelect.append('<option value="">No available batches</option>');
-                        $('#batchInfo').html('<div class="alert alert-warning p-2 mb-0">No batches available for this course.</div>');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Batch load error:', error);
-                    $('#batchSelect').html('<option value="">Error loading batches</option>');
-                }
-            });
+            if (response && response.length > 0) {
+                batchSelect.append('<option value="">Select a batch</option>');
+                $.each(response, function (index, batch) {
+                    const isAvailable = batch.available_seats > 0;
+                    batchSelect.append(
+                        '<option value="' + batch.id + '" ' +
+                        'data-available="' + batch.available_seats + '" ' +
+                        'data-total="' + batch.total_seat + '" ' +
+                        (!isAvailable ? 'disabled' : '') + '>' + 
+                        batch.batch_code + ' (Available: ' + batch.available_seats + '/' + batch.total_seat + ')' +
+                        (!isAvailable ? ' - FULL' : '') +
+                        '</option>'
+                    );
+                });
+            } else {
+                batchSelect.append('<option value="">No available batches</option>');
+                $('#batchInfo').html('<div class="alert alert-warning p-2 mb-0">No batches available for this course.</div>');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Batch load error:', error);
+            $('#batchSelect').html('<option value="">Error loading batches</option>');
         }
-        
+    });
+}
         function initializeEventListeners(courseFee) {
             // Batch selection change
             $(document).on('change', '#batchSelect', function() {
@@ -631,28 +545,12 @@
                     success: function (response) {
                         if (response.success) {
                             $('#admissionModal').modal('hide');
-                            
-                            // Show success notification
-                            const successMessage = '✅ ' + response.message + '\nStudent ID: ' + response.student_id;
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Admission Approved',
-                                text: 'Student ID: ' + response.student_id,
-                                confirmButtonText: 'OK',
-                                timer: 3000,
-                                timerProgressBar: true
-                            });
-                            
+                            alert('✅ ' + response.message + ' Student ID: ' + response.student_id);
                             setTimeout(function() {
                                 window.location.reload();
                             }, 2000);
                         } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message,
-                                confirmButtonText: 'OK'
-                            });
+                            alert('❌ ' + response.message);
                             submitBtn.prop('disabled', false).html(originalText);
                         }
                     },
@@ -663,68 +561,15 @@
                             $.each(response.errors, function (key, errors) {
                                 errorMessage += '• ' + errors[0] + '\n';
                             });
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Validation Error',
-                                text: errorMessage,
-                                confirmButtonText: 'OK'
-                            });
+                            alert('❌ ' + errorMessage);
                         } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'An error occurred. Please try again.',
-                                confirmButtonText: 'OK'
-                            });
+                            alert('❌ An error occurred. Please try again.');
                         }
                         submitBtn.prop('disabled', false).html(originalText);
                     }
                 });
             });
         }
-
-        // Tooltip initialization
-        $('[data-toggle="tooltip"]').tooltip();
-        
-        // Confirm delete
-        $('a[data-method="DELETE"]').click(function(e) {
-            e.preventDefault();
-            const href = $(this).attr('href');
-            const title = $(this).data('confirm-title');
-            const text = $(this).data('confirm-text');
-            const confirmText = $(this).data('confirm-delete');
-            
-            Swal.fire({
-                title: title,
-                text: text,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: confirmText,
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: href,
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': getCsrfToken()
-                        },
-                        success: function() {
-                            window.location.reload();
-                        },
-                        error: function() {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Failed to delete application. Please try again.'
-                            });
-                        }
-                    });
-                }
-            });
-        });
     });
 </script>
 
@@ -738,18 +583,6 @@
 }
 .card-header h6 {
     font-size: 0.9rem;
-}
-.no-photo {
-    font-size: 0.8rem;
-}
-.badge {
-    font-size: 0.75em;
-}
-.table th {
-    font-weight: 600;
-}
-.btn-group .dropdown-toggle::after {
-    margin-left: 0.2em;
 }
 </style>
 @endsection

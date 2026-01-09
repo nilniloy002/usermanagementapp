@@ -9,16 +9,42 @@
          <!-- <li class="nav-item"><a class="nav-link" href="{{ route('departments.index') }}"><i class="fa fa-building"></i><span>Departments</span></a></li> -->
          <!-- <li class="nav-item"><a class="nav-link" href="{{ route('employees.index') }}"><i class="fa fa-building"></i><span>Employees</span></a></li> -->
       
-         <li class="nav-item">
-            <a class="nav-link collapsed" href="#admission-dropdown" data-toggle="collapse" aria-expanded="false">
-            <i class="fa fa-university"></i>
-            <span>Admissions</span>
+<li class="nav-item">
+    <a class="nav-link collapsed" href="#admission-dropdown" data-toggle="collapse" aria-expanded="false">
+        <i class="fa fa-university"></i>
+        <span>Admissions</span>
+    </a>
+    <ul class="list-unstyled sub-menu collapse" id="admission-dropdown" style="">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('student-admissions.pending-student-index') }}">
+                <i class="fas fa-user-clock"></i>
+                <span>Pending Admission</span>
             </a>
-            <ul class="list-unstyled sub-menu collapse" id="admission-dropdown" style="">
-               <li class="nav-item"><a class="nav-link" href="{{ route('student-admissions.index') }}"><i class="fas fa-users"></i><span>Admission List</span></a></li>
-               <!-- <li class="nav-item"><a class="nav-link" href="{{ route('admissions.create') }}"><i class="fa fa-plus"></i><span>New Admission</span></a></li> -->
-            </ul>
-         </li>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('student-admissions.index') }}">
+                <i class="fas fa-users"></i>
+                <span>Admission List</span>
+            </a>
+        </li>
+        <!-- Payment Section -->
+        <li class="nav-item">
+            <hr class="my-1">
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('student-admissions.payment-invoice-form') }}">
+                <i class="fa fa-file text-success"></i>
+                <span class="text-success">Create Payment Invoice</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('student-admissions.payment-invoices') }}">
+                <i class="fas fa-list-alt text-info"></i>
+                <span class="text-info">Payment Invoices</span>
+            </a>
+        </li>
+    </ul>
+</li>
          <li class="nav-item">
             <a class="nav-link collapsed" href="#course-dropdown" data-toggle="collapse" aria-expanded="false">
             <i class="fas fa-cogs"></i>

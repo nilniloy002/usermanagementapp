@@ -21,14 +21,6 @@ class StudentAdmission extends Model
         'course_id',
         'batch_id',
         'photo_data',
-        'payment_method',
-        'transaction_id',
-        'serial_number',
-        'deposit_amount',
-        'discount_amount',
-        'due_amount',
-        'next_due_date',
-        'remarks',
         'application_number',
         'student_id',
         'status',
@@ -37,18 +29,11 @@ class StudentAdmission extends Model
 
     protected $casts = [
         'dob' => 'date',
-        'next_due_date' => 'date',
         'approved_at' => 'datetime',
-        'deposit_amount' => 'decimal:2',
-        'discount_amount' => 'decimal:2',
-        'due_amount' => 'decimal:2',
     ];
 
     protected $attributes = [
         'status' => 'pending',
-        'deposit_amount' => 0,
-        'discount_amount' => 0,
-        'due_amount' => 0,
     ];
 
     /**
@@ -62,6 +47,11 @@ class StudentAdmission extends Model
     public function batch()
     {
         return $this->belongsTo(Batch::class);
+    }
+
+    public function payment()
+    {
+        return $this->hasOne(StudentPayment::class);
     }
 
     /**
@@ -94,19 +84,55 @@ class StudentAdmission extends Model
     }
 
     /**
-     * Generate unique student ID
+     * Generate unique student ID based on course
      */
-    public static function generateStudentId()
+    public static function generateStudentId($courseId)
     {
-        $prefix = 'STU';
-        $year = date('y');
+        $course = Course::find($courseId);
+        
+        if (!$course) {
+            throw new \Exception('Course not found for generating student ID');
+        }
+
+        $prefix = self::getCoursePrefix($course->course_name);
+        $year = date('y'); // Last 2 digits of current year
         
         do {
-            $random = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
-            $studentId = "{$prefix}{$year}{$random}";
+            $randomAlphabets = chr(rand(65, 90)) . chr(rand(65, 90)); // Two capital letters
+            $studentId = "{$prefix}{$year}{$randomAlphabets}";
         } while (static::where('student_id', $studentId)->exists());
 
         return $studentId;
+    }
+
+    /**
+     * Get course prefix based on course name
+     */
+    private static function getCoursePrefix($courseName)
+    {
+        $prefixes = [
+            'IELTS On Computer' => 'SIOC',
+            'English Language Foundation Program' => 'SEFP',
+            'PTE Preparation Course' => 'SPTE',
+            'Junior English Language Program L-1' => 'SJEPL1',
+            'Junior English Language Program L-2' => 'SJEPL2',
+            'Junior English Language Program L-3' => 'SJEPL3',
+            'NextGen Computer Course with AI' => 'SCOM',
+            'Beginner\'s Programming for Juniors' => 'SBPJ',
+            'English Foundation Course (After SSC)' => 'SESSC',
+            'Combo: English Foundation + IELTS' => 'SEFIP',
+            'Combo: Computer + Foundation (After SSC)' => 'SBCEF',
+        ];
+
+        // Find matching course name (case-insensitive, partial match)
+        foreach ($prefixes as $coursePattern => $prefix) {
+            if (stripos($courseName, $coursePattern) !== false) {
+                return $prefix;
+            }
+        }
+
+        // Default prefix if no match found
+        return 'STU';
     }
 
     /**
@@ -129,7 +155,7 @@ class StudentAdmission extends Model
 
     public function getTotalPayableAttribute()
     {
-        return $this->course_fee - $this->discount_amount;
+        return $this->course_fee - ($this->payment->discount_amount ?? 0);
     }
 
     public function getIsApprovedAttribute()
@@ -139,12 +165,7 @@ class StudentAdmission extends Model
 
     public function getPaymentMethodNameAttribute()
     {
-        return match($this->payment_method) {
-            'cash' => 'Cash',
-            'bkash' => 'bKash',
-            'bank' => 'Bank',
-            default => ucfirst($this->payment_method)
-        };
+        return $this->payment ? $this->payment->payment_method_name : 'N/A';
     }
 
     public function getPhotoUrlAttribute()
@@ -153,6 +174,42 @@ class StudentAdmission extends Model
             return Storage::disk('public')->url($this->photo_data);
         }
         return null;
+    }
+
+    // Convenience accessors for payment information
+    public function getDepositAmountAttribute()
+    {
+        return $this->payment ? $this->payment->deposit_amount : 0;
+    }
+
+    public function getDiscountAmountAttribute()
+    {
+        return $this->payment ? $this->payment->discount_amount : 0;
+    }
+
+    public function getDueAmountAttribute()
+    {
+        return $this->payment ? $this->payment->due_amount : 0;
+    }
+
+    public function getNextDueDateAttribute()
+    {
+        return $this->payment ? $this->payment->next_due_date : null;
+    }
+
+    public function getTransactionIdAttribute()
+    {
+        return $this->payment ? $this->payment->transaction_id : null;
+    }
+
+    public function getSerialNumberAttribute()
+    {
+        return $this->payment ? $this->payment->serial_number : null;
+    }
+
+    public function getRemarksAttribute()
+    {
+        return $this->payment ? $this->payment->remarks : null;
     }
 
     /**

@@ -11,13 +11,15 @@ class BatchController extends Controller
 {
     public function index()
     {
-        $batches = Batch::with('course')->get();
+        $batches = Batch::with('course')
+        ->orderBy('created_at', 'DESC')
+        ->get();
         return view('batches.index', compact('batches'));
     }
 
     public function create()
     {
-        $courses = Course::all();
+        $courses = Course::where('status', 'On')->get();
         return view('batches.add-edit', compact('courses'), ['edit' => false]);
     }
 
@@ -32,7 +34,7 @@ class BatchController extends Controller
 
     public function edit(Batch $batch)
     {
-        $courses = Course::all();
+        $courses = Course::where('status', 'On')->get();
         return view('batches.add-edit', compact('batch', 'courses'), ['edit' => true]);
     }
 

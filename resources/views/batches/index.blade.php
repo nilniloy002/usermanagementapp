@@ -32,6 +32,7 @@
                         <tr>
                             <th class="min-width-100">@lang('Batch Code')</th>
                             <th class="min-width-100">@lang('Course')</th>
+                            <th class="min-width-100">@lang('Schedule')</th>
                             <th class="min-width-80">@lang('Total Seats')</th>
                             <th class="min-width-80">@lang('Available')</th>
                             <th class="min-width-80">@lang('Status')</th>
@@ -44,6 +45,7 @@
                                 <tr>
                                     <td>{{ $batch->batch_code }}</td>
                                     <td>{{ $batch->course->course_name }}</td>
+                                    <td>{{ $batch->batch_schedule }}</td>
                                     <td>
                                         <span class="badge badge-info">{{ $batch->total_seat }}</span>
                                     </td>

@@ -119,7 +119,7 @@
                     </a>
                     
                     <!-- Status Update Buttons -->
-                    <div class="btn-group ml-2">
+                    <!-- <div class="btn-group ml-2">
                         <form action="{{ route('student-admissions.update-status', $application) }}" method="POST" class="d-inline">
                             @csrf
                             <button type="submit" name="status" value="approved" class="btn btn-success">
@@ -132,7 +132,7 @@
                                 <i class="fas fa-clock mr-2"></i>Set Pending
                             </button>
                         </form>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

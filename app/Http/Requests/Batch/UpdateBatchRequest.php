@@ -13,7 +13,7 @@ class UpdateBatchRequest extends FormRequest
 
     public function rules()
     {
-        $batchId = $this->route('batches')->id;
+        $batchId = $this->route('batch')->id;
         
         return [
             'batch_code' => 'required|string|max:255|unique:batches,batch_code,' . $batchId,

@@ -15,6 +15,7 @@ class Batch extends Model
         'status',
         'total_seat',
         'enrolled_students', // Make sure this is included
+        'batch_schedule', 
 
     ];
 
