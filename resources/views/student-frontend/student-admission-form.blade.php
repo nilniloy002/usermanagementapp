@@ -381,7 +381,7 @@
         <!-- Footer Note -->
         <div class="text-center mt-8 text-gray-500 text-sm">
             <p>All information provided will be kept confidential and used solely for admission purposes.</p>
-            <p class="mt-2">© 2024 STS Institute. All rights reserved.</p>
+            <p class="mt-2">© 2018-2026 STS Institute. All rights reserved.</p>
         </div>
     </div>
 
