@@ -318,24 +318,170 @@ class StudentAdmissionController extends Controller
         return view('student-frontend.admission-success', compact('admission'));
     }
 
-    /**
-     * Admin: List all applications
-     */
-    public function index()
+        /**
+         * Admin: List all applications with filters
+         */
+        public function index(Request $request)
+        {
+            $query = StudentAdmission::with(['course', 'batch', 'payment'])
+                ->where('status', 'approved')
+                // ->latest();
+                ->orderBy('created_at', 'desc');
+
+            
+            // Course filter
+            if ($request->filled('course_id')) {
+                $query->where('course_id', $request->course_id);
+            }
+            
+            // Batch filter
+            if ($request->filled('batch_id')) {
+                $query->where('batch_id', $request->batch_id);
+            }
+            
+            // Payment status filter
+            if ($request->filled('payment_status')) {
+                if ($request->payment_status === 'due') {
+                    $query->whereHas('payment', function($q) {
+                        $q->where('due_amount', '>', 0);
+                    });
+                } elseif ($request->payment_status === 'paid') {
+                    $query->whereHas('payment', function($q) {
+                        $q->where('due_amount', '<=', 0);
+                    });
+                }
+            }
+            
+            // Search filter
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('application_number', 'like', "%{$search}%")
+                    ->orWhere('student_id', 'like', "%{$search}%")
+                    ->orWhere('mobile', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+                });
+            }
+            
+            $applications = $query->paginate(20);
+            
+            // Get courses for filter
+            $courses = Course::where('status', 'On')->get();
+            
+            // Get batches based on selected course
+            $selectedCourseId = $request->course_id;
+            $batches = collect();
+            
+            if ($selectedCourseId) {
+                // Get batches only for the selected course
+                $batches = Batch::where('course_id', $selectedCourseId)
+                    ->where('status', 'On')
+                    ->orderBy('batch_code', 'ASC')
+                    ->get();
+            } else {
+                // Get all active batches with course names
+                $batches = Batch::where('status', 'On')
+                    ->with('course')
+                    ->orderBy('batch_code', 'ASC')
+                    ->get();
+            }
+            
+            return view('admissions.student-index', compact('applications', 'courses', 'batches', 'selectedCourseId'));
+        }
+
+        /**
+         * Get batches for a specific course (AJAX)
+         */
+
+       public function getBatchesByCourse($courseId)
     {
-        $applications = StudentAdmission::with(['course', 'batch', 'payment'])
-            ->where('status', 'approved')
-            ->latest()
-            ->paginate(20);
-        
-        return view('admissions.student-index', compact('applications'));
-    }
+            try {
+                $batches = Batch::where('course_id', $courseId)
+                    ->where('status', 'On')
+                    ->orderBy('batch_code', 'ASC')
+                    ->get(['id', 'batch_code']);
+                
+                return response()->json([
+                    'success' => true,
+                    'batches' => $batches
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Error getting batches by course: ' . $e->getMessage());
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to load batches'
+                ], 500);
+            }
+        }
+
+        private function exportStudents($students, $type)
+        {
+            $data = [];
+            
+            foreach ($students as $student) {
+                $data[] = [
+                    'Application No' => $student->application_number,
+                    'Student ID' => $student->student_id,
+                    'Name' => $student->name,
+                    'Mobile' => $student->mobile,
+                    'Email' => $student->email,
+                    'Course' => $student->course_name,
+                    'Batch' => $student->batch_code,
+                    'Course Fee' => $student->course_fee,
+                    'Deposit Amount' => $student->deposit_amount,
+                    'Discount Amount' => $student->discount_amount,
+                    'Due Amount' => $student->due_amount,
+                    'Payment Method' => $student->payment->payment_method_name ?? 'N/A',
+                    'Status' => ucfirst($student->status),
+                    'Applied Date' => $student->created_at->format('d-m-Y'),
+                    'Approved Date' => $student->approved_at ? $student->approved_at->format('d-m-Y') : 'N/A',
+                ];
+            }
+            
+            if ($type === 'csv') {
+                return $this->exportToCsv($data);
+            } elseif ($type === 'excel') {
+                return $this->exportToExcel($data);
+            } elseif ($type === 'pdf') {
+                return $this->exportToPdf($data);
+            }
+        }
+
+        private function exportToCsv($data)
+        {
+            $headers = [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="students-' . date('Y-m-d') . '.csv"',
+            ];
+
+            $callback = function() use ($data) {
+                $file = fopen('php://output', 'w');
+                
+                // Add BOM for UTF-8
+                fputs($file, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF)));
+                
+                // Add headers
+                fputcsv($file, array_keys($data[0]));
+                
+                // Add data
+                foreach ($data as $row) {
+                    fputcsv($file, $row);
+                }
+                
+                fclose($file);
+            };
+
+            return response()->stream($callback, 200, $headers);
+        }
+
 
     public function PendingStudentIndex()
     {
         $applications = StudentAdmission::with(['course', 'batch', 'payment'])
             ->where('status', 'pending')
-            ->latest()
+            // ->latest()
+            ->orderBy('created_at', 'desc')
             ->paginate(20);
         
         return view('admissions.pending-student-index', compact('applications'));

@@ -60,4 +60,35 @@ class Batch extends Model
     {
         return $query->where('status', 'On');
     }
+
+    /**
+ * Get all active batches (AJAX)
+ */
+public function getActiveBatches()
+{
+    try {
+        $batches = Batch::where('status', 'On')
+            ->with('course')
+            ->orderBy('batch_code', 'ASC')
+            ->get(['id', 'batch_code', 'course_id']);
+        
+        return response()->json([
+            'success' => true,
+            'batches' => $batches->map(function($batch) {
+                return [
+                    'id' => $batch->id,
+                    'batch_code' => $batch->batch_code,
+                    'course_name' => $batch->course->course_name ?? 'N/A'
+                ];
+            })
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('Error getting active batches: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to load batches'
+        ], 500);
+    }
+}
+
 }

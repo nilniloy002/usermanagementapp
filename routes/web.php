@@ -316,7 +316,17 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
         Route::post('student-admissions/bulk-id-cards', [StudentAdmissionController::class, 'bulkIdCards'])
             ->name('student-admissions.bulk-id-cards');
-    /**
+    
+    // Get batches by course (AJAX)
+    Route::get('student-admissions/batches-by-course/{courseId}', 
+        [StudentAdmissionController::class, 'getBatchesByCourse'])
+        ->name('student-admissions.batches-by-course');
+
+    // Get all active batches (AJAX)
+    Route::get('batches/active', [BatchController::class, 'getActiveBatches'])
+        ->name('batches.active');
+
+/**
      * Courses
      */
     Route::get('courses', 'CourseController@index')->name('courses.index');
