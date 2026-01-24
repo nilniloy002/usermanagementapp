@@ -69,20 +69,58 @@ class StudentAdmission extends Model
         });
     }
 
+    // /**
+    //  * Generate unique application number
+    //  */
+    // public static function generateApplicationNumber()
+    // {
+    //     $prefix = 'APP';
+    //     $year = date('Y');
+    //     $month = date('m');
+        
+    //     do {
+    //         $random = str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+    //         $applicationNumber = "{$prefix}{$year}{$month}{$random}";
+    //     } while (static::where('application_number', $applicationNumber)->exists());
+
+    //     return $applicationNumber;
+    // }
+
+
     /**
      * Generate unique application number
+     * Format: YYMMDDXXXXX (e.g., 26012400001)
+     * Where:
+     * - YY: Last two digits of year (26)
+     * - MM: Month (01)
+     * - DD: Day of month (24)
+     * - XXXXX: Sequential number starting from 00001
      */
     public static function generateApplicationNumber()
     {
-        $prefix = 'APP';
-        $year = date('Y');
-        $month = date('m');
+        $year = date('y'); // Last two digits (26)
+        $month = date('m'); // Month (01)
+        $day = date('d');   // Day (24)
         
-        do {
-            $random = str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
-            $applicationNumber = "{$prefix}{$year}{$month}{$random}";
-        } while (static::where('application_number', $applicationNumber)->exists());
-
+        // Get the last application number for today
+        $lastApplication = static::where('application_number', 'LIKE', "{$year}{$month}{$day}%")
+            ->orderBy('application_number', 'desc')
+            ->first();
+        
+        if ($lastApplication) {
+            // Extract the sequence number from the last application
+            $lastSequence = (int) substr($lastApplication->application_number, -5);
+            $sequence = $lastSequence + 1;
+        } else {
+            // First application of the day
+            $sequence = 1;
+        }
+        
+        // Format: YYMMDD + 5-digit sequence
+        $applicationNumber = sprintf("%02d%02d%02d%05d", 
+            $year, $month, $day, $sequence
+        );
+        
         return $applicationNumber;
     }
 
