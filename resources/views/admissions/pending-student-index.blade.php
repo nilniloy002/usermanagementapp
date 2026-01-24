@@ -18,7 +18,7 @@
                 <table class="table table-striped table-borderless" id="student-admissions-table">
                     <thead>
                     <tr>
-                        <th class="min-width-100">@lang('Application No.')</th>
+                        <th class="min-width-100">@lang('Invoice No.')</th>
                         <th class="min-width-100">@lang('Photo')</th>
                         <th class="min-width-150">@lang('Student Details')</th>
                         <th class="min-width-100">@lang('Course')</th>

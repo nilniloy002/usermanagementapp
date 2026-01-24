@@ -5,6 +5,8 @@ namespace Vanguard;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Storage;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class StudentAdmission extends Model
 {
@@ -87,41 +89,47 @@ class StudentAdmission extends Model
     // }
 
 
-    /**
-     * Generate unique application number
-     * Format: YYMMDDXXXXX (e.g., 26012400001)
-     * Where:
-     * - YY: Last two digits of year (26)
-     * - MM: Month (01)
-     * - DD: Day of month (24)
-     * - XXXXX: Sequential number starting from 00001
-     */
+
+
     public static function generateApplicationNumber()
     {
-        $year = date('y'); // Last two digits (26)
-        $month = date('m'); // Month (01)
-        $day = date('d');   // Day (24)
+        $year = date('y');
+        $month = date('m');
+        $day = date('d');
+        $datePrefix = sprintf("%02d%02d%02d", $year, $month, $day);
         
-        // Get the last application number for today
-        $lastApplication = static::where('application_number', 'LIKE', "{$year}{$month}{$day}%")
-            ->orderBy('application_number', 'desc')
-            ->first();
+        $cacheKey = "app_seq:{$datePrefix}";
+        $lockKey = "app_seq_lock:{$datePrefix}";
         
-        if ($lastApplication) {
-            // Extract the sequence number from the last application
-            $lastSequence = (int) substr($lastApplication->application_number, -5);
-            $sequence = $lastSequence + 1;
-        } else {
-            // First application of the day
-            $sequence = 1;
+        // Generate unique lock ID
+        $lockId = Str::uuid()->toString();
+        
+        // Wait for lock (max 5 seconds)
+        $startTime = microtime(true);
+        while (Cache::get($lockKey) && (microtime(true) - $startTime) < 5) {
+            usleep(100000); // Wait 0.1 second
         }
         
-        // Format: YYMMDD + 5-digit sequence
-        $applicationNumber = sprintf("%02d%02d%02d%05d", 
-            $year, $month, $day, $sequence
-        );
+        // Acquire lock
+        Cache::put($lockKey, $lockId, 10);
         
-        return $applicationNumber;
+        try {
+            // Get current sequence
+            $sequence = Cache::get($cacheKey, 0);
+            $nextSequence = $sequence + 1;
+            
+            // Store the new sequence
+            Cache::put($cacheKey, $nextSequence, 86400); // Keep for 24 hours
+            
+            // Format: YYMMDD + 5-digit sequence
+            return sprintf("%s%05d", $datePrefix, $nextSequence);
+            
+        } finally {
+            // Release lock
+            if (Cache::get($lockKey) === $lockId) {
+                Cache::forget($lockKey);
+            }
+        }
     }
 
     /**
