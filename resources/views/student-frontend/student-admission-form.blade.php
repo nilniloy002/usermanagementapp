@@ -10,7 +10,8 @@
     <meta name="keywords" content="student admission, IELTS course, PTE course, English Foundation, Kids English, STS Institute">
     <meta name="author" content="STS Institute">
     <meta name="robots" content="index, follow">
-    
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="Student Admission Form - STS Institute">
     <meta property="og:description" content="Apply for courses at STS Institute - IELTS, PTE, English Foundation, and Kids English.">
@@ -413,27 +414,54 @@
 
     <script>
         // Get CSRF token safely
-        function getCsrfToken() {
-            // Try hidden input first
-            const csrfInput = document.getElementById('csrf_token');
-            if (csrfInput && csrfInput.value) {
-                console.log('CSRF token found in hidden input:', csrfInput.value.substring(0, 10) + '...');
-                return csrfInput.value;
-            }
+        // function getCsrfToken() {
+        //     // Try hidden input first
+        //     const csrfInput = document.getElementById('csrf_token');
+        //     if (csrfInput && csrfInput.value) {
+        //         console.log('CSRF token found in hidden input:', csrfInput.value.substring(0, 10) + '...');
+        //         return csrfInput.value;
+        //     }
             
-            // Try other possible locations
-            const tokenInputs = document.querySelectorAll('input[name="_token"]');
-            for (let input of tokenInputs) {
-                if (input.value) {
-                    console.log('CSRF token found in _token input:', input.value.substring(0, 10) + '...');
-                    return input.value;
-                }
-            }
+        //     // Try other possible locations
+        //     const tokenInputs = document.querySelectorAll('input[name="_token"]');
+        //     for (let input of tokenInputs) {
+        //         if (input.value) {
+        //             console.log('CSRF token found in _token input:', input.value.substring(0, 10) + '...');
+        //             return input.value;
+        //         }
+        //     }
             
-            console.error('CSRF token not found');
-            return null;
-        }
+        //     console.error('CSRF token not found');
+        //     return null;
+        // }
 
+        function getCsrfToken() {
+        // First try the meta tag (Laravel's default)
+        const metaToken = document.querySelector('meta[name="csrf-token"]');
+        if (metaToken && metaToken.getAttribute('content')) {
+            console.log('CSRF token found in meta tag');
+            return metaToken.getAttribute('content');
+        }
+        
+        // Try hidden input
+        const csrfInput = document.getElementById('csrf_token');
+        if (csrfInput && csrfInput.value) {
+            console.log('CSRF token found in hidden input');
+            return csrfInput.value;
+        }
+        
+        // Try other possible locations
+        const tokenInputs = document.querySelectorAll('input[name="_token"]');
+        for (let input of tokenInputs) {
+            if (input.value) {
+                console.log('CSRF token found in _token input');
+                return input.value;
+            }
+        }
+        
+        console.error('CSRF token not found in any location');
+        return null;
+    }
         // Camera functionality
         const startCameraBtn = document.getElementById('startCamera');
         const capturePhotoBtn = document.getElementById('capturePhoto');
