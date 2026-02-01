@@ -106,6 +106,14 @@
         from { opacity: 0; transform: scale(0.8); }
         to { opacity: 1; transform: scale(1); }
     }
+    .fa-spinner {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen py-8">
@@ -411,531 +419,524 @@
             <p class="mt-2">© 2018-2026 STS Institute. All rights reserved.</p>
         </div>
     </div>
-
     <script>
-        // Get CSRF token safely
-        // function getCsrfToken() {
-        //     // Try hidden input first
-        //     const csrfInput = document.getElementById('csrf_token');
-        //     if (csrfInput && csrfInput.value) {
-        //         console.log('CSRF token found in hidden input:', csrfInput.value.substring(0, 10) + '...');
-        //         return csrfInput.value;
-        //     }
+    // Camera functionality
+    const startCameraBtn = document.getElementById('startCamera');
+    const capturePhotoBtn = document.getElementById('capturePhoto');
+    const retakePhotoBtn = document.getElementById('retakePhoto');
+    const cameraPreview = document.getElementById('cameraPreview');
+    const placeholderText = document.getElementById('placeholderText');
+    const video = document.getElementById('video');
+    const capturedImage = document.getElementById('capturedImage');
+    const photoData = document.getElementById('photoData');
+    
+    let stream = null;
+    
+    // Start camera when button is clicked
+    startCameraBtn.addEventListener('click', async () => {
+        try {
+            // Get user media with constraints for front camera
+            stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    facingMode: 'user',
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                }, 
+                audio: false 
+            });
             
-        //     // Try other possible locations
-        //     const tokenInputs = document.querySelectorAll('input[name="_token"]');
-        //     for (let input of tokenInputs) {
-        //         if (input.value) {
-        //             console.log('CSRF token found in _token input:', input.value.substring(0, 10) + '...');
-        //             return input.value;
-        //         }
-        //     }
+            // Set video source to the stream
+            video.srcObject = stream;
             
-        //     console.error('CSRF token not found');
-        //     return null;
-        // }
-
-        function getCsrfToken() {
-        // First try the meta tag (Laravel's default)
-        const metaToken = document.querySelector('meta[name="csrf-token"]');
-        if (metaToken && metaToken.getAttribute('content')) {
-            console.log('CSRF token found in meta tag');
-            return metaToken.getAttribute('content');
+            // Show video and hide placeholder
+            video.style.display = 'block';
+            placeholderText.style.display = 'none';
+            capturedImage.style.display = 'none';
+            
+            // Update button visibility
+            startCameraBtn.classList.add('hidden');
+            capturePhotoBtn.classList.remove('hidden');
+            
+        } catch (err) {
+            console.error('Error accessing camera:', err);
+            alert('Error accessing camera: ' + err.message);
+        }
+    });
+    
+    // Capture photo when button is clicked
+    capturePhotoBtn.addEventListener('click', () => {
+        // Create a canvas element to capture the photo
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        
+        // Set canvas dimensions to match video
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
+        // Draw current video frame to canvas
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Convert canvas to data URL (JPEG format with 80% quality)
+        const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+        
+        // Store the image data in the hidden field
+        photoData.value = dataURL;
+        
+        // Stop the camera stream
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
         }
         
-        // Try hidden input
+        // Show the captured image and hide video
+        capturedImage.src = dataURL;
+        video.style.display = 'none';
+        capturedImage.style.display = 'block';
+        
+        // Update button visibility
+        capturePhotoBtn.classList.add('hidden');
+        retakePhotoBtn.classList.remove('hidden');
+    });
+    
+    // Retake photo when button is clicked
+    retakePhotoBtn.addEventListener('click', () => {
+        // Reset the display
+        capturedImage.style.display = 'none';
+        placeholderText.style.display = 'flex';
+        photoData.value = '';
+        
+        // Update button visibility
+        retakePhotoBtn.classList.add('hidden');
+        startCameraBtn.classList.remove('hidden');
+        
+        // Restart the camera
+        startCameraBtn.click();
+    });
+    
+    // Payment method toggle
+    const paymentOptions = document.querySelectorAll('input[name="payment_method"]');
+    const bkashExtra = document.getElementById('bkashExtra');
+    const bankExtra = document.getElementById('bankExtra');
+    
+    paymentOptions.forEach(option => {
+        option.addEventListener('change', () => {
+            // Remove selected class from all payment options
+            document.querySelectorAll('.payment-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selected class to the parent of the checked option
+            if (option.checked) {
+                option.closest('.payment-option').classList.add('selected');
+            }
+            
+            // Hide all extra fields first
+            bkashExtra.style.display = 'none';
+            bankExtra.style.display = 'none';
+            
+            // Clear required attributes
+            document.getElementById('txn_id').required = false;
+            document.getElementById('serial_number').required = false;
+            
+            // Show relevant extra fields
+            if (option.value === 'bkash') {
+                bkashExtra.style.display = 'block';
+                document.getElementById('txn_id').required = true;
+            } else if (option.value === 'bank') {
+                bankExtra.style.display = 'block';
+                document.getElementById('serial_number').required = true;
+            }
+        });
+    });
+
+    // Educational Background toggle
+    function initializeEducationField() {
+        const educationSelect = document.getElementById('educational_background');
+        const otherEducationContainer = document.getElementById('otherEducationContainer');
+        const otherEducationInput = document.getElementById('other_education');
+
+        educationSelect.addEventListener('change', function() {
+            if (this.value === 'others') {
+                otherEducationContainer.classList.remove('hidden');
+                otherEducationInput.required = true;
+            } else {
+                otherEducationContainer.classList.add('hidden');
+                otherEducationInput.required = false;
+                otherEducationInput.value = '';
+            }
+        });
+    }
+
+    // DOB dropdown functionality
+    function initializeDobSelection() {
+        const daySelect = document.getElementById('dob_day');
+        const monthSelect = document.getElementById('dob_month');
+        const yearSelect = document.getElementById('dob_year');
+        const dobHidden = document.getElementById('dob');
+
+        function updateDob() {
+            const day = daySelect.value;
+            const month = monthSelect.value;
+            const year = yearSelect.value;
+            
+            if (day && month && year) {
+                // Validate the date
+                const date = new Date(year, month - 1, day);
+                if (date.getDate() == day && date.getMonth() == month - 1 && date.getFullYear() == year) {
+                    const formattedDate = `${year}-${month}-${day}`;
+                    dobHidden.value = formattedDate;
+                } else {
+                    dobHidden.value = '';
+                    alert('Please select a valid date.');
+                }
+            } else {
+                dobHidden.value = '';
+            }
+        }
+
+        daySelect.addEventListener('change', updateDob);
+        monthSelect.addEventListener('change', updateDob);
+        yearSelect.addEventListener('change', updateDob);
+    }
+
+    // Course selection functionality
+    function initializeCourseSelection() {
+        const courseOptions = document.querySelectorAll('input[name="course_id"]');
+        const selectedCourseInfo = document.getElementById('selectedCourseInfo');
+        const selectedCourseName = document.getElementById('selectedCourseName');
+        const selectedCourseFee = document.getElementById('selectedCourseFee');
+        
+        // Function to reset all icons and styles
+        function resetAllCourseOptions() {
+            document.querySelectorAll('.course-option').forEach(option => {
+                // Remove visual selection styles
+                option.classList.remove('selected', 'border-indigo-500', 'bg-blue-50');
+                option.classList.add('border-gray-300');
+                
+                // Reset icons: show unselected, hide selected
+                const unselectedIcon = option.querySelector('.unselected-icon');
+                const selectedIcon = option.querySelector('.selected-icon');
+                if (unselectedIcon) unselectedIcon.classList.remove('hidden');
+                if (selectedIcon) selectedIcon.classList.add('hidden');
+            });
+        }
+        
+        courseOptions.forEach(option => {
+            option.addEventListener('change', function() {
+                // Reset all options first
+                resetAllCourseOptions();
+                
+                // Add selected styles and show green check icon for the selected option
+                if (this.checked) {
+                    const courseOption = this.closest('.course-option');
+                    courseOption.classList.add('selected', 'border-indigo-500', 'bg-blue-50');
+                    courseOption.classList.remove('border-gray-300');
+                    
+                    // Switch icons: hide gray check, show green check
+                    const unselectedIcon = courseOption.querySelector('.unselected-icon');
+                    const selectedIcon = courseOption.querySelector('.selected-icon');
+                    if (unselectedIcon) unselectedIcon.classList.add('hidden');
+                    if (selectedIcon) selectedIcon.classList.remove('hidden');
+                    
+                    // Get course details
+                    const courseName = courseOption.querySelector('.font-medium').textContent;
+                    const courseFee = courseOption.querySelector('.text-gray-500').textContent.replace('Fee: ', '');
+                    
+                    // Update selected course info
+                    selectedCourseName.textContent = courseName;
+                    selectedCourseFee.textContent = courseFee;
+                    selectedCourseInfo.classList.remove('hidden');
+                }
+            });
+        });
+        
+        // Initialize course option click handling
+        document.querySelectorAll('.course-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const radioInput = this.querySelector('input[type="radio"]');
+                if (radioInput) {
+                    // Set checked state
+                    radioInput.checked = true;
+                    
+                    // Trigger change event
+                    const event = new Event('change');
+                    radioInput.dispatchEvent(event);
+                }
+            });
+        });
+    }
+
+    // Simple CSRF token retrieval
+    function getCsrfToken() {
+        // Method 1: Check meta tag (Laravel's default)
+        const metaTag = document.querySelector('meta[name="csrf-token"]');
+        if (metaTag && metaTag.content) {
+            return metaTag.content;
+        }
+        
+        // Method 2: Check form input
+        const tokenInput = document.querySelector('input[name="_token"]');
+        if (tokenInput && tokenInput.value) {
+            return tokenInput.value;
+        }
+        
+        // Method 3: Try the hidden input
         const csrfInput = document.getElementById('csrf_token');
         if (csrfInput && csrfInput.value) {
-            console.log('CSRF token found in hidden input');
             return csrfInput.value;
         }
         
-        // Try other possible locations
-        const tokenInputs = document.querySelectorAll('input[name="_token"]');
-        for (let input of tokenInputs) {
-            if (input.value) {
-                console.log('CSRF token found in _token input');
-                return input.value;
-            }
-        }
-        
-        console.error('CSRF token not found in any location');
+        console.error('CSRF token not found!');
         return null;
     }
-        // Camera functionality
-        const startCameraBtn = document.getElementById('startCamera');
-        const capturePhotoBtn = document.getElementById('capturePhoto');
-        const retakePhotoBtn = document.getElementById('retakePhoto');
-        const cameraPreview = document.getElementById('cameraPreview');
-        const placeholderText = document.getElementById('placeholderText');
-        const video = document.getElementById('video');
-        const capturedImage = document.getElementById('capturedImage');
-        const photoData = document.getElementById('photoData');
-        
-        let stream = null;
-        
-        // Start camera when button is clicked
-        startCameraBtn.addEventListener('click', async () => {
-            try {
-                // Get user media with constraints for front camera
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        facingMode: 'user',
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    }, 
-                    audio: false 
-                });
-                
-                // Set video source to the stream
-                video.srcObject = stream;
-                
-                // Show video and hide placeholder
-                video.style.display = 'block';
-                placeholderText.style.display = 'none';
-                capturedImage.style.display = 'none';
-                
-                // Update button visibility
-                startCameraBtn.classList.add('hidden');
-                capturePhotoBtn.classList.remove('hidden');
-                
-            } catch (err) {
-                console.error('Error accessing camera:', err);
-                alert('Error accessing camera: ' + err.message);
-            }
-        });
-        
-        // Capture photo when button is clicked
-        capturePhotoBtn.addEventListener('click', () => {
-            // Create a canvas element to capture the photo
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            
-            // Set canvas dimensions to match video
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            
-            // Draw current video frame to canvas
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            // Convert canvas to data URL (JPEG format with 80% quality)
-            const dataURL = canvas.toDataURL('image/jpeg', 0.8);
-            
-            // Store the image data in the hidden field
-            photoData.value = dataURL;
-            
-            // Stop the camera stream
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-            }
-            
-            // Show the captured image and hide video
-            capturedImage.src = dataURL;
-            video.style.display = 'none';
-            capturedImage.style.display = 'block';
-            
-            // Update button visibility
-            capturePhotoBtn.classList.add('hidden');
-            retakePhotoBtn.classList.remove('hidden');
-        });
-        
-        // Retake photo when button is clicked
-        retakePhotoBtn.addEventListener('click', () => {
-            // Reset the display
-            capturedImage.style.display = 'none';
-            placeholderText.style.display = 'flex';
-            photoData.value = '';
-            
-            // Update button visibility
-            retakePhotoBtn.classList.add('hidden');
-            startCameraBtn.classList.remove('hidden');
-            
-            // Restart the camera
-            startCameraBtn.click();
-        });
-        
-        // Payment method toggle
-        const paymentOptions = document.querySelectorAll('input[name="payment_method"]');
-        const bkashExtra = document.getElementById('bkashExtra');
-        const bankExtra = document.getElementById('bankExtra');
-        
-        paymentOptions.forEach(option => {
-            option.addEventListener('change', () => {
-                // Remove selected class from all payment options
-                document.querySelectorAll('.payment-option').forEach(opt => {
-                    opt.classList.remove('selected');
-                });
-                
-                // Add selected class to the parent of the checked option
-                if (option.checked) {
-                    option.closest('.payment-option').classList.add('selected');
-                }
-                
-                // Hide all extra fields first
-                bkashExtra.style.display = 'none';
-                bankExtra.style.display = 'none';
-                
-                // Clear required attributes
-                document.getElementById('txn_id').required = false;
-                document.getElementById('serial_number').required = false;
-                
-                // Show relevant extra fields
-                if (option.value === 'bkash') {
-                    bkashExtra.style.display = 'block';
-                    document.getElementById('txn_id').required = true;
-                } else if (option.value === 'bank') {
-                    bankExtra.style.display = 'block';
-                    document.getElementById('serial_number').required = true;
-                }
-            });
-        });
 
-        // Educational Background toggle
-        function initializeEducationField() {
-            const educationSelect = document.getElementById('educational_background');
-            const otherEducationContainer = document.getElementById('otherEducationContainer');
-            const otherEducationInput = document.getElementById('other_education');
-
-            educationSelect.addEventListener('change', function() {
-                if (this.value === 'others') {
-                    otherEducationContainer.classList.remove('hidden');
-                    otherEducationInput.required = true;
-                } else {
-                    otherEducationContainer.classList.add('hidden');
-                    otherEducationInput.required = false;
-                    otherEducationInput.value = '';
-                }
-            });
+    // Form submission with AJAX
+    document.getElementById('admissionForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        console.log('Form submission started');
+        
+        // Validate all required fields
+        const requiredFields = [
+            'name', 'dob', 'gender', 'mobile', 'emergency_mobile', 
+            'email', 'address', 'educational_background', 'academic_year',
+            'course_id', 'payment_method', 'photo_data'
+        ];
+        
+        let isValid = true;
+        let errorMessage = '';
+        
+        // Check if DOB is properly set
+        const dobField = document.getElementById('dob');
+        if (!dobField.value) {
+            isValid = false;
+            errorMessage += '• Please select a valid date of birth.\n';
         }
-
-        // DOB dropdown functionality
-        function initializeDobSelection() {
-            const daySelect = document.getElementById('dob_day');
-            const monthSelect = document.getElementById('dob_month');
-            const yearSelect = document.getElementById('dob_year');
-            const dobHidden = document.getElementById('dob');
-
-            function updateDob() {
-                const day = daySelect.value;
-                const month = monthSelect.value;
-                const year = yearSelect.value;
-                
-                if (day && month && year) {
-                    // Validate the date
-                    const date = new Date(year, month - 1, day);
-                    if (date.getDate() == day && date.getMonth() == month - 1 && date.getFullYear() == year) {
-                        const formattedDate = `${year}-${month}-${day}`;
-                        dobHidden.value = formattedDate;
-                    } else {
-                        dobHidden.value = '';
-                        alert('Please select a valid date.');
-                    }
-                } else {
-                    dobHidden.value = '';
-                }
-            }
-
-            daySelect.addEventListener('change', updateDob);
-            monthSelect.addEventListener('change', updateDob);
-            yearSelect.addEventListener('change', updateDob);
-        }
-
-        // Course selection functionality
-        // function initializeCourseSelection() {
-        //     const courseOptions = document.querySelectorAll('input[name="course_id"]');
-        //     const selectedCourseInfo = document.getElementById('selectedCourseInfo');
-        //     const selectedCourseName = document.getElementById('selectedCourseName');
-        //     const selectedCourseFee = document.getElementById('selectedCourseFee');
-            
-        //     courseOptions.forEach(option => {
-        //         option.addEventListener('change', function() {
-        //             // Remove selected class from all course options
-        //             document.querySelectorAll('.course-option').forEach(opt => {
-        //                 opt.classList.remove('selected', 'border-indigo-500', 'bg-blue-50');
-        //                 opt.classList.add('border-gray-300');
-        //             });
-                    
-        //             // Add selected class to clicked option
-        //             if (this.checked) {
-        //                 const courseOption = this.closest('.course-option');
-        //                 courseOption.classList.add('selected', 'border-indigo-500', 'bg-blue-50');
-        //                 courseOption.classList.remove('border-gray-300');
-                        
-        //                 // Get course details
-        //                 const courseName = courseOption.querySelector('.font-medium').textContent;
-        //                 const courseFee = courseOption.querySelector('.text-gray-500').textContent.replace('Fee: ', '');
-                        
-        //                 // Update selected course info
-        //                 selectedCourseName.textContent = courseName;
-        //                 selectedCourseFee.textContent = courseFee;
-        //                 selectedCourseInfo.classList.remove('hidden');
-        //             }
-        //         });
-        //     });
-            
-        //     // Initialize course option styling
-        //     document.querySelectorAll('.course-option').forEach(option => {
-        //         option.addEventListener('click', function() {
-        //             const radioInput = this.querySelector('input[type="radio"]');
-        //             if (radioInput) {
-        //                 radioInput.checked = true;
-                        
-        //                 // Trigger change event
-        //                 const event = new Event('change');
-        //                 radioInput.dispatchEvent(event);
-        //             }
-        //         });
-        //     });
-        // }
-
-        // Course selection functionality
-        function initializeCourseSelection() {
-            const courseOptions = document.querySelectorAll('input[name="course_id"]');
-            const selectedCourseInfo = document.getElementById('selectedCourseInfo');
-            const selectedCourseName = document.getElementById('selectedCourseName');
-            const selectedCourseFee = document.getElementById('selectedCourseFee');
-            
-            // Function to reset all icons and styles
-            function resetAllCourseOptions() {
-                document.querySelectorAll('.course-option').forEach(option => {
-                    // Remove visual selection styles
-                    option.classList.remove('selected', 'border-indigo-500', 'bg-blue-50');
-                    option.classList.add('border-gray-300');
-                    
-                    // Reset icons: show unselected, hide selected
-                    const unselectedIcon = option.querySelector('.unselected-icon');
-                    const selectedIcon = option.querySelector('.selected-icon');
-                    if (unselectedIcon) unselectedIcon.classList.remove('hidden');
-                    if (selectedIcon) selectedIcon.classList.add('hidden');
-                });
-            }
-            
-            courseOptions.forEach(option => {
-                option.addEventListener('change', function() {
-                    // Reset all options first
-                    resetAllCourseOptions();
-                    
-                    // Add selected styles and show green check icon for the selected option
-                    if (this.checked) {
-                        const courseOption = this.closest('.course-option');
-                        courseOption.classList.add('selected', 'border-indigo-500', 'bg-blue-50');
-                        courseOption.classList.remove('border-gray-300');
-                        
-                        // Switch icons: hide gray check, show green check
-                        const unselectedIcon = courseOption.querySelector('.unselected-icon');
-                        const selectedIcon = courseOption.querySelector('.selected-icon');
-                        if (unselectedIcon) unselectedIcon.classList.add('hidden');
-                        if (selectedIcon) selectedIcon.classList.remove('hidden');
-                        
-                        // Get course details
-                        const courseName = courseOption.querySelector('.font-medium').textContent;
-                        const courseFee = courseOption.querySelector('.text-gray-500').textContent.replace('Fee: ', '');
-                        
-                        // Update selected course info
-                        selectedCourseName.textContent = courseName;
-                        selectedCourseFee.textContent = courseFee;
-                        selectedCourseInfo.classList.remove('hidden');
-                    }
-                });
-            });
-            
-            // Initialize course option click handling
-            document.querySelectorAll('.course-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    const radioInput = this.querySelector('input[type="radio"]');
-                    if (radioInput) {
-                        // Set checked state
-                        radioInput.checked = true;
-                        
-                        // Trigger change event
-                        const event = new Event('change');
-                        radioInput.dispatchEvent(event);
-                    }
-                });
-            });
-        }
-
-
-        // Form submission with AJAX
-        document.getElementById('admissionForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            // Validate all required fields
-            const requiredFields = [
-                'name', 'dob', 'gender', 'mobile', 'emergency_mobile', 
-                'email', 'address', 'educational_background', 'academic_year',
-                'course_id', 'payment_method', 'photo_data'
-            ];
-            
-            let isValid = true;
-            let errorMessage = '';
-            
-            // Check if DOB is properly set
-            const dobField = document.getElementById('dob');
-            if (!dobField.value) {
+        
+        // Check educational background
+        const educationSelect = document.getElementById('educational_background');
+        if (educationSelect.value === 'others') {
+            const otherEducation = document.getElementById('other_education');
+            if (!otherEducation.value.trim()) {
                 isValid = false;
-                errorMessage += '• Please select a valid date of birth.\n';
+                errorMessage += '• Please specify your educational background.\n';
             }
-            
-            // Check educational background
-            const educationSelect = document.getElementById('educational_background');
-            if (educationSelect.value === 'others') {
-                const otherEducation = document.getElementById('other_education');
-                if (!otherEducation.value.trim()) {
+        }
+        
+        // Check photo
+        if (!photoData.value) {
+            isValid = false;
+            errorMessage += '• Please take a picture before submitting the form.\n';
+        }
+        
+        // Check payment method extra fields
+        const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+        if (paymentMethod) {
+            if (paymentMethod.value === 'bkash') {
+                const txnId = document.getElementById('txn_id');
+                if (!txnId.value.trim()) {
                     isValid = false;
-                    errorMessage += '• Please specify your educational background.\n';
+                    errorMessage += '• Transaction ID is required for bKash payments.\n';
+                }
+            } else if (paymentMethod.value === 'bank') {
+                const serialNumber = document.getElementById('serial_number');
+                if (!serialNumber.value.trim()) {
+                    isValid = false;
+                    errorMessage += '• Serial number is required for Bank payments.\n';
                 }
             }
+        }
+        
+        if (!isValid) {
+            alert('Please fix the following errors:\n' + errorMessage);
+            return;
+        }
+        
+        // Show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Submitting...';
+        submitBtn.disabled = true;
+        this.classList.add('loading');
+        
+        try {
+            // Get CSRF token
+            const csrfToken = getCsrfToken();
             
-            // Check photo
-            if (!photoData.value) {
-                isValid = false;
-                errorMessage += '• Please take a picture before submitting the form.\n';
+            if (!csrfToken) {
+                throw new Error('Security token not found. Please refresh the page and try again.');
             }
             
-            // Check payment method extra fields
-            const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
-            if (paymentMethod) {
-                if (paymentMethod.value === 'bkash') {
-                    const txnId = document.getElementById('txn_id');
-                    if (!txnId.value.trim()) {
-                        isValid = false;
-                        errorMessage += '• Transaction ID is required for bKash payments.\n';
+            console.log('CSRF Token being used');
+            
+            // Create FormData
+            const formData = new FormData(this);
+            
+            // Debug: Log form data
+            console.log('Form data entries:');
+            for (let [key, value] of formData.entries()) {
+                console.log(key + ': ' + (key === 'photo_data' ? '[Base64 image data]' : value));
+            }
+            
+            // Send the request
+            const response = await fetch('/student-admission', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                },
+                body: formData
+            });
+            
+            console.log('Response status:', response.status);
+            
+            // Try to parse response as JSON
+            let result;
+            try {
+                result = await response.json();
+            } catch (jsonError) {
+                console.error('Failed to parse JSON response:', jsonError);
+                const textResponse = await response.text();
+                console.error('Raw response:', textResponse.substring(0, 500));
+                throw new Error('Invalid response from server. Please try again.');
+            }
+            
+            console.log('Response result:', result);
+            
+            if (response.status === 422) {
+                // Validation errors
+                let errorMessage = 'Please fix the following errors:\n';
+                
+                if (result.errors) {
+                    for (const field in result.errors) {
+                        errorMessage += `• ${result.errors[field][0]}\n`;
                     }
-                } else if (paymentMethod.value === 'bank') {
-                    const serialNumber = document.getElementById('serial_number');
-                    if (!serialNumber.value.trim()) {
-                        isValid = false;
-                        errorMessage += '• Serial number is required for Bank payments.\n';
-                    }
+                } else {
+                    errorMessage = result.message || 'Please check your form and try again.';
                 }
-            }
-            
-            if (!isValid) {
-                alert('Please fix the following errors:\n' + errorMessage);
+                
+                alert(errorMessage);
                 return;
             }
             
-            // Show loading state
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Submitting...';
-            submitBtn.disabled = true;
-            this.classList.add('loading');
+            if (!response.ok) {
+                throw new Error(`Server error! Status: ${response.status}, Message: ${result.message || 'Unknown error'}`);
+            }
             
-            try {
-                const formData = new FormData(this);
-                const csrfToken = getCsrfToken();
+            if (result.success) {
+                alert('Application submitted successfully! Your application number: ' + result.application_number);
                 
-                if (!csrfToken) {
-                    throw new Error('CSRF token not found. Please refresh the page and try again.');
-                }
+                // Reset form
+                this.reset();
+                photoData.value = '';
+                capturedImage.style.display = 'none';
+                placeholderText.style.display = 'flex';
+                retakePhotoBtn.classList.add('hidden');
+                startCameraBtn.classList.remove('hidden');
                 
-                console.log('Submitting form with CSRF token:', csrfToken.substring(0, 10) + '...');
+                // Reset educational background fields
+                document.getElementById('otherEducationContainer').classList.add('hidden');
+                document.getElementById('other_education').value = '';
                 
-                const response = await fetch('/student-admission', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json',
-                    },
-                    body: formData
+                // Reset payment extra fields
+                bkashExtra.style.display = 'none';
+                bankExtra.style.display = 'none';
+                document.getElementById('txn_id').required = false;
+                document.getElementById('serial_number').required = false;
+                
+                // Reset selected course info
+                document.getElementById('selectedCourseInfo').classList.add('hidden');
+                
+                // Remove selected class from payment and course options
+                document.querySelectorAll('.payment-option, .course-option').forEach(opt => {
+                    opt.classList.remove('selected', 'border-indigo-500', 'bg-blue-50');
                 });
                 
-                console.log('Response status:', response.status);
+                // Reset radio buttons
+                document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.checked = false;
+                });
                 
-                const result = await response.json();
-                console.log('Result:', result);
+                // Reset dropdowns
+                document.getElementById('dob_day').selectedIndex = 0;
+                document.getElementById('dob_month').selectedIndex = 0;
+                document.getElementById('dob_year').selectedIndex = 0;
+                document.getElementById('dob').value = '';
+                document.getElementById('educational_background').selectedIndex = 0;
                 
-                if (response.status === 422) {
-                    // Validation errors
-                    let errorMessage = 'Please fix the following errors:\n';
-                    
-                    if (result.errors) {
-                        for (const field in result.errors) {
-                            errorMessage += `• ${result.errors[field][0]}\n`;
-                        }
-                    } else {
-                        errorMessage = result.message || 'Please check your form and try again.';
-                    }
-                    
-                    alert(errorMessage);
-                    return;
-                }
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                if (result.success) {
-                    alert('Application submitted successfully! Your application number: ' + result.application_number);
-                    // Reset form
-                    this.reset();
-                    photoData.value = '';
-                    capturedImage.style.display = 'none';
-                    placeholderText.style.display = 'flex';
-                    retakePhotoBtn.classList.add('hidden');
-                    startCameraBtn.classList.remove('hidden');
-                    
-                    // Reset educational background fields
-                    document.getElementById('otherEducationContainer').classList.add('hidden');
-                    document.getElementById('other_education').value = '';
-                    
-                    // Reset payment extra fields
-                    bkashExtra.style.display = 'none';
-                    bankExtra.style.display = 'none';
-                    
-                    // Reset selected course info
-                    document.getElementById('selectedCourseInfo').classList.add('hidden');
-                    
-                    // Remove selected class from payment and course options
-                    document.querySelectorAll('.payment-option, .course-option').forEach(opt => {
-                        opt.classList.remove('selected', 'border-indigo-500', 'bg-blue-50');
-                    });
-                    
-                    // Redirect if needed
-                    if (result.redirect_url) {
-                        window.location.href = result.redirect_url;
-                    }
+                // Redirect to success page
+                if (result.redirect_url) {
+                    window.location.href = result.redirect_url;
                 } else {
-                    alert(result.message || 'Failed to submit application. Please try again.');
+                    // If no redirect URL, show success message and offer to reload
+                    const reload = confirm('Application submitted successfully! Would you like to submit another application?');
+                    if (reload) {
+                        window.location.reload();
+                    }
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred: ' + error.message);
-            } finally {
-                // Reset button state
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-                this.classList.remove('loading');
+            } else {
+                alert(result.message || 'Failed to submit application. Please try again.');
             }
-        });
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred: ' + error.message);
+        } finally {
+            // Reset button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            this.classList.remove('loading');
+        }
+    });
 
+    // Initialize payment option styling
+    document.querySelectorAll('.payment-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.payment-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            this.classList.add('selected');
+        });
+    });
+
+    // Initialize all functionalities when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Debug: Check if CSRF token is available on page load
+        const token = getCsrfToken();
+        console.log('CSRF Token available:', token ? 'Yes' : 'No');
+        if (!token) {
+            console.error('WARNING: CSRF token not found! Form submission will fail.');
+            // Show warning to user
+            const warningDiv = document.createElement('div');
+            warningDiv.className = 'bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded';
+            warningDiv.innerHTML = '<p class="font-bold">Warning</p><p>Security token not found. Please refresh the page before submitting.</p>';
+            document.querySelector('.max-w-4xl').prepend(warningDiv);
+        }
+        
+        // Initialize all components
+        initializeEducationField();
+        initializeCourseSelection();
+        initializeDobSelection();
+        
         // Initialize payment option styling
         document.querySelectorAll('.payment-option').forEach(option => {
-            option.addEventListener('click', function() {
-                document.querySelectorAll('.payment-option').forEach(opt => {
-                    opt.classList.remove('selected');
-                });
-                this.classList.add('selected');
-            });
-        });
-
-        // Initialize all functionalities when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            // Debug: Check if CSRF token is available on page load
-            const token = getCsrfToken();
-            console.log('CSRF Token on load:', token ? token.substring(0, 10) + '...' : 'NOT FOUND');
-            
-            if (!token) {
-                console.warn('CSRF token not found in form. This may cause submission issues.');
+            const radio = option.querySelector('input[type="radio"]');
+            if (radio && radio.checked) {
+                option.classList.add('selected');
             }
-            
-            // Initialize all components
-            initializeEducationField();
-            initializeCourseSelection();
-            initializeDobSelection();
         });
-    </script>
+        
+        // Initialize course option styling
+        document.querySelectorAll('.course-option').forEach(option => {
+            const radio = option.querySelector('input[type="radio"]');
+            if (radio && radio.checked) {
+                option.classList.add('selected', 'border-indigo-500', 'bg-blue-50');
+                const unselectedIcon = option.querySelector('.unselected-icon');
+                const selectedIcon = option.querySelector('.selected-icon');
+                if (unselectedIcon) unselectedIcon.classList.add('hidden');
+                if (selectedIcon) selectedIcon.classList.remove('hidden');
+            }
+        });
+    });
+</script>
+    
 </body>
 </html>
