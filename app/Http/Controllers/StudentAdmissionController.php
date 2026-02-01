@@ -32,15 +32,22 @@ class StudentAdmissionController extends Controller
         return view('student-frontend.student-admission-form', compact('courses'));
     }
 
-   
     public function store(Request $request)
     {
-        Log::info('Admission form submitted', $request->all());
-
+        // Log the incoming request (excluding photo_data for brevity)
+        Log::info('=== ADMISSION FORM SUBMISSION START ===');
+        Log::info('Request headers:', $request->headers->all());
+        Log::info('Request data (excluding photo):', $request->except(['photo_data', '_token']));
+        Log::info('CSRF Token received:', ['token' => $request->header('X-CSRF-TOKEN')]);
+        Log::info('Submitted course_id:', ['course_id' => $request->course_id]);
+        
         try {
+            // Get active courses
             $activeCourseIds = Course::where('status', 'On')->pluck('id')->toArray();
+            Log::info('Active course IDs:', $activeCourseIds);
             
-            $validated = $request->validate([
+            // Manual validation for debugging
+            $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'dob' => 'required|date|before:today',
                 'gender' => 'required|in:male,female',
@@ -66,8 +73,18 @@ class StudentAdmissionController extends Controller
                 'academic_year.required' => 'Please enter your academic year.',
             ]);
 
+            if ($validator->fails()) {
+                Log::error('Validation failed:', $validator->errors()->toArray());
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed.',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
             // Payment method validation
             if ($request->payment_method === 'bkash' && empty($request->transaction_id)) {
+                Log::error('bKash payment missing transaction ID');
                 return response()->json([
                     'success' => false,
                     'message' => 'Transaction ID is required for bKash payments.',
@@ -76,6 +93,7 @@ class StudentAdmissionController extends Controller
             }
 
             if ($request->payment_method === 'bank' && empty($request->serial_number)) {
+                Log::error('Bank payment missing serial number');
                 return response()->json([
                     'success' => false,
                     'message' => 'Serial number is required for Bank payments.',
@@ -86,36 +104,61 @@ class StudentAdmissionController extends Controller
             // Handle photo data
             $photoPath = null;
             if ($request->photo_data && $request->photo_data !== '{{ csrf_token() }}') {
-                $photoPath = $this->saveBase64Image($request->photo_data);
+                Log::info('Processing photo data');
+                try {
+                    $photoPath = $this->saveBase64Image($request->photo_data);
+                    Log::info('Photo saved to:', ['path' => $photoPath]);
+                } catch (\Exception $e) {
+                    Log::error('Failed to save photo:', ['error' => $e->getMessage()]);
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Failed to process photo: ' . $e->getMessage()
+                    ], 422);
+                }
+            } else {
+                Log::error('No photo data provided');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please take a student photo before submitting.'
+                ], 422);
             }
 
             // Use transaction to ensure both records are created
             DB::beginTransaction();
 
             try {
+                Log::info('Creating student admission record');
+                
                 // Create student admission record
                 $admission = StudentAdmission::create([
-                    'name' => $validated['name'],
-                    'dob' => $validated['dob'],
-                    'gender' => $validated['gender'],
-                    'mobile' => $validated['mobile'],
-                    'emergency_mobile' => $validated['emergency_mobile'],
-                    'email' => $validated['email'],
-                    'address' => $validated['address'],
-                    'educational_background' => $validated['educational_background'],
-                    'other_education' => $validated['educational_background'] === 'others' ? $validated['other_education'] : null,
-                    'academic_year' => $validated['academic_year'],
-                    'course_id' => $validated['course_id'],
+                    'name' => $request->name,
+                    'dob' => $request->dob,
+                    'gender' => $request->gender,
+                    'mobile' => $request->mobile,
+                    'emergency_mobile' => $request->emergency_mobile,
+                    'email' => $request->email,
+                    'address' => $request->address,
+                    'educational_background' => $request->educational_background,
+                    'other_education' => $request->educational_background === 'others' ? $request->other_education : null,
+                    'academic_year' => $request->academic_year,
+                    'course_id' => $request->course_id,
                     'photo_data' => $photoPath,
                 ]);
 
+                Log::info('Student admission created:', [
+                    'id' => $admission->id,
+                    'application_number' => $admission->application_number
+                ]);
+
+                Log::info('Creating payment record');
+                
                 // Create payment record
-                StudentPayment::create([
+                $payment = StudentPayment::create([
                     'student_admission_id' => $admission->id,
                     'application_number' => $admission->application_number,
-                    'payment_method' => $validated['payment_method'],
-                    'transaction_id' => $validated['transaction_id'] ?? null,
-                    'serial_number' => $validated['serial_number'] ?? null,
+                    'payment_method' => $request->payment_method,
+                    'transaction_id' => $request->transaction_id ?? null,
+                    'serial_number' => $request->serial_number ?? null,
                     'deposit_amount' => 0,
                     'discount_amount' => 0,
                     'due_amount' => 0,
@@ -124,9 +167,11 @@ class StudentAdmissionController extends Controller
                     'payment_received_by' => null,
                 ]);
 
+                Log::info('Payment record created:', ['payment_id' => $payment->id]);
+
                 DB::commit();
 
-                Log::info('Admission created successfully', ['id' => $admission->id, 'application_number' => $admission->application_number]);
+                Log::info('=== ADMISSION FORM SUBMISSION SUCCESS ===');
 
                 return response()->json([
                     'success' => true,
@@ -137,11 +182,15 @@ class StudentAdmissionController extends Controller
 
             } catch (\Exception $e) {
                 DB::rollBack();
+                Log::error('Database error in admission creation:', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
                 throw $e;
             }
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation error: ', $e->errors());
+            Log::error('Validation exception:', $e->errors());
             return response()->json([
                 'success' => false,
                 'message' => 'Please check the form for errors.',
@@ -149,18 +198,19 @@ class StudentAdmissionController extends Controller
             ], 422);
         } catch (\Exception $e) {
             Log::error('Student admission error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to submit application. Please try again.'
+                'message' => 'Failed to submit application. Error: ' . $e->getMessage()
             ], 500);
         }
     }
 
-    /**
-     * Save base64 image to storage
-     */
     private function saveBase64Image($base64Image)
     {
+        Log::info('saveBase64Image called, data length: ' . strlen($base64Image));
+        
         if (strpos($base64Image, 'data:image') !== 0) {
             throw new \Exception('Invalid image data format');
         }
@@ -170,24 +220,44 @@ class StudentAdmissionController extends Controller
             $type = strtolower($type[1]);
 
             if (!in_array($type, ['jpg', 'jpeg', 'png', 'gif'])) {
-                throw new \Exception('Invalid image type');
+                throw new \Exception('Invalid image type: ' . $type);
             }
 
             $image = base64_decode($image);
             if ($image === false) {
                 throw new \Exception('Base64 decode failed');
             }
+            
+            Log::info('Image decoded successfully, size: ' . strlen($image) . ' bytes');
         } else {
             throw new \Exception('Invalid image data');
         }
 
         $filename = 'student_photos/' . Str::uuid() . '.' . $type;
         
+        Log::info('Attempting to save to: ' . $filename);
+        
         if (!Storage::disk('public')->exists('student_photos')) {
             Storage::disk('public')->makeDirectory('student_photos');
         }
         
-        Storage::disk('public')->put($filename, $image);
+        $path = Storage::disk('public')->path($filename);
+        Log::info('Full path: ' . $path);
+        
+        // Check if directory is writable
+        $directory = dirname($path);
+        if (!is_writable($directory)) {
+            Log::error('Directory not writable: ' . $directory);
+            throw new \Exception('Storage directory is not writable');
+        }
+        
+        $result = Storage::disk('public')->put($filename, $image);
+        
+        if (!$result) {
+            throw new \Exception('Failed to save image to storage');
+        }
+        
+        Log::info('Image saved successfully to: ' . $filename);
         
         return $filename;
     }
