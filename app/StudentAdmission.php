@@ -91,47 +91,61 @@ class StudentAdmission extends Model
 
 
 
-    public static function generateApplicationNumber()
-    {
-        $year = date('y');
-        $month = date('m');
-        $day = date('d');
-        $datePrefix = sprintf("%02d%02d%02d", $year, $month, $day);
-        
-        $cacheKey = "app_seq:{$datePrefix}";
-        $lockKey = "app_seq_lock:{$datePrefix}";
-        
-        // Generate unique lock ID
-        $lockId = Str::uuid()->toString();
-        
-        // Wait for lock (max 5 seconds)
-        $startTime = microtime(true);
-        while (Cache::get($lockKey) && (microtime(true) - $startTime) < 5) {
-            usleep(100000); // Wait 0.1 second
-        }
-        
-        // Acquire lock
-        Cache::put($lockKey, $lockId, 10);
-        
-        try {
-            // Get current sequence
-            $sequence = Cache::get($cacheKey, 0);
-            $nextSequence = $sequence + 1;
+        /**
+         * Generate unique application number
+         */
+        public static function generateApplicationNumber()
+        {
+            $year = date('y');      // 2-digit year
+            $month = date('m');     // 2-digit month
+            $day = date('d');       // 2-digit day
+            $datePrefix = sprintf("%02d%02d%02d", $year, $month, $day); // Format: YYMMDD
             
-            // Store the new sequence
-            Cache::put($cacheKey, $nextSequence, 86400); // Keep for 24 hours
+            // Use database to get the last sequence for today
+            $lastAppNumber = static::where('application_number', 'like', $datePrefix . '%')
+                ->orderBy('application_number', 'desc')
+                ->value('application_number');
             
-            // Format: YYMMDD + 5-digit sequence
-            return sprintf("%s%05d", $datePrefix, $nextSequence);
-            
-        } finally {
-            // Release lock
-            if (Cache::get($lockKey) === $lockId) {
-                Cache::forget($lockKey);
+            if ($lastAppNumber) {
+                // Extract the sequence part (last 5 digits)
+                $lastSequence = intval(substr($lastAppNumber, -5));
+                $nextSequence = $lastSequence + 1;
+            } else {
+                // First application of the day
+                $nextSequence = 1;
             }
+            
+            // Ensure sequence doesn't exceed 99999
+            if ($nextSequence > 99999) {
+                // If we exceed 99999, start over with random numbers
+                do {
+                    $nextSequence = mt_rand(10000, 99999);
+                    $appNumber = sprintf("%s%05d", $datePrefix, $nextSequence);
+                } while (static::where('application_number', $appNumber)->exists());
+            } else {
+                $appNumber = sprintf("%s%05d", $datePrefix, $nextSequence);
+                
+                // Double-check if this number already exists (in case of gaps)
+                if (static::where('application_number', $appNumber)->exists()) {
+                    // Find the next available number
+                    $nextSequence = $nextSequence + 1;
+                    while (static::where('application_number', sprintf("%s%05d", $datePrefix, $nextSequence))->exists()) {
+                        $nextSequence++;
+                        if ($nextSequence > 99999) {
+                            // Fallback to random if we reach the limit
+                            do {
+                                $nextSequence = mt_rand(10000, 99999);
+                                $appNumber = sprintf("%s%05d", $datePrefix, $nextSequence);
+                            } while (static::where('application_number', $appNumber)->exists());
+                            break;
+                        }
+                    }
+                    $appNumber = sprintf("%s%05d", $datePrefix, $nextSequence);
+                }
+            }
+            
+            return $appNumber;
         }
-    }
-
     /**
      * Generate unique student ID based on course
      */
