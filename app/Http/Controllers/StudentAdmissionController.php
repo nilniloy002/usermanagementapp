@@ -32,282 +32,330 @@ class StudentAdmissionController extends Controller
         return view('student-frontend.student-admission-form', compact('courses'));
     }
 
-    /**
-     * Process student admission form submission
-     */
+
     // public function store(Request $request)
     // {
-    //         Log::info('Admission form submitted', $request->all());
+    //     Log::info('Admission form submitted', $request->all());
+
+    //     try {
+    //         $activeCourseIds = Course::where('status', 'On')->pluck('id')->toArray();
+            
+    //         $validated = $request->validate([
+    //             'name' => 'required|string|max:255',
+    //             'dob' => 'required|date|before:today',
+    //             'gender' => 'required|in:male,female',
+    //             'mobile' => 'required|string|max:20',
+    //             'emergency_mobile' => 'required|string|max:20',
+    //             'email' => 'required|email|max:255',
+    //             'address' => 'required|string|max:1000',
+    //             'educational_background' => 'required|in:SSC,HSC,bachelor,masters,others',
+    //             'other_education' => 'nullable|required_if:educational_background,others|string|max:255',
+    //             'academic_year' => 'required|string|max:50',
+    //             'course_id' => 'required|in:' . implode(',', $activeCourseIds),
+    //             'photo_data' => 'required|string',
+    //             'payment_method' => 'required|in:cash,bkash,bank',
+    //             'transaction_id' => 'nullable|string|max:255',
+    //             'serial_number' => 'nullable|string|max:255',
+    //         ], [
+    //             'photo_data.required' => 'Please take a student photo before submitting.',
+    //             'dob.before' => 'Date of birth must be in the past.',
+    //             'course_id.required' => 'Please select a course.',
+    //             'course_id.in' => 'Please select a valid course.',
+    //             'educational_background.required' => 'Please select your educational background.',
+    //             'other_education.required_if' => 'Please specify your educational background.',
+    //             'academic_year.required' => 'Please enter your academic year.',
+    //         ]);
+
+    //         // Payment method validation
+    //         if ($request->payment_method === 'bkash' && empty($request->transaction_id)) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Transaction ID is required for bKash payments.',
+    //                 'errors' => ['transaction_id' => ['Transaction ID is required for bKash payments.']]
+    //             ], 422);
+    //         }
+
+    //         if ($request->payment_method === 'bank' && empty($request->serial_number)) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Serial number is required for Bank payments.',
+    //                 'errors' => ['serial_number' => ['Serial number is required for Bank payments.']]
+    //             ], 422);
+    //         }
+
+    //         // Handle photo data
+    //         $photoPath = null;
+    //         if ($request->photo_data && $request->photo_data !== '{{ csrf_token() }}') {
+    //             $photoPath = $this->saveBase64Image($request->photo_data);
+    //         }
+
+    //         // Use transaction to ensure both records are created
+    //         DB::beginTransaction();
 
     //         try {
-    //             $activeCourseIds = Course::where('status', 'On')->pluck('id')->toArray();
-                
-    //             $validated = $request->validate([
-    //                 'name' => 'required|string|max:255',
-    //                 'dob' => 'required|date|before:today',
-    //                 'gender' => 'required|in:male,female',
-    //                 'mobile' => 'required|string|max:20',
-    //                 'emergency_mobile' => 'required|string|max:20',
-    //                 'email' => 'required|email|max:255',
-    //                 'address' => 'required|string|max:1000',
-    //                 'course_id' => 'required|in:' . implode(',', $activeCourseIds),
-    //                 'photo_data' => 'required|string',
-    //                 'payment_method' => 'required|in:cash,bkash,bank',
-    //                 'transaction_id' => 'nullable|string|max:255',
-    //                 'serial_number' => 'nullable|string|max:255',
-    //             ], [
-    //                 'photo_data.required' => 'Please take a student photo before submitting.',
-    //                 'dob.before' => 'Date of birth must be in the past.',
-    //                 'course_id.required' => 'Please select a course.',
-    //                 'course_id.in' => 'Please select a valid course.',
+    //             // Create student admission record
+    //             $admission = StudentAdmission::create([
+    //                 'name' => $validated['name'],
+    //                 'dob' => $validated['dob'],
+    //                 'gender' => $validated['gender'],
+    //                 'mobile' => $validated['mobile'],
+    //                 'emergency_mobile' => $validated['emergency_mobile'],
+    //                 'email' => $validated['email'],
+    //                 'address' => $validated['address'],
+    //                 'educational_background' => $validated['educational_background'],
+    //                 'other_education' => $validated['educational_background'] === 'others' ? $validated['other_education'] : null,
+    //                 'academic_year' => $validated['academic_year'],
+    //                 'course_id' => $validated['course_id'],
+    //                 'photo_data' => $photoPath,
     //             ]);
 
-    //             // Payment method validation
-    //             if ($request->payment_method === 'bkash' && empty($request->transaction_id)) {
-    //                 return response()->json([
-    //                     'success' => false,
-    //                     'message' => 'Transaction ID is required for bKash payments.',
-    //                     'errors' => ['transaction_id' => ['Transaction ID is required for bKash payments.']]
-    //                 ], 422);
-    //             }
+    //             // Create payment record
+    //             StudentPayment::create([
+    //                 'student_admission_id' => $admission->id,
+    //                 'application_number' => $admission->application_number,
+    //                 'payment_method' => $validated['payment_method'],
+    //                 'transaction_id' => $validated['transaction_id'] ?? null,
+    //                 'serial_number' => $validated['serial_number'] ?? null,
+    //                 'deposit_amount' => 0,
+    //                 'discount_amount' => 0,
+    //                 'due_amount' => 0,
+    //                 'next_due_date' => null,
+    //                 'remarks' => null,
+    //                 'payment_received_by' => null,
+    //             ]);
 
-    //             if ($request->payment_method === 'bank' && empty($request->serial_number)) {
-    //                 return response()->json([
-    //                     'success' => false,
-    //                     'message' => 'Serial number is required for Bank payments.',
-    //                     'errors' => ['serial_number' => ['Serial number is required for Bank payments.']]
-    //                 ], 422);
-    //             }
+    //             DB::commit();
 
-    //             // Handle photo data
-    //             $photoPath = null;
-    //             if ($request->photo_data && $request->photo_data !== '{{ csrf_token() }}') {
-    //                 $photoPath = $this->saveBase64Image($request->photo_data);
-    //             }
+    //             Log::info('Admission created successfully', ['id' => $admission->id, 'application_number' => $admission->application_number]);
 
-    //             // Use transaction to ensure both records are created
-    //             DB::beginTransaction();
-
-    //             try {
-    //                 // Create student admission record
-    //                 $admission = StudentAdmission::create([
-    //                     'name' => $validated['name'],
-    //                     'dob' => $validated['dob'],
-    //                     'gender' => $validated['gender'],
-    //                     'mobile' => $validated['mobile'],
-    //                     'emergency_mobile' => $validated['emergency_mobile'],
-    //                     'email' => $validated['email'],
-    //                     'address' => $validated['address'],
-    //                     'course_id' => $validated['course_id'],
-    //                     'photo_data' => $photoPath,
-    //                 ]);
-
-    //                 // Create payment record
-    //                 StudentPayment::create([
-    //                     'student_admission_id' => $admission->id,
-    //                     'application_number' => $admission->application_number,
-    //                     'payment_method' => $validated['payment_method'],
-    //                     'transaction_id' => $validated['transaction_id'] ?? null,
-    //                     'serial_number' => $validated['serial_number'] ?? null,
-    //                     'deposit_amount' => 0,
-    //                     'discount_amount' => 0,
-    //                     'due_amount' => 0,
-    //                     'next_due_date' => null,
-    //                     'remarks' => null,
-    //                     'payment_received_by' => null, // For initial submission, no payment received yet
-
-    //                 ]);
-
-    //                 DB::commit();
-
-    //                 Log::info('Admission created successfully', ['id' => $admission->id, 'application_number' => $admission->application_number]);
-
-    //                 return response()->json([
-    //                     'success' => true,
-    //                     'message' => 'Application submitted successfully!',
-    //                     'application_number' => $admission->application_number,
-    //                     'redirect_url' => route('admission.success', $admission->id)
-    //                 ]);
-
-    //             } catch (\Exception $e) {
-    //                 DB::rollBack();
-    //                 throw $e;
-    //             }
-
-    //         } catch (\Illuminate\Validation\ValidationException $e) {
-    //             Log::error('Validation error: ', $e->errors());
     //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Please check the form for errors.',
-    //                 'errors' => $e->errors()
-    //             ], 422);
+    //                 'success' => true,
+    //                 'message' => 'Application submitted successfully!',
+    //                 'application_number' => $admission->application_number,
+    //                 'redirect_url' => route('admission.success', $admission->id)
+    //             ]);
+
     //         } catch (\Exception $e) {
-    //             Log::error('Student admission error: ' . $e->getMessage());
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Failed to submit application. Please try again.'
-    //             ], 500);
+    //             DB::rollBack();
+    //             throw $e;
     //         }
+
+    //     } catch (\Illuminate\Validation\ValidationException $e) {
+    //         Log::error('Validation error: ', $e->errors());
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Please check the form for errors.',
+    //             'errors' => $e->errors()
+    //         ], 422);
+    //     } catch (\Exception $e) {
+    //         Log::error('Student admission error: ' . $e->getMessage());
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Failed to submit application. Please try again.'
+    //         ], 500);
+    //     }
     // }
 
     public function store(Request $request)
     {
-        Log::info('Admission form submitted', $request->all());
+        $request->headers->set('Accept','application/json');
 
         try {
-            $activeCourseIds = Course::where('status', 'On')->pluck('id')->toArray();
-            
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'dob' => 'required|date|before:today',
-                'gender' => 'required|in:male,female',
-                'mobile' => 'required|string|max:20',
-                'emergency_mobile' => 'required|string|max:20',
-                'email' => 'required|email|max:255',
-                'address' => 'required|string|max:1000',
-                'educational_background' => 'required|in:SSC,HSC,bachelor,masters,others',
-                'other_education' => 'nullable|required_if:educational_background,others|string|max:255',
-                'academic_year' => 'required|string|max:50',
-                'course_id' => 'required|in:' . implode(',', $activeCourseIds),
-                'photo_data' => 'required|string',
-                'payment_method' => 'required|in:cash,bkash,bank',
-                'transaction_id' => 'nullable|string|max:255',
-                'serial_number' => 'nullable|string|max:255',
-            ], [
-                'photo_data.required' => 'Please take a student photo before submitting.',
-                'dob.before' => 'Date of birth must be in the past.',
-                'course_id.required' => 'Please select a course.',
-                'course_id.in' => 'Please select a valid course.',
-                'educational_background.required' => 'Please select your educational background.',
-                'other_education.required_if' => 'Please specify your educational background.',
-                'academic_year.required' => 'Please enter your academic year.',
+
+            $active = Course::where('status','On')
+                            ->pluck('id')->toArray();
+
+
+            $data = $request->validate([
+
+                'name'=>'required|max:255',
+                'dob'=>'required|date|before:today',
+                'gender'=>'required|in:male,female',
+
+                'mobile'=>'required|max:20',
+                'emergency_mobile'=>'required|max:20',
+
+                'email'=>'required|email',
+                'address'=>'required',
+
+                'educational_background'=>'required',
+                'other_education'=>'nullable|required_if:educational_background,others',
+
+                'academic_year'=>'required',
+
+                'course_id'=>'required|in:'.implode(',',$active),
+
+                'photo_data'=>'required',
+
+                'payment_method'=>'required|in:cash,bkash,bank',
+
+                'transaction_id'=>'nullable',
+                'serial_number'=>'nullable',
+
             ]);
 
-            // Payment method validation
-            if ($request->payment_method === 'bkash' && empty($request->transaction_id)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Transaction ID is required for bKash payments.',
-                    'errors' => ['transaction_id' => ['Transaction ID is required for bKash payments.']]
-                ], 422);
+
+            if ($data['payment_method']=='bkash'
+                && empty($data['transaction_id'])) {
+
+                throw ValidationException::withMessages([
+                    'transaction_id'=>'Txn ID required'
+                ]);
             }
 
-            if ($request->payment_method === 'bank' && empty($request->serial_number)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Serial number is required for Bank payments.',
-                    'errors' => ['serial_number' => ['Serial number is required for Bank payments.']]
-                ], 422);
+
+            if ($data['payment_method']=='bank'
+                && empty($data['serial_number'])) {
+
+                throw ValidationException::withMessages([
+                    'serial_number'=>'Serial required'
+                ]);
             }
 
-            // Handle photo data
-            $photoPath = null;
-            if ($request->photo_data && $request->photo_data !== '{{ csrf_token() }}') {
-                $photoPath = $this->saveBase64Image($request->photo_data);
-            }
 
-            // Use transaction to ensure both records are created
             DB::beginTransaction();
 
-            try {
-                // Create student admission record
-                $admission = StudentAdmission::create([
-                    'name' => $validated['name'],
-                    'dob' => $validated['dob'],
-                    'gender' => $validated['gender'],
-                    'mobile' => $validated['mobile'],
-                    'emergency_mobile' => $validated['emergency_mobile'],
-                    'email' => $validated['email'],
-                    'address' => $validated['address'],
-                    'educational_background' => $validated['educational_background'],
-                    'other_education' => $validated['educational_background'] === 'others' ? $validated['other_education'] : null,
-                    'academic_year' => $validated['academic_year'],
-                    'course_id' => $validated['course_id'],
-                    'photo_data' => $photoPath,
-                ]);
 
-                // Create payment record
-                StudentPayment::create([
-                    'student_admission_id' => $admission->id,
-                    'application_number' => $admission->application_number,
-                    'payment_method' => $validated['payment_method'],
-                    'transaction_id' => $validated['transaction_id'] ?? null,
-                    'serial_number' => $validated['serial_number'] ?? null,
-                    'deposit_amount' => 0,
-                    'discount_amount' => 0,
-                    'due_amount' => 0,
-                    'next_due_date' => null,
-                    'remarks' => null,
-                    'payment_received_by' => null,
-                ]);
+            $photo = $this->saveBase64Image($data['photo_data']);
 
-                DB::commit();
 
-                Log::info('Admission created successfully', ['id' => $admission->id, 'application_number' => $admission->application_number]);
+            $admission = StudentAdmission::create([
 
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Application submitted successfully!',
-                    'application_number' => $admission->application_number,
-                    'redirect_url' => route('admission.success', $admission->id)
-                ]);
+                'name'=>$data['name'],
+                'dob'=>$data['dob'],
+                'gender'=>$data['gender'],
 
-            } catch (\Exception $e) {
-                DB::rollBack();
-                throw $e;
-            }
+                'mobile'=>$data['mobile'],
+                'emergency_mobile'=>$data['emergency_mobile'],
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation error: ', $e->errors());
+                'email'=>$data['email'],
+                'address'=>$data['address'],
+
+                'educational_background'=>$data['educational_background'],
+
+                'other_education'=>$data['educational_background']=='others'
+                                    ? $data['other_education']
+                                    : null,
+
+                'academic_year'=>$data['academic_year'],
+
+                'course_id'=>$data['course_id'],
+
+                'photo_data'=>$photo
+            ]);
+
+
+            StudentPayment::create([
+
+                'student_admission_id'=>$admission->id,
+
+                'application_number'=>$admission->application_number,
+
+                'payment_method'=>$data['payment_method'],
+
+                'transaction_id'=>$data['transaction_id'] ?? null,
+
+                'serial_number'=>$data['serial_number'] ?? null,
+            ]);
+
+
+            DB::commit();
+
+
             return response()->json([
-                'success' => false,
-                'message' => 'Please check the form for errors.',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            Log::error('Student admission error: ' . $e->getMessage());
+
+                'success'=>true,
+
+                'application_number'=>$admission->application_number,
+
+                'redirect_url'=>route('admission.success',$admission->id)
+
+            ]);
+
+
+        }
+
+        catch(\Throwable $e){
+
+            DB::rollBack();
+
+            Log::error($e);
+
             return response()->json([
-                'success' => false,
-                'message' => 'Failed to submit application. Please try again.'
-            ], 500);
+
+                'success'=>false,
+
+                'message'=>'Server error. Try again.'
+
+            ],500);
         }
     }
 
     /**
      * Save base64 image to storage
      */
-    private function saveBase64Image($base64Image)
+    // private function saveBase64Image($base64Image)
+    // {
+    //     if (strpos($base64Image, 'data:image') !== 0) {
+    //         throw new \Exception('Invalid image data format');
+    //     }
+
+    //     if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+    //         $image = substr($base64Image, strpos($base64Image, ',') + 1);
+    //         $type = strtolower($type[1]);
+
+    //         if (!in_array($type, ['jpg', 'jpeg', 'png', 'gif'])) {
+    //             throw new \Exception('Invalid image type');
+    //         }
+
+    //         $image = base64_decode($image);
+    //         if ($image === false) {
+    //             throw new \Exception('Base64 decode failed');
+    //         }
+    //     } else {
+    //         throw new \Exception('Invalid image data');
+    //     }
+
+    //     $filename = 'student_photos/' . Str::uuid() . '.' . $type;
+        
+    //     if (!Storage::disk('public')->exists('student_photos')) {
+    //         Storage::disk('public')->makeDirectory('student_photos');
+    //     }
+        
+    //     Storage::disk('public')->put($filename, $image);
+        
+    //     return $filename;
+    // }
+
+    private function saveBase64Image($data)
     {
-        if (strpos($base64Image, 'data:image') !== 0) {
-            throw new \Exception('Invalid image data format');
+        if (!preg_match('/^data:image\/(\w+);base64,/', $data)) {
+            throw new \Exception("Invalid image");
         }
 
-        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
-            $image = substr($base64Image, strpos($base64Image, ',') + 1);
-            $type = strtolower($type[1]);
+        $image = substr($data, strpos($data, ',') + 1);
 
-            if (!in_array($type, ['jpg', 'jpeg', 'png', 'gif'])) {
-                throw new \Exception('Invalid image type');
-            }
+        $image = base64_decode($image);
 
-            $image = base64_decode($image);
-            if ($image === false) {
-                throw new \Exception('Base64 decode failed');
-            }
-        } else {
-            throw new \Exception('Invalid image data');
-        }
 
-        $filename = 'student_photos/' . Str::uuid() . '.' . $type;
-        
-        if (!Storage::disk('public')->exists('student_photos')) {
-            Storage::disk('public')->makeDirectory('student_photos');
-        }
-        
-        Storage::disk('public')->put($filename, $image);
-        
-        return $filename;
+        $file = 'student_photos/'.Str::uuid().'.jpg';
+
+
+        $img = Image::make($image)
+
+            ->resize(600, null, function($c){
+                $c->aspectRatio();
+            })
+
+            ->encode('jpg',75);
+
+
+        Storage::disk('public')->put($file,$img);
+
+
+        return $file;
     }
+
 
     /**
      * Display success page
@@ -476,7 +524,8 @@ class StudentAdmissionController extends Controller
         }
 
 
-    public function PendingStudentIndex()
+    
+        public function PendingStudentIndex()
     {
         $applications = StudentAdmission::with(['course', 'batch', 'payment'])
             ->where('status', 'pending')
