@@ -413,6 +413,27 @@
     </div>
 
     <script>
+        // Get CSRF token safely
+        // function getCsrfToken() {
+        //     // Try hidden input first
+        //     const csrfInput = document.getElementById('csrf_token');
+        //     if (csrfInput && csrfInput.value) {
+        //         console.log('CSRF token found in hidden input:', csrfInput.value.substring(0, 10) + '...');
+        //         return csrfInput.value;
+        //     }
+            
+        //     // Try other possible locations
+        //     const tokenInputs = document.querySelectorAll('input[name="_token"]');
+        //     for (let input of tokenInputs) {
+        //         if (input.value) {
+        //             console.log('CSRF token found in _token input:', input.value.substring(0, 10) + '...');
+        //             return input.value;
+        //         }
+        //     }
+            
+        //     console.error('CSRF token not found');
+        //     return null;
+        // }
 
         function getCsrfToken() {
         // First try the meta tag (Laravel's default)
@@ -619,7 +640,54 @@
             yearSelect.addEventListener('change', updateDob);
         }
 
-    
+        // Course selection functionality
+        // function initializeCourseSelection() {
+        //     const courseOptions = document.querySelectorAll('input[name="course_id"]');
+        //     const selectedCourseInfo = document.getElementById('selectedCourseInfo');
+        //     const selectedCourseName = document.getElementById('selectedCourseName');
+        //     const selectedCourseFee = document.getElementById('selectedCourseFee');
+            
+        //     courseOptions.forEach(option => {
+        //         option.addEventListener('change', function() {
+        //             // Remove selected class from all course options
+        //             document.querySelectorAll('.course-option').forEach(opt => {
+        //                 opt.classList.remove('selected', 'border-indigo-500', 'bg-blue-50');
+        //                 opt.classList.add('border-gray-300');
+        //             });
+                    
+        //             // Add selected class to clicked option
+        //             if (this.checked) {
+        //                 const courseOption = this.closest('.course-option');
+        //                 courseOption.classList.add('selected', 'border-indigo-500', 'bg-blue-50');
+        //                 courseOption.classList.remove('border-gray-300');
+                        
+        //                 // Get course details
+        //                 const courseName = courseOption.querySelector('.font-medium').textContent;
+        //                 const courseFee = courseOption.querySelector('.text-gray-500').textContent.replace('Fee: ', '');
+                        
+        //                 // Update selected course info
+        //                 selectedCourseName.textContent = courseName;
+        //                 selectedCourseFee.textContent = courseFee;
+        //                 selectedCourseInfo.classList.remove('hidden');
+        //             }
+        //         });
+        //     });
+            
+        //     // Initialize course option styling
+        //     document.querySelectorAll('.course-option').forEach(option => {
+        //         option.addEventListener('click', function() {
+        //             const radioInput = this.querySelector('input[type="radio"]');
+        //             if (radioInput) {
+        //                 radioInput.checked = true;
+                        
+        //                 // Trigger change event
+        //                 const event = new Event('change');
+        //                 radioInput.dispatchEvent(event);
+        //             }
+        //         });
+        //     });
+        // }
+
         // Course selection functionality
         function initializeCourseSelection() {
             const courseOptions = document.querySelectorAll('input[name="course_id"]');
