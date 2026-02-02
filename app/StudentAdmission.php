@@ -89,63 +89,63 @@ class StudentAdmission extends Model
     // }
 
 
-
-
         /**
-         * Generate unique application number
-         */
-        public static function generateApplicationNumber()
-        {
-            $year = date('y');      // 2-digit year
-            $month = date('m');     // 2-digit month
-            $day = date('d');       // 2-digit day
-            $datePrefix = sprintf("%02d%02d%02d", $year, $month, $day); // Format: YYMMDD
+     * Generate unique application number with continuous sequence
+     * Format: YYMMDDXXXXX where XXXXX continues from last highest number
+     */
+    public static function generateApplicationNumber()
+    {
+        // Get the highest application number overall
+        $lastAppNumber = static::orderByRaw('CAST(application_number AS UNSIGNED) DESC')
+            ->value('application_number');
+        
+        if ($lastAppNumber) {
+            // Extract the sequence part (last 5 digits)
+            $lastSequence = intval(substr($lastAppNumber, -5));
             
-            // Use database to get the last sequence for today
-            $lastAppNumber = static::where('application_number', 'like', $datePrefix . '%')
-                ->orderBy('application_number', 'desc')
-                ->value('application_number');
+            // Extract the date part
+            $lastDate = substr($lastAppNumber, 0, 6);
+            $currentDate = date('ymd');
             
-            if ($lastAppNumber) {
-                // Extract the sequence part (last 5 digits)
-                $lastSequence = intval(substr($lastAppNumber, -5));
+            if ($lastDate === $currentDate) {
+                // Same day: continue sequence
                 $nextSequence = $lastSequence + 1;
             } else {
-                // First application of the day
-                $nextSequence = 1;
-            }
-            
-            // Ensure sequence doesn't exceed 99999
-            if ($nextSequence > 99999) {
-                // If we exceed 99999, start over with random numbers
-                do {
-                    $nextSequence = mt_rand(10000, 99999);
-                    $appNumber = sprintf("%s%05d", $datePrefix, $nextSequence);
-                } while (static::where('application_number', $appNumber)->exists());
-            } else {
-                $appNumber = sprintf("%s%05d", $datePrefix, $nextSequence);
+                // New day: check if we should continue or start from 00001
                 
-                // Double-check if this number already exists (in case of gaps)
-                if (static::where('application_number', $appNumber)->exists()) {
-                    // Find the next available number
-                    $nextSequence = $nextSequence + 1;
-                    while (static::where('application_number', sprintf("%s%05d", $datePrefix, $nextSequence))->exists()) {
-                        $nextSequence++;
-                        if ($nextSequence > 99999) {
-                            // Fallback to random if we reach the limit
-                            do {
-                                $nextSequence = mt_rand(10000, 99999);
-                                $appNumber = sprintf("%s%05d", $datePrefix, $nextSequence);
-                            } while (static::where('application_number', $appNumber)->exists());
-                            break;
-                        }
-                    }
-                    $appNumber = sprintf("%s%05d", $datePrefix, $nextSequence);
-                }
+                // Option 1: Continue sequence (recommended for true uniqueness)
+                $nextSequence = $lastSequence + 1;
+                
+                // Option 2: Start from 00001 for new day (uncomment if preferred)
+                // $nextSequence = 1;
             }
-            
-            return $appNumber;
+        } else {
+            // First application ever
+            $nextSequence = 1;
         }
+        
+        // Ensure sequence doesn't exceed 99999
+        if ($nextSequence > 99999) {
+            throw new \Exception('Maximum sequence reached. Please contact administrator.');
+        }
+        
+        $appNumber = sprintf("%s%05d", date('ymd'), $nextSequence);
+        
+        // Final uniqueness check
+        $counter = 0;
+        while (static::where('application_number', $appNumber)->exists() && $counter < 100) {
+            $nextSequence++;
+            if ($nextSequence > 99999) {
+                throw new \Exception('Cannot find unique application number.');
+            }
+            $appNumber = sprintf("%s%05d", date('ymd'), $nextSequence);
+            $counter++;
+        }
+        
+        return $appNumber;
+    }
+
+
     /**
      * Generate unique student ID based on course
      */
