@@ -52,7 +52,7 @@
             </li>
             </ul>
         </li>
-
+         @if (in_array(auth()->user()->role_id, [1, 3])) {{-- Admin, SuperAdmin --}}
          <li class="nav-item">
             <a class="nav-link collapsed" href="#reports-dropdown" data-toggle="collapse" aria-expanded="false">
                <i class="fas fa-file"></i>
