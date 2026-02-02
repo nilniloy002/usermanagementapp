@@ -53,22 +53,26 @@
             </ul>
         </li>
 
-         <li class="nav-item">
-            <a class="nav-link collapsed" href="#reports-dropdown" data-toggle="collapse" aria-expanded="false">
-               <i class="fas fa-file"></i>
-                <span>Reports</span>
-            </a>
-            <ul class="list-unstyled sub-menu collapse" id="reports-dropdown" style="">
-             
+        @if (in_array(auth()->user()->role_id, [1, 3])) {{-- Admin, SuperAdmin --}}
 
-                <li class="nav-item {{ request()->is('*daily-revenue*') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('student-admissions.daily-revenue') }}">
-                    <i class="fas fa-money-bill-wave nav-icon"></i>
-                    <span>@lang('Daily Revenue')</span>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#reports-dropdown" data-toggle="collapse" aria-expanded="false">
+                <i class="fas fa-file"></i>
+                    <span>Reports</span>
                 </a>
+                <ul class="list-unstyled sub-menu collapse" id="reports-dropdown" style="">
+                
+
+                    <li class="nav-item {{ request()->is('*daily-revenue*') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ route('student-admissions.daily-revenue') }}">
+                        <i class="fas fa-money-bill-wave nav-icon"></i>
+                        <span>@lang('Daily Revenue')</span>
+                    </a>
+                </li>
+                </ul>
             </li>
-            </ul>
-        </li>
+        @endif
+
 
          <li class="nav-item">
             <a class="nav-link collapsed" href="#course-dropdown" data-toggle="collapse" aria-expanded="false">
