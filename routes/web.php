@@ -316,6 +316,20 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
         Route::post('student-admissions/bulk-id-cards', [StudentAdmissionController::class, 'bulkIdCards'])
             ->name('student-admissions.bulk-id-cards');
+
+            // Daily Revenue Report Routes
+
+    Route::get('daily-revenue', [StudentAdmissionController::class, 'dailyRevenue'])
+    ->name('student-admissions.daily-revenue');
+
+
+    Route::get('student-admissions/daily-revenue/pdf', [StudentAdmissionController::class, 'exportDailyRevenuePdf'])
+        ->name('student-admissions.daily-revenue.pdf');
+    Route::get('student-admissions/daily-revenue/excel', [StudentAdmissionController::class, 'exportDailyRevenueExcel'])
+        ->name('student-admissions.daily-revenue.excel');
+
+
+    
     
     // Get batches by course (AJAX)
     Route::get('student-admissions/batches-by-course/{courseId}', 

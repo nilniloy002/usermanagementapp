@@ -20,6 +20,7 @@ use Vanguard\Mail\AdmissionApprovalMail;
 use Vanguard\Mail\PaymentInvoiceMail;
 use Illuminate\Support\Facades\Auth;
 use DB;
+use App\Exports\DailyRevenueExport; // Make sure this is created
 
 class StudentAdmissionController extends Controller
 {
@@ -1235,6 +1236,165 @@ class StudentAdmissionController extends Controller
             ->paginate(20);
         
         return view('admissions.payment-invoices-index', compact('payments'));
+    }
+
+    public function dailyRevenue(Request $request)
+    {
+        // Set default to today if no dates are provided
+        $today = now()->format('Y-m-d');
+        $startDate = $request->filled('start_date') ? $request->start_date : $today;
+        $endDate = $request->filled('end_date') ? $request->end_date : $today;
+        
+        $query = StudentAdmission::with(['payment'])
+            ->where('status', 'approved')
+            ->whereHas('payment', function($q) {
+                $q->whereNotNull('deposit_amount')
+                ->where('deposit_amount', '>', 0);
+            })
+            ->latest();
+        
+        // Apply date range filter (defaults to today)
+        $query->whereBetween('created_at', [
+            $startDate . ' 00:00:00',
+            $endDate . ' 23:59:59'
+        ]);
+        
+        // Payment received by filter (if you want to keep it in blade, uncomment this)
+        // if ($request->filled('payment_received_by')) {
+        //     $query->whereHas('payment', function($q) use ($request) {
+        //         $q->where('payment_received_by', 'like', '%' . $request->payment_received_by . '%');
+        //     });
+        // }
+        
+        $students = $query->paginate(50);
+        
+        // Calculate totals
+        $totalDeposit = $students->sum(function($student) {
+            return $student->payment->deposit_amount ?? 0;
+        });
+        
+        $totalDiscount = $students->sum(function($student) {
+            return $student->payment->discount_amount ?? 0;
+        });
+        
+        $totalDue = $students->sum(function($student) {
+            return $student->payment->due_amount ?? 0;
+        });
+        
+        // Get unique payment receivers for filter (if needed)
+        $paymentReceivers = StudentPayment::whereNotNull('payment_received_by')
+            ->distinct()
+            ->pluck('payment_received_by')
+            ->filter()
+            ->values();
+        
+        return view('report.daily-report', compact(
+            'students',
+            'totalDeposit',
+            'totalDiscount',
+            'totalDue',
+            'paymentReceivers',
+            'startDate',
+            'endDate'
+        ));
+    }
+
+    /**
+     * Export daily revenue to PDF
+     */
+    public function exportDailyRevenuePdf(Request $request)
+    {
+        // Set default to today if no dates are provided
+        $today = now()->format('Y-m-d');
+        $startDate = $request->filled('start_date') ? $request->start_date : $today;
+        $endDate = $request->filled('end_date') ? $request->end_date : $today;
+        
+        $query = StudentAdmission::with(['payment'])
+            ->where('status', 'approved')
+            ->whereHas('payment', function($q) {
+                $q->whereNotNull('deposit_amount')
+                ->where('deposit_amount', '>', 0);
+            });
+        
+        // Apply date range filter
+        $query->whereBetween('created_at', [
+            $startDate . ' 00:00:00',
+            $endDate . ' 23:59:59'
+        ]);
+        
+        $students = $query->get();
+        
+        // Calculate totals
+        $totalDeposit = $students->sum(function($student) {
+            return $student->payment->deposit_amount ?? 0;
+        });
+        
+        $totalDiscount = $students->sum(function($student) {
+            return $student->payment->discount_amount ?? 0;
+        });
+        
+        $totalDue = $students->sum(function($student) {
+            return $student->payment->due_amount ?? 0;
+        });
+        
+        $data = [
+            'students' => $students,
+            'totalDeposit' => $totalDeposit,
+            'totalDiscount' => $totalDiscount,
+            'totalDue' => $totalDue,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'today' => now()->format('d-m-Y h:i A'),
+            'totalRecords' => $students->count(),
+        ];
+        
+        $pdf = Pdf::loadView('report.daily-report-pdf', $data);
+        
+        $filename = 'daily-revenue-report-' . $startDate . '-to-' . $endDate . '.pdf';
+        
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Export daily revenue to Excel
+     */
+    public function exportDailyRevenueExcel(Request $request)
+    {
+        // Set default to today if no dates are provided
+        $today = now()->format('Y-m-d');
+        $startDate = $request->filled('start_date') ? $request->start_date : $today;
+        $endDate = $request->filled('end_date') ? $request->end_date : $today;
+        
+        $query = StudentAdmission::with(['payment'])
+            ->where('status', 'approved')
+            ->whereHas('payment', function($q) {
+                $q->whereNotNull('deposit_amount')
+                ->where('deposit_amount', '>', 0);
+            });
+        
+        // Apply date range filter
+        $query->whereBetween('created_at', [
+            $startDate . ' 00:00:00',
+            $endDate . ' 23:59:59'
+        ]);
+        
+        $students = $query->get();
+        
+        // Calculate totals
+        $totalDeposit = $students->sum(function($student) {
+            return $student->payment->deposit_amount ?? 0;
+        });
+        
+        $totalDiscount = $students->sum(function($student) {
+            return $student->payment->discount_amount ?? 0;
+        });
+        
+        $totalDue = $students->sum(function($student) {
+            return $student->payment->due_amount ?? 0;
+        });
+        
+        return Excel::download(new DailyRevenueExport($students, $startDate, $endDate, $totalDeposit, $totalDiscount, $totalDue), 
+            'daily-revenue-report-' . $startDate . '-to-' . $endDate . '.xlsx');
     }
 
 }
