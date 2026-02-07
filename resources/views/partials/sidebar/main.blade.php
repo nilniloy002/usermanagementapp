@@ -43,13 +43,6 @@
                         <span class="text-info">Payment Invoices</span>
                     </a>
                 </li>
-
-                <li class="nav-item {{ request()->is('*daily-revenue*') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('student-admissions.daily-revenue') }}">
-                    <i class="fas fa-money-bill-wave nav-icon"></i>
-                    <p>@lang('Daily Revenue')</p>
-                </a>
-            </li>
             </ul>
         </li>
 
