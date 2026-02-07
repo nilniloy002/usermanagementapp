@@ -151,7 +151,7 @@
                 data-confirm-delete="@lang('Yes, delete it!')">
                     <i class="fas fa-trash"></i>
                 </a>
-</td>
+                </td>
                             </tr>
                         @endforeach
                     @else

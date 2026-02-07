@@ -234,10 +234,10 @@
                                         <img src="{{ $imageUrl }}" 
                                             alt="Student Photo" 
                                             class="img-thumbnail" 
-                                            width="60" 
-                                            height="60"
+                                            width="100" 
+                                            height="100"
                                             style="object-fit: cover; border-radius: 2px;"
-                                            onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"60\" height=\"60\" viewBox=\"0 0 24 24\"><path fill=\"%236c757d\" d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z\"/></svg>'">
+                                            onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjNmM3NTdkIiBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnptMCAzYzEuNjYgMCAzIDEuMzQgMyAzcy0xLjM0IDMtMyAzLTMtMS4zNC0zLTMgMS4zNC0zIDMtM3ptMCAxNC4yYy0yLjUgMC00LjcxLTEuMjgtNi0zLjIyLjAzLTEuOTkgNC0zLjA4IDYtMy4wOCAxLjk5IDAgNS45NyAxLjA5IDYgMy4wOC0xLjI5IDEuOTQtMy41IDMuMjItNiAzLjIyeiIvPjwvc3ZnPg=='">
                                     @else
                                         <div class="no-photo bg-light rounded d-flex align-items-center justify-content-center" 
                                             style="width: 60px; height: 60px; border: 1px solid #dee2e6;">
@@ -369,7 +369,7 @@
                                     @endif
 
                                     <!-- Status Update Dropdown -->
-                                    <div class="btn-group">
+                                    <!-- <div class="btn-group">
                                         <button type="button" 
                                                 class="btn btn-icon btn-sm btn-secondary dropdown-toggle" 
                                                 data-toggle="dropdown" 
@@ -403,7 +403,7 @@
                                                 </button>
                                             </form>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <!-- Delete Button -->
                                     <a href="{{ route('student-admissions.destroy', $application) }}" 
