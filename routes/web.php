@@ -293,6 +293,13 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::get('student-admissions/{id}', [StudentAdmissionController::class, 'show'])
             ->name('student-admissions.show');
 
+        // Add this route
+        Route::get('student-admissions/{studentAdmission}/edit', [StudentAdmissionController::class, 'edit'])
+            ->name('student-admissions.edit');
+
+        Route::put('student-admissions/{studentAdmission}', [StudentAdmissionController::class, 'update'])
+            ->name('student-admissions.update');
+
         Route::post('student-admissions/{id}/status', [StudentAdmissionController::class, 'updateStatus'])
             ->name('student-admissions.update-status');
 

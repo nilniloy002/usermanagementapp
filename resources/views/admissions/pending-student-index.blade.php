@@ -102,59 +102,55 @@
                                         <br><small>{{ $application->approved_at->format('d-m-Y') }}</small>
                                     @endif
                                 </td>
-                                <td class="text-center">
-                                    <a href="{{ route('student-admissions.show', $application) }}" 
-                                       class="btn btn-icon btn-sm btn-info" 
-                                       title="@lang('View Application')" 
-                                       data-toggle="tooltip">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    
-@if($application->status == 'pending')
-    <button type="button" 
-            class="btn btn-icon btn-sm btn-success" 
-            title="@lang('Approve Admission')"
-            data-toggle="modal" 
-            data-target="#admissionModal"
-            data-application-id="{{ $application->id }}"
-            data-course-id="{{ $application->course_id }}"
-            data-course-fee="{{ $application->course->course_fee ?? 0 }}"
-            data-student-name="{{ $application->name }}"
-            data-application-number="{{ $application->application_number }}"
-            data-course-name="{{ $application->course->course_name ?? 'N/A' }}">
-        <i class="fas fa-user-graduate"></i>
-    </button>
-@endif
-@if($application->status == 'approved')
-    <!-- ID Card Buttons -->
-    <a href="{{ route('student-admissions.id-card', $application) }}" 
-       class="btn btn-icon btn-sm btn-primary" 
-       title="@lang('View ID Card')"
-       data-toggle="tooltip">
-        <i class="fas fa-id-card"></i>
-    </a>
-    <a href="{{ route('student-admissions.download-id-card', $application) }}" 
-       class="btn btn-icon btn-sm btn-success" 
-       title="@lang('Download ID Card')"
-       data-toggle="tooltip">
-        <i class="fas fa-download"></i>
-    </a>
-@endif
 
-                                
+                                <!-- In pending-student-index.blade.php, inside the actions column (around line 140-160): -->
 
-                                    <!-- Delete Button -->
-                                    <a href="{{ route('student-admissions.destroy', $application) }}" 
-                                       class="btn btn-icon btn-sm btn-danger" 
-                                       title="@lang('Delete Application')"
-                                       data-toggle="tooltip"
-                                       data-method="DELETE"
-                                       data-confirm-title="@lang('Please Confirm')"
-                                       data-confirm-text="@lang('Are you sure that you want to delete this application?')"
-                                       data-confirm-delete="@lang('Yes, delete it!')">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
-                                </td>
+<td class="text-center">
+    <!-- View Button -->
+    <a href="{{ route('student-admissions.show', $application) }}" 
+       class="btn btn-icon btn-sm btn-info" 
+       title="@lang('View Application')" 
+       data-toggle="tooltip">
+        <i class="fas fa-eye"></i>
+    </a>
+    
+    <!-- Edit Button - NEW -->
+    <a href="{{ route('student-admissions.edit', $application) }}" 
+       class="btn btn-icon btn-sm btn-warning" 
+       title="@lang('Edit Application')"
+       data-toggle="tooltip">
+        <i class="fas fa-edit"></i>
+    </a>
+    
+    <!-- Approve Button -->
+    @if($application->status == 'pending')
+        <button type="button" 
+                class="btn btn-icon btn-sm btn-success" 
+                title="@lang('Approve Admission')"
+                data-toggle="modal" 
+                data-target="#admissionModal"
+                data-application-id="{{ $application->id }}"
+                data-course-id="{{ $application->course_id }}"
+                data-course-fee="{{ $application->course->course_fee ?? 0 }}"
+                data-student-name="{{ $application->name }}"
+                data-application-number="{{ $application->application_number }}"
+                data-course-name="{{ $application->course->course_name ?? 'N/A' }}">
+            <i class="fas fa-user-graduate"></i>
+        </button>
+    @endif
+    
+    <!-- Delete Button -->
+    <a href="{{ route('student-admissions.destroy', $application) }}" 
+       class="btn btn-icon btn-sm btn-danger" 
+       title="@lang('Delete Application')"
+       data-toggle="tooltip"
+       data-method="DELETE"
+       data-confirm-title="@lang('Please Confirm')"
+       data-confirm-text="@lang('Are you sure that you want to delete this application?')"
+       data-confirm-delete="@lang('Yes, delete it!')">
+        <i class="fas fa-trash"></i>
+    </a>
+</td>
                             </tr>
                         @endforeach
                     @else

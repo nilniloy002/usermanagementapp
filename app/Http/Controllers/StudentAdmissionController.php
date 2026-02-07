@@ -450,6 +450,123 @@ class StudentAdmissionController extends Controller
         return view('admissions.student-show', compact('application'));
     }
 
+
+        /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id)
+    {
+        $application = StudentAdmission::with(['course', 'payment'])->findOrFail($id);
+        
+        // Only allow editing if status is pending
+        if ($application->status !== 'pending') {
+            return redirect()->route('student-admissions.index')
+                ->with('error', 'Only pending applications can be edited.');
+        }
+        
+        $courses = Course::where('status', 'On')->get();
+        
+        return view('admissions.student-edit', compact('application', 'courses'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id)
+    {
+        $application = StudentAdmission::findOrFail($id);
+        
+        // Only allow updating if status is pending
+        if ($application->status !== 'pending') {
+            return redirect()->route('student-admissions.index')
+                ->with('error', 'Only pending applications can be edited.');
+        }
+        
+        // Validation rules
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'dob' => 'required|date|before:today',
+            'gender' => 'required|in:male,female',
+            'mobile' => 'required|string|max:20',
+            'emergency_mobile' => 'required|string|max:20',
+            'email' => 'required|email|max:255',
+            'address' => 'required|string|max:1000',
+            'educational_background' => 'required|in:SSC,HSC,bachelor,masters,others',
+            'other_education' => 'nullable|required_if:educational_background,others|string|max:255',
+            'academic_year' => 'required|string|max:50',
+            'course_id' => 'required|exists:courses,id',
+            'payment_method' => 'required|in:cash,bkash,bank',
+            'transaction_id' => 'nullable|string|max:255',
+            'serial_number' => 'nullable|string|max:255',
+        ], [
+            'dob.before' => 'Date of birth must be in the past.',
+            'course_id.required' => 'Please select a course.',
+            'educational_background.required' => 'Please select your educational background.',
+            'other_education.required_if' => 'Please specify your educational background.',
+            'academic_year.required' => 'Please enter your academic year.',
+        ]);
+
+        // Payment method validation
+        if ($request->payment_method === 'bkash' && empty($request->transaction_id)) {
+            $validator->after(function ($validator) {
+                $validator->errors()->add('transaction_id', 'Transaction ID is required for bKash payments.');
+            });
+        }
+
+        if ($request->payment_method === 'bank' && empty($request->serial_number)) {
+            $validator->after(function ($validator) {
+                $validator->errors()->add('serial_number', 'Serial number is required for Bank payments.');
+            });
+        }
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Update student admission
+            $application->update([
+                'name' => $request->name,
+                'dob' => $request->dob,
+                'gender' => $request->gender,
+                'mobile' => $request->mobile,
+                'emergency_mobile' => $request->emergency_mobile,
+                'email' => $request->email,
+                'address' => $request->address,
+                'educational_background' => $request->educational_background,
+                'other_education' => $request->educational_background === 'others' ? $request->other_education : null,
+                'academic_year' => $request->academic_year,
+                'course_id' => $request->course_id,
+            ]);
+
+            // Update payment record if exists
+            if ($application->payment) {
+                $application->payment->update([
+                    'payment_method' => $request->payment_method,
+                    'transaction_id' => $request->transaction_id ?? null,
+                    'serial_number' => $request->serial_number ?? null,
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('student-admissions.pending-student-index')
+                ->with('success', 'Application updated successfully!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error updating application: ' . $e->getMessage());
+            
+            return redirect()->back()
+                ->with('error', 'Failed to update application. Please try again.')
+                ->withInput();
+        }
+    }
+
     /**
      * Admin: Update application status
      */
