@@ -797,6 +797,37 @@ class StudentAdmissionController extends Controller
         }
     }
 
+
+    /**
+     * Delete an application from pending list
+     */
+    public function destroyPending($id)
+    {
+        try {
+            $application = StudentAdmission::findOrFail($id);
+            
+            // Only allow deleting pending applications
+            if ($application->status !== 'pending') {
+                return redirect()->route('student-admissions.pending-student-index')
+                    ->with('error', 'Only pending applications can be deleted from this list.');
+            }
+            
+            // Delete photo if exists
+            if ($application->photo_data && Storage::disk('public')->exists($application->photo_data)) {
+                Storage::disk('public')->delete($application->photo_data);
+            }
+            
+            $application->delete();
+
+            return redirect()->route('student-admissions.pending-student-index')
+                ->with('success', 'Application deleted successfully.');
+
+        } catch (\Exception $e) {
+            Log::error('Error deleting pending application: ' . $e->getMessage());
+            return redirect()->route('student-admissions.pending-student-index')
+                ->with('error', 'Failed to delete application. Please try again.');
+        }
+    }
     /**
      * Display ID card for a student
      */

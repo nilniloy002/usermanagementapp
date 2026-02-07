@@ -305,6 +305,9 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
         Route::delete('student-admissions/{id}', [StudentAdmissionController::class, 'destroy'])
             ->name('student-admissions.destroy');
+        // Add this new route for pending student deletions
+        Route::delete('student-admissions-pending/{id}', [StudentAdmissionController::class, 'destroyPending'])
+            ->name('student-admissions.destroy-pending');
 
         Route::post('student-admissions/{id}/approve', [StudentAdmissionController::class, 'approveAdmission'])
             ->name('student-admissions.approve');

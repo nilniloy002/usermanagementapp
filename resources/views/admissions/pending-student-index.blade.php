@@ -140,16 +140,17 @@
     @endif
     
     <!-- Delete Button -->
-    <a href="{{ route('student-admissions.destroy', $application) }}" 
-       class="btn btn-icon btn-sm btn-danger" 
-       title="@lang('Delete Application')"
-       data-toggle="tooltip"
-       data-method="DELETE"
-       data-confirm-title="@lang('Please Confirm')"
-       data-confirm-text="@lang('Are you sure that you want to delete this application?')"
-       data-confirm-delete="@lang('Yes, delete it!')">
-        <i class="fas fa-trash"></i>
-    </a>
+                <!-- Use the new route -->
+                <a href="{{ route('student-admissions.destroy-pending', $application) }}" 
+                class="btn btn-icon btn-sm btn-danger" 
+                title="@lang('Delete Application')"
+                data-toggle="tooltip"
+                data-method="DELETE"
+                data-confirm-title="@lang('Please Confirm')"
+                data-confirm-text="@lang('Are you sure that you want to delete this application?')"
+                data-confirm-delete="@lang('Yes, delete it!')">
+                    <i class="fas fa-trash"></i>
+                </a>
 </td>
                             </tr>
                         @endforeach
