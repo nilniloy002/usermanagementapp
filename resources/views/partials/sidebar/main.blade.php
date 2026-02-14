@@ -24,7 +24,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('student-admissions.index') }}">
                         <i class="fas fa-users"></i>
-                        <span>Admission List</span>
+                        <span>Student List</span>
                     </a>
                 </li>
                 <!-- Payment Section -->

@@ -234,8 +234,8 @@
                                         <img src="{{ $imageUrl }}" 
                                             alt="Student Photo" 
                                             class="img-thumbnail" 
-                                            width="100" 
-                                            height="100"
+                                            width="150" 
+                                            height="200"
                                             style="object-fit: cover; border-radius: 2px;"
                                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjNmM3NTdkIiBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnptMCAzYzEuNjYgMCAzIDEuMzQgMyAzcy0xLjM0IDMtMyAzLTMtMS4zNC0zLTMgMS4zNC0zIDMtM3ptMCAxNC4yYy0yLjUgMC00LjcxLTEuMjgtNi0zLjIyLjAzLTEuOTkgNC0zLjA4IDYtMy4wOCAxLjk5IDAgNS45NyAxLjA5IDYgMy4wOC0xLjI5IDEuOTQtMy41IDMuMjItNiAzLjIyeiIvPjwvc3ZnPg=='">
                                     @else
@@ -369,7 +369,7 @@
                                     @endif
 
                                     <!-- Status Update Dropdown -->
-                                    <!-- <div class="btn-group">
+                                    <div class="btn-group">
                                         <button type="button" 
                                                 class="btn btn-icon btn-sm btn-secondary dropdown-toggle" 
                                                 data-toggle="dropdown" 
@@ -403,7 +403,7 @@
                                                 </button>
                                             </form>
                                         </div>
-                                    </div> -->
+                                    </div>
 
                                     <!-- Delete Button -->
                                     <a href="{{ route('student-admissions.destroy', $application) }}" 
