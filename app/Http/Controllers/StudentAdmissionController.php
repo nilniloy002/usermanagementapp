@@ -1402,7 +1402,7 @@ class StudentAdmissionController extends Controller
             ->latest();
         
         // Apply date range filter (defaults to today)
-        $query->whereBetween('created_at', [
+        $query->whereBetween('updated_at', [
             $startDate . ' 00:00:00',
             $endDate . ' 23:59:59'
         ]);
@@ -1465,7 +1465,7 @@ class StudentAdmissionController extends Controller
             });
         
         // Apply date range filter
-        $query->whereBetween('created_at', [
+        $query->whereBetween('updated_at', [
             $startDate . ' 00:00:00',
             $endDate . ' 23:59:59'
         ]);
@@ -1521,7 +1521,7 @@ class StudentAdmissionController extends Controller
             });
         
         // Apply date range filter
-        $query->whereBetween('created_at', [
+        $query->whereBetween('updated_at', [
             $startDate . ' 00:00:00',
             $endDate . ' 23:59:59'
         ]);

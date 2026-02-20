@@ -52,6 +52,7 @@
                             'IoC LRW Slot' => 'IoC LRW Slot',
                             'IoC Speaking Slot Morning' => 'IoC Speaking Slot Morning',
                             'IoC Speaking Slot Afternoon' => 'IoC Speaking Slot Afternoon',
+                            'PTE Slot' => 'PTE Slot',
                         ], $edit ? $mockTestTimeSlot->slot_key : old('slot_key'), ['class' => 'form-control', 'id' => 'slot_key', 'required']) !!}
                     </div>
                     <div class="form-group">

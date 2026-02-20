@@ -33,6 +33,7 @@
                             <option value="">@lang('Select Exam Pattern')</option>
                             <option value="IoP" {{ old('exam_pattern', $mockTestDate->exam_pattern ?? '') == 'IoP' ? 'selected' : '' }}>IoP</option>
                             <option value="IoC" {{ old('exam_pattern', $mockTestDate->exam_pattern ?? '') == 'IoC' ? 'selected' : '' }}>IoC</option>
+                            <option value="PTE" {{ old('exam_pattern', $mockTestDate->exam_pattern ?? '') == 'PTE' ? 'selected' : '' }}>PTE</option>
                         </select>
                     </div>
 
