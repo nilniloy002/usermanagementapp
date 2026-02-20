@@ -13,164 +13,218 @@
     @include('partials.messages')
 
     <!-- Filter Section -->
-<div class="card mb-4">
-    <div class="card-body">
-        <form action="{{ route('student-admissions.index') }}" method="GET" id="filterForm">
-            <div class="row">
-                <!-- Course Filter -->
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="course_id" class="form-label">Course</label>
-                        <select class="form-control select2" id="course_id" name="course_id">
-                            <option value="">All Courses</option>
-                            @foreach($courses as $course)
-                                <option value="{{ $course->id }}" 
-                                    {{ request('course_id') == $course->id ? 'selected' : '' }}>
-                                    {{ $course->course_name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                
-                <!-- Batch Filter -->
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="batch_id" class="form-label">Batch</label>
-                        <select class="form-control select2" id="batch_id" name="batch_id">
-                            <option value="">All Batches</option>
-                            @if($selectedCourseId)
-                                <!-- Show only batches for selected course -->
-                                @foreach($batches as $batch)
-                                    <option value="{{ $batch->id }}" 
-                                        {{ request('batch_id') == $batch->id ? 'selected' : '' }}>
-                                        {{ $batch->batch_code }}
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h6 class="mb-0">
+                <i class="fas fa-filter mr-2"></i>Filter Students
+                <button class="btn btn-sm btn-link float-right" type="button" data-toggle="collapse" data-target="#filterCollapse">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </h6>
+        </div>
+        <div class="collapse show" id="filterCollapse">
+            <div class="card-body">
+                <form action="{{ route('student-admissions.index') }}" method="GET" id="filterForm">
+                    <div class="row">
+                        <!-- Course Filter -->
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="course_id" class="form-label">Course</label>
+                                <select class="form-control select2" id="course_id" name="course_id">
+                                    <option value="">All Courses</option>
+                                    @foreach($courses as $course)
+                                        <option value="{{ $course->id }}" 
+                                            {{ request('course_id') == $course->id ? 'selected' : '' }}>
+                                            {{ $course->course_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Batch Filter -->
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="batch_id" class="form-label">Batch</label>
+                                <select class="form-control select2" id="batch_id" name="batch_id">
+                                    <option value="">All Batches</option>
+                                    @if($selectedCourseId)
+                                        <!-- Show only batches for selected course -->
+                                        @foreach($batches as $batch)
+                                            <option value="{{ $batch->id }}" 
+                                                {{ request('batch_id') == $batch->id ? 'selected' : '' }}>
+                                                {{ $batch->batch_code }}
+                                            </option>
+                                        @endforeach
+                                    @else
+                                        <!-- Show all batches with course names -->
+                                        @foreach($batches as $batch)
+                                            <option value="{{ $batch->id }}" 
+                                                {{ request('batch_id') == $batch->id ? 'selected' : '' }}>
+                                                {{ $batch->batch_code }} ({{ $batch->course->course_name ?? 'N/A' }})
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Status Filter -->
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="payment_status" class="form-label">Payment Status</label>
+                                <select class="form-control" id="payment_status" name="payment_status">
+                                    <option value="">All</option>
+                                    <option value="paid" {{ request('payment_status') == 'paid' ? 'selected' : '' }}>
+                                        Paid in Full
                                     </option>
-                                @endforeach
-                            @else
-                                <!-- Show all batches with course names -->
-                                @foreach($batches as $batch)
-                                    <option value="{{ $batch->id }}" 
-                                        {{ request('batch_id') == $batch->id ? 'selected' : '' }}>
-                                        {{ $batch->batch_code }} ({{ $batch->course->course_name ?? 'N/A' }})
+                                    <option value="due" {{ request('payment_status') == 'due' ? 'selected' : '' }}>
+                                        Has Due Amount
                                     </option>
-                                @endforeach
-                            @endif
-                        </select>
-                    </div>
-                </div>
-                
-                <!-- Payment Status Filter -->
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <label for="payment_status" class="form-label">Payment Status</label>
-                        <select class="form-control" id="payment_status" name="payment_status">
-                            <option value="">All</option>
-                            <option value="paid" {{ request('payment_status') == 'paid' ? 'selected' : '' }}>
-                                Paid in Full
-                            </option>
-                            <option value="due" {{ request('payment_status') == 'due' ? 'selected' : '' }}>
-                                Has Due Amount
-                            </option>
-                        </select>
-                    </div>
-                </div>
-                
-                <!-- Search -->
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="search" class="form-label">Search</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="search" name="search" 
-                                   placeholder="Name, ID, Mobile, Email..." 
-                                   value="{{ request('search') }}">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="button" id="clearSearch">
-                                    <i class="fas fa-times"></i>
-                                </button>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Search -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="search" class="form-label">Search</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="search" name="search" 
+                                           placeholder="Name, ID, Mobile, Email..." 
+                                           value="{{ request('search') }}">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="button" id="clearSearch">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Action Buttons -->
-                <div class="col-md-1">
-                    <div class="form-group d-flex align-items-end">
-                        <div class="btn-group">
-                            <button type="submit" class="btn btn-primary" title="Apply Filters">
-                                <i class="fas fa-filter"></i>
-                            </button>
-                            <a href="{{ route('student-admissions.index') }}" 
-                               class="btn btn-secondary" title="Reset Filters">
-                                <i class="fas fa-redo"></i>
-                            </a>
+
+                    <!-- Date Range Filter - Updated At -->
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <hr class="my-2">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="date_from" class="form-label">From Date</label>
+                                <input type="date" class="form-control" id="date_from" name="date_from" 
+                                       value="{{ request('date_from') }}" max="{{ date('Y-m-d') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="date_to" class="form-label">To Date</label>
+                                <input type="date" class="form-control" id="date_to" name="date_to" 
+                                       value="{{ request('date_to') }}" max="{{ date('Y-m-d') }}">
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                 
+                    
+                    <!-- Action Buttons -->
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <div class="form-group d-flex justify-content-end">
+                                <div class="btn-group">
+                                    <button type="submit" class="btn btn-primary" title="Apply Filters">
+                                        <i class="fas fa-filter mr-1"></i> Apply Filters
+                                    </button>
+                                    <a href="{{ route('student-admissions.index') }}" 
+                                       class="btn btn-secondary" title="Reset Filters">
+                                        <i class="fas fa-redo mr-1"></i> Reset
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            
-            <!-- Active Filters -->
-            @if(request()->anyFilled(['course_id', 'batch_id', 'payment_status', 'search']))
-            <div class="row mt-3">
-                <div class="col-md-12">
-                    <div class="d-flex flex-wrap align-items-center">
-                        <small class="text-muted mr-2">Active Filters:</small>
-                        @if(request('course_id'))
-                            @php
-                                $course = \Vanguard\Course::find(request('course_id'));
-                            @endphp
-                            @if($course)
-                            <span class="badge badge-info mr-2 mb-1">
-                                Course: {{ $course->course_name }}
-                                <a href="{{ route('student-admissions.index', array_merge(request()->except('course_id'), ['page' => 1])) }}" 
-                                   class="text-white ml-1">
-                                    <i class="fas fa-times"></i>
-                                </a>
-                            </span>
-                            @endif
-                        @endif
-                        
-                        @if(request('batch_id'))
-                            @php
-                                $batch = \Vanguard\Batch::find(request('batch_id'));
-                            @endphp
-                            @if($batch)
-                            <span class="badge badge-info mr-2 mb-1">
-                                Batch: {{ $batch->batch_code }}
-                                <a href="{{ route('student-admissions.index', array_merge(request()->except('batch_id'), ['page' => 1])) }}" 
-                                   class="text-white ml-1">
-                                    <i class="fas fa-times"></i>
-                                </a>
-                            </span>
-                            @endif
-                        @endif
-                        
-                        @if(request('payment_status'))
-                            <span class="badge badge-{{ request('payment_status') == 'due' ? 'warning' : 'success' }} mr-2 mb-1">
-                                Payment: {{ ucfirst(request('payment_status')) }}
-                                <a href="{{ route('student-admissions.index', array_merge(request()->except('payment_status'), ['page' => 1])) }}" 
-                                   class="text-white ml-1">
-                                    <i class="fas fa-times"></i>
-                                </a>
-                            </span>
-                        @endif
-                        
-                        @if(request('search'))
-                            <span class="badge badge-secondary mr-2 mb-1">
-                                Search: "{{ request('search') }}"
-                                <a href="{{ route('student-admissions.index', array_merge(request()->except('search'), ['page' => 1])) }}" 
-                                   class="text-white ml-1">
-                                    <i class="fas fa-times"></i>
-                                </a>
-                            </span>
-                        @endif
+                    
+                    <!-- Active Filters -->
+                    @if(request()->anyFilled(['course_id', 'batch_id', 'payment_status', 'search', 'date_from', 'date_to']))
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <div class="d-flex flex-wrap align-items-center">
+                                <small class="text-muted mr-2">Active Filters:</small>
+                                
+                                @if(request('course_id'))
+                                    @php
+                                        $course = \Vanguard\Course::find(request('course_id'));
+                                    @endphp
+                                    @if($course)
+                                    <span class="badge badge-info mr-2 mb-1">
+                                        Course: {{ $course->course_name }}
+                                        <a href="{{ route('student-admissions.index', array_merge(request()->except('course_id'), ['page' => 1])) }}" 
+                                           class="text-white ml-1">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    </span>
+                                    @endif
+                                @endif
+                                
+                                @if(request('batch_id'))
+                                    @php
+                                        $batch = \Vanguard\Batch::find(request('batch_id'));
+                                    @endphp
+                                    @if($batch)
+                                    <span class="badge badge-info mr-2 mb-1">
+                                        Batch: {{ $batch->batch_code }}
+                                        <a href="{{ route('student-admissions.index', array_merge(request()->except('batch_id'), ['page' => 1])) }}" 
+                                           class="text-white ml-1">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    </span>
+                                    @endif
+                                @endif
+                                
+                                @if(request('payment_status'))
+                                    <span class="badge badge-{{ request('payment_status') == 'due' ? 'warning' : 'success' }} mr-2 mb-1">
+                                        Payment: {{ ucfirst(request('payment_status')) }}
+                                        <a href="{{ route('student-admissions.index', array_merge(request()->except('payment_status'), ['page' => 1])) }}" 
+                                           class="text-white ml-1">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    </span>
+                                @endif
+                                
+                                @if(request('search'))
+                                    <span class="badge badge-secondary mr-2 mb-1">
+                                        Search: "{{ request('search') }}"
+                                        <a href="{{ route('student-admissions.index', array_merge(request()->except('search'), ['page' => 1])) }}" 
+                                           class="text-white ml-1">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    </span>
+                                @endif
+                                
+                                @if(request('date_from') || request('date_to'))
+                                    <span class="badge badge-primary mr-2 mb-1">
+                                        Updated: 
+                                        @if(request('date_from') && request('date_to'))
+                                            {{ request('date_from') }} to {{ request('date_to') }}
+                                        @elseif(request('date_from'))
+                                            From {{ request('date_from') }}
+                                        @elseif(request('date_to'))
+                                            Until {{ request('date_to') }}
+                                        @endif
+                                        <a href="{{ route('student-admissions.index', array_merge(request()->except(['date_from', 'date_to']), ['page' => 1])) }}" 
+                                           class="text-white ml-1">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
                     </div>
-                </div>
+                    @endif
+                </form>
             </div>
-            @endif
-        </form>
+        </div>
     </div>
-</div>
 
     <!-- Student List Card -->
     <div class="card">
@@ -178,7 +232,7 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="card-title mb-0">
                     Students ({{ $applications->total() }} found)
-                    @if(request()->anyFilled(['course_id', 'batch_id', 'payment_status', 'search']))
+                    @if(request()->anyFilled(['course_id', 'batch_id', 'payment_status', 'search', 'date_from', 'date_to']))
                         <small class="text-muted"> - Filtered</small>
                     @endif
                 </h5>
@@ -212,6 +266,7 @@
                         <th class="min-width-120">@lang('Course')</th>
                         <th class="min-width-120">@lang('Payment Info')</th>
                         <th class="min-width-80">@lang('Status')</th>
+                        <th class="min-width-100">@lang('Last Updated')</th>
                         <th class="text-center min-width-150">@lang('Actions')</th>
                     </tr>
                     </thead>
@@ -234,8 +289,8 @@
                                         <img src="{{ $imageUrl }}" 
                                             alt="Student Photo" 
                                             class="img-thumbnail" 
-                                            width="150" 
-                                            height="200"
+                                            width="60" 
+                                            height="60"
                                             style="object-fit: cover; border-radius: 2px;"
                                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjNmM3NTdkIiBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnptMCAzYzEuNjYgMCAzIDEuMzQgMyAzcy0xLjM0IDMtMyAzLTMtMS4zNC0zLTMgMS4zNC0zIDMtM3ptMCAxNC4yYy0yLjUgMC00LjcxLTEuMjgtNi0zLjIyLjAzLTEuOTkgNC0zLjA4IDYtMy4wOCAxLjk5IDAgNS45NyAxLjA5IDYgMy4wOC0xLjI5IDEuOTQtMy41IDMuMjItNiAzLjIyeiIvPjwvc3ZnPg=='">
                                     @else
@@ -325,6 +380,12 @@
                                     @if($application->approved_at)
                                         <br><small class="text-muted">{{ $application->approved_at->format('d-m-Y') }}</small>
                                     @endif
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        {{ $application->updated_at->format('d-m-Y') }}<br>
+                                        <span class="small">{{ $application->updated_at->format('h:i A') }}</span>
+                                    </small>
                                 </td>
                                 <td class="text-center">
                                     <!-- View Button -->
@@ -421,8 +482,12 @@
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="7" class="text-center">
-                                <em>@lang('No student applications found.')</em>
+                            <td colspan="8" class="text-center">
+                                <div class="text-muted py-4">
+                                    <i class="fas fa-users fa-2x mb-3"></i>
+                                    <h5>No students found</h5>
+                                    <p>Try adjusting your filters or add new students</p>
+                                </div>
                             </td>
                         </tr>
                     @endif
@@ -483,92 +548,151 @@
             $('#filterForm').submit();
         });
 
+        // Clear date range button
+        $('#clearDates').click(function() {
+            $('#date_from').val('');
+            $('#date_to').val('');
+            $('#filterForm').submit();
+        });
+
+        // Quick date range buttons
+        $('#todayBtn').click(function() {
+            const today = new Date().toISOString().split('T')[0];
+            $('#date_from').val(today);
+            $('#date_to').val(today);
+            $('#filterForm').submit();
+        });
+
+        $('#lastWeekBtn').click(function() {
+            const today = new Date();
+            const lastWeek = new Date(today);
+            lastWeek.setDate(today.getDate() - 7);
+            
+            $('#date_from').val(lastWeek.toISOString().split('T')[0]);
+            $('#date_to').val(today.toISOString().split('T')[0]);
+            $('#filterForm').submit();
+        });
+
+        $('#lastMonthBtn').click(function() {
+            const today = new Date();
+            const lastMonth = new Date(today);
+            lastMonth.setMonth(today.getMonth() - 1);
+            
+            $('#date_from').val(lastMonth.toISOString().split('T')[0]);
+            $('#date_to').val(today.toISOString().split('T')[0]);
+            $('#filterForm').submit();
+        });
+
+        $('#thisMonthBtn').click(function() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            $('#date_from').val(firstDay.toISOString().split('T')[0]);
+            $('#date_to').val(today.toISOString().split('T')[0]);
+            $('#filterForm').submit();
+        });
+
+        // Date validation
+        $('#date_from, #date_to').on('change', function() {
+            const dateFrom = $('#date_from').val();
+            const dateTo = $('#date_to').val();
+            
+            if (dateFrom && dateTo && dateFrom > dateTo) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Date Range Error',
+                    text: 'From Date cannot be greater than To Date',
+                    confirmButtonText: 'OK'
+                });
+                $(this).val('');
+            }
+        });
+
+        // Set max date for date inputs
+        $('#date_from, #date_to').attr('max', new Date().toISOString().split('T')[0]);
+
         // Dynamic batch loading based on course selection (AJAX)
-$('#course_id').change(function() {
-    const courseId = $(this).val();
-    const batchSelect = $('#batch_id');
-    
-    if (courseId) {
-        batchSelect.html('<option value="">Loading batches...</option>');
-        
-        $.ajax({
-            url: '/student-admissions/batches-by-course/' + courseId,
-            method: 'GET',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                'Accept': 'application/json'
-            },
-            success: function(response) {
+        $('#course_id').change(function() {
+            const courseId = $(this).val();
+            const batchSelect = $('#batch_id');
+            
+            if (courseId) {
+                batchSelect.html('<option value="">Loading batches...</option>');
+                
+                $.ajax({
+                    url: '/student-admissions/batches-by-course/' + courseId,
+                    method: 'GET',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Accept': 'application/json'
+                    },
+                    success: function(response) {
+                        batchSelect.html('<option value="">All Batches</option>');
+                        
+                        if (response.success && response.batches.length > 0) {
+                            $.each(response.batches, function(index, batch) {
+                                batchSelect.append('<option value="' + batch.id + '">' + batch.batch_code + '</option>');
+                            });
+                        } else {
+                            batchSelect.append('<option value="">No batches available</option>');
+                        }
+                        
+                        // Reinitialize Select2
+                        batchSelect.select2({
+                            theme: 'bootstrap4',
+                            width: '100%'
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error loading batches:', error);
+                        batchSelect.html('<option value="">Error loading batches</option>');
+                        batchSelect.select2({
+                            theme: 'bootstrap4',
+                            width: '100%'
+                        });
+                    }
+                });
+            } else {
+                // If no course selected, show all active batches
                 batchSelect.html('<option value="">All Batches</option>');
                 
-                if (response.success && response.batches.length > 0) {
-                    $.each(response.batches, function(index, batch) {
-                        batchSelect.append('<option value="' + batch.id + '">' + batch.batch_code + '</option>');
-                    });
-                } else {
-                    batchSelect.append('<option value="">No batches available</option>');
-                }
-                
-                // Reinitialize Select2
-                batchSelect.select2({
-                    theme: 'bootstrap4',
-                    width: '100%'
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error('Error loading batches:', error);
-                batchSelect.html('<option value="">Error loading batches</option>');
-                batchSelect.select2({
-                    theme: 'bootstrap4',
-                    width: '100%'
-                });
-            }
-        });
-    } else {
-        // If no course selected, show all active batches
-        batchSelect.html('<option value="">All Batches</option>');
-        
-        // Load all active batches
-        $.ajax({
-            url: '/batches/active',
-            method: 'GET',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                'Accept': 'application/json'
-            },
-            success: function(response) {
-                if (response.success && response.batches.length > 0) {
-                    $.each(response.batches, function(index, batch) {
-                        batchSelect.append('<option value="' + batch.id + '">' + batch.batch_code + ' (' + (batch.course_name || 'N/A') + ')</option>');
-                    });
-                }
-                
-                // Reinitialize Select2
-                batchSelect.select2({
-                    theme: 'bootstrap4',
-                    width: '100%'
-                });
-            },
-            error: function() {
-                batchSelect.select2({
-                    theme: 'bootstrap4',
-                    width: '100%'
+                // Load all active batches
+                $.ajax({
+                    url: '/batches/active',
+                    method: 'GET',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Accept': 'application/json'
+                    },
+                    success: function(response) {
+                        if (response.success && response.batches.length > 0) {
+                            $.each(response.batches, function(index, batch) {
+                                batchSelect.append('<option value="' + batch.id + '">' + batch.batch_code + ' (' + (batch.course_name || 'N/A') + ')</option>');
+                            });
+                        }
+                        
+                        // Reinitialize Select2
+                        batchSelect.select2({
+                            theme: 'bootstrap4',
+                            width: '100%'
+                        });
+                    },
+                    error: function() {
+                        batchSelect.select2({
+                            theme: 'bootstrap4',
+                            width: '100%'
+                        });
+                    }
                 });
             }
         });
-    }
-});
 
-// Remove auto-submit for course and batch filters
-$('#course_id, #batch_id, #payment_status').change(function() {
-    // Don't auto-submit, let user click filter button
-});
-
-// Update the filter form submission to handle AJAX loading
-$('#filterForm').submit(function(e) {
-    // Prevent auto-submit when course changes
-    // Let the form submit normally when filter button is clicked
-});
+        // Auto-submit for course and batch filters (optional - uncomment to enable)
+        /*
+        $('#course_id, #batch_id, #payment_status').change(function() {
+            $('#filterForm').submit();
+        });
+        */
 
         // Export functionality
         $('#exportCSV').click(function(e) {
@@ -623,27 +747,12 @@ $('#filterForm').submit(function(e) {
             "order": [[0, "desc"]],
             "responsive": true,
             "autoWidth": false,
+            "searching": false, // Disable DataTable's internal search
             "language": {
-                "search": "Search within results:",
                 "lengthMenu": "Show _MENU_ entries",
                 "info": "Showing _START_ to _END_ of _TOTAL_ entries",
                 "infoEmpty": "No entries available",
-                "infoFiltered": "(filtered from _MAX_ total entries)"
-            },
-            "initComplete": function() {
-                // Add search box to DataTable
-                this.api().columns().every(function() {
-                    var column = this;
-                    if (column.index() === 2 || column.index() === 0 || column.index() === 3) {
-                        var input = $('<input type="text" class="form-control form-control-sm" placeholder="Search...">')
-                            .appendTo($(column.header()))
-                            .on('keyup change clear', function() {
-                                if (column.search() !== this.value) {
-                                    column.search(this.value).draw();
-                                }
-                            });
-                    }
-                });
+                "infoFiltered": ""
             }
         });
 
@@ -1127,6 +1236,30 @@ $('#filterForm').submit(function(e) {
 }
 .badge a:hover {
     opacity: 1;
+}
+/* Date range styles */
+#date_from, #date_to {
+    background-color: #fff;
+}
+.btn-outline-primary.btn-sm {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+}
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .btn-group-sm {
+        flex-wrap: wrap;
+    }
+    .btn-group-sm .btn {
+        margin-bottom: 2px;
+    }
+    .table td, .table th {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+    }
+    .card-header .btn-link {
+        padding: 0;
+    }
 }
 </style>
 @endsection

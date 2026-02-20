@@ -275,14 +275,14 @@ class StudentAdmissionController extends Controller
         /**
          * Admin: List all applications with filters
          */
+  
+ 
         public function index(Request $request)
         {
             $query = StudentAdmission::with(['course', 'batch', 'payment'])
                 ->where('status', 'approved')
-                // ->latest();
                 ->orderBy('created_at', 'desc');
 
-            
             // Course filter
             if ($request->filled('course_id')) {
                 $query->where('course_id', $request->course_id);
@@ -318,6 +318,15 @@ class StudentAdmissionController extends Controller
                 });
             }
             
+            // Date range filter (updated_at)
+            if ($request->filled('date_from')) {
+                $query->whereDate('updated_at', '>=', $request->date_from);
+            }
+            
+            if ($request->filled('date_to')) {
+                $query->whereDate('updated_at', '<=', $request->date_to);
+            }
+            
             $applications = $query->paginate(20);
             
             // Get courses for filter
@@ -349,24 +358,24 @@ class StudentAdmissionController extends Controller
          */
 
        public function getBatchesByCourse($courseId)
-    {
-            try {
-                $batches = Batch::where('course_id', $courseId)
-                    ->where('status', 'On')
-                    ->orderBy('batch_code', 'ASC')
-                    ->get(['id', 'batch_code']);
-                
-                return response()->json([
-                    'success' => true,
-                    'batches' => $batches
-                ]);
-            } catch (\Exception $e) {
-                \Log::error('Error getting batches by course: ' . $e->getMessage());
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to load batches'
-                ], 500);
-            }
+        {
+                try {
+                    $batches = Batch::where('course_id', $courseId)
+                        ->where('status', 'On')
+                        ->orderBy('batch_code', 'ASC')
+                        ->get(['id', 'batch_code']);
+                    
+                    return response()->json([
+                        'success' => true,
+                        'batches' => $batches
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('Error getting batches by course: ' . $e->getMessage());
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Failed to load batches'
+                    ], 500);
+                }
         }
 
         private function exportStudents($students, $type)
