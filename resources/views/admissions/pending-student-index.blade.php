@@ -23,7 +23,7 @@
                         <th class="min-width-150">@lang('Student Details')</th>
                         <th class="min-width-100">@lang('Course')</th>
                         <th class="min-width-100">@lang('Payment Method')</th>
-                        <th class="min-width-100">@lang('Status')</th>
+                        <th class="min-width-100">@lang('Status & Date')</th>
                         <th class="text-center min-width-150">@lang('Actions')</th>
                     </tr>
                     </thead>
