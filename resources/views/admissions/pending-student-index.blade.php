@@ -98,8 +98,8 @@
                                     }}">
                                         {{ ucfirst($application->status) }}
                                     </span>
-                                    @if($application->approved_at)
-                                        <br><small>{{ $application->approved_at->format('d-m-Y') }}</small>
+                                    @if($application->created_at)
+                                        <br><small>{{ $application->created_at->format('d-m-Y') }}</small>
                                     @endif
                                 </td>
 
