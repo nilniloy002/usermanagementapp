@@ -100,7 +100,7 @@
                         </tr>
                     </table>
                     
-                    @if($application->photo_data)
+                    <!-- @if($application->photo_data)
                     <div class="text-center mt-3">
                         <h6>@lang('Student Photo')</h6>
                         <img src="{{ Storage::disk('public')->url($application->photo_data) }}" 
@@ -108,31 +108,43 @@
                              class="img-thumbnail" 
                              style="max-width: 200px;">
                     </div>
-                    @endif
+                    @endif -->
+
+                                   @if($application->photo_data)
+                                        @php
+                                            $filename = basename($application->photo_data);
+                                            $filePath = public_path('student_photos/' . $filename);
+                                            $imageUrl = asset('student_photos/' . $filename);
+                                            $fileExists = file_exists($filePath);
+                                        @endphp
+                                        
+                                        @if($fileExists)
+                                            <img src="{{ $imageUrl }}" 
+                                                 alt="Student Photo" 
+                                                class="img-thumbnail" 
+                                                style="max-width: 200px;">
+                                        @else
+                                            <div class="no-photo bg-light rounded d-flex align-items-center justify-content-center" 
+                                                style="width: 50px; height: 50px; border: 1px solid #dee2e6;">
+                                                <i class="fas fa-user text-muted"></i>
+                                                <small class="text-muted ml-1">File missing</small>
+                                            </div>
+                                        @endif
+                                    @else
+                                        <div class="no-photo bg-light rounded d-flex align-items-center justify-content-center" 
+                                            style="width: 50px; height: 50px; border: 1px solid #dee2e6;">
+                                            <i class="fas fa-user text-muted"></i>
+                                        </div>
+                                    @endif
                 </div>
             </div>
             
             <div class="row mt-4">
                 <div class="col-md-12">
-                    <a href="{{ route('student-admissions.index') }}" class="btn btn-primary">
+                    <a href="{{ route('student-admissions.pending-student-index') }}" class="btn btn-primary">
                         <i class="fas fa-arrow-left mr-2"></i>@lang('Back to List')
                     </a>
-                    
-                    <!-- Status Update Buttons -->
-                    <!-- <div class="btn-group ml-2">
-                        <form action="{{ route('student-admissions.update-status', $application) }}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" name="status" value="approved" class="btn btn-success">
-                                <i class="fas fa-check mr-2"></i>Approve
-                            </button>
-                            <button type="submit" name="status" value="rejected" class="btn btn-danger">
-                                <i class="fas fa-times mr-2"></i>Reject
-                            </button>
-                            <button type="submit" name="status" value="pending" class="btn btn-warning">
-                                <i class="fas fa-clock mr-2"></i>Set Pending
-                            </button>
-                        </form>
-                    </div> -->
+                
                 </div>
             </div>
         </div>
