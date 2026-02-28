@@ -117,17 +117,14 @@
             <tr>
                 <th>SL</th>
                 <th>Inv. No.</th>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Mobile</th>
-                <th>Course</th>
+                <th>Std. Details</th>
                 <th class="text-right">Fee</th>
                 <th class="text-right">Deposit</th>
                 <th class="text-right">Discount</th>
                 <th class="text-right">Due</th>
                 <th>Payment</th>
                 <!-- <th>Status</th> -->
-                <th>Date</th>
+                <th>AAD</th>
             </tr>
         </thead>
         <tbody>
@@ -135,11 +132,12 @@
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $student->application_number }}</td>
-                <td>{{ $student->student_id ?? 'N/A' }}</td>
-                <td>{{ $student->name }}</td>
-                <td>{{ $student->mobile }}</td>
-                <td>{{ $student->course_name }}
-                    <br><small>Batch: {{ $student->batch_code ?? 'N/A' }}</small>
+                <td>{{ $student->name }}
+                    <br><small>ID- {{ $student->student_id ?? 'N/A' }}</small>
+                    <br><small>{{ $student->mobile }}</small>
+                    <br><small>{{ $student->course_name }}</small>
+                    <br><small>{{ $student->batch_code ?? 'N/A' }}</small>
+
                 </td>
                 <td class="text-right">{{ number_format($student->course_fee, 2) }}</td>
                 <td class="text-right">{{ number_format($student->payment->deposit_amount ?? 0, 2) }}</td>
