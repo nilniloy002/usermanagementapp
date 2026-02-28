@@ -1428,12 +1428,15 @@ class StudentAdmissionController extends Controller
     public function paymentInvoiceForm()
     {
         $paymentCategories = [
-            "Mock Tests",
-            "Speaking Tests",
-            "Admission Due Collections",
-            "2nd Semester Fee",
-            "3rd Semester Fee",
-            "Final Semester Fee",
+            "IELTS Mock Tests",
+            "PTE Mock Tests",
+            "IELTS Speaking Tests",
+            "Admission Due",
+            "JEP- 2nd Semester Fee",
+            "JEP- 3rd Semester Fee",
+            "JFP- Final Semester Fee",
+            "PTE Portal Access (2 Weeks)",
+            "PTE Portal Access (1 Month)",
             "Other",
         ];
 
