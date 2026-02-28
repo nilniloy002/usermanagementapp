@@ -400,7 +400,7 @@
                                     <!-- Invoice Button - NEW -->
                                     @if($application->status == 'approved')
                                         <a href="{{ route('student-admissions.invoice', $application->id) }}" 
-                                    class="btn btn-success" 
+                                    class="btn btn-sm btn-outline-success" 
                                         title="@lang('View Invoice')"
                                         data-toggle="tooltip">
                                             <i class="fas fa-file-pdf"></i>
@@ -427,7 +427,7 @@
                                     <!-- ID Card Buttons (only for approved applications) -->
                                     @if($application->status == 'approved')
                                         <a href="{{ route('student-admissions.id-card', $application) }}" 
-                                        class="btn btn-warning" 
+                                        class="btn btn-sm btn-outline-warning" 
                                         title="@lang('View ID Card')"
                                         data-toggle="tooltip">
                                             <i class="fas fa-id-card"></i>
@@ -442,7 +442,7 @@
                                     <!-- Status Update Dropdown -->
                                     <div class="btn-group">
                                         <button type="button" 
-                                                class="btn btn-dark dropdown-toggle" 
+                                                class="btn btn-sm btn-outline-dark dropdown-toggle" 
                                                 data-toggle="dropdown" 
                                                 aria-haspopup="true" 
                                                 aria-expanded="false"
@@ -491,7 +491,7 @@
                                             <!-- Delete Button - Only visible to users with role_id = 3 -->
                                     @if(auth()->user() && auth()->user()->role_id == 3)
                                         <a href="{{ route('student-admissions.destroy', $application) }}" 
-                                        class="btn btn-danger" 
+                                        class="btn btn-sm btn-outline-danger" 
                                         title="@lang('Delete Application')"
                                         data-toggle="tooltip"
                                         data-method="DELETE"

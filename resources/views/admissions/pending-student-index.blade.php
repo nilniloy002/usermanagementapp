@@ -105,53 +105,77 @@
 
                                 <!-- In pending-student-index.blade.php, inside the actions column (around line 140-160): -->
 
-<td class="text-center">
-    <!-- View Button -->
-    <a href="{{ route('student-admissions.show', $application) }}" 
-       class="btn btn-icon btn-sm btn-info" 
-       title="@lang('View Application')" 
-       data-toggle="tooltip">
-        <i class="fas fa-eye"></i>
-    </a>
-    
-    <!-- Edit Button - NEW -->
-    <a href="{{ route('student-admissions.edit', $application) }}" 
-       class="btn btn-icon btn-sm btn-warning" 
-       title="@lang('Edit Application')"
-       data-toggle="tooltip">
-        <i class="fas fa-edit"></i>
-    </a>
-    
-    <!-- Approve Button -->
-    @if($application->status == 'pending')
-        <button type="button" 
-                class="btn btn-icon btn-sm btn-success" 
-                title="@lang('Approve Admission')"
-                data-toggle="modal" 
-                data-target="#admissionModal"
-                data-application-id="{{ $application->id }}"
-                data-course-id="{{ $application->course_id }}"
-                data-course-fee="{{ $application->course->course_fee ?? 0 }}"
-                data-student-name="{{ $application->name }}"
-                data-application-number="{{ $application->application_number }}"
-                data-course-name="{{ $application->course->course_name ?? 'N/A' }}">
-            <i class="fas fa-user-graduate"></i>
-        </button>
-    @endif
-    
-    <!-- Delete Button -->
-                <!-- Use the new route -->
-                <a href="{{ route('student-admissions.destroy-pending', $application) }}" 
-                class="btn btn-icon btn-sm btn-danger" 
-                title="@lang('Delete Application')"
-                data-toggle="tooltip"
-                data-method="DELETE"
-                data-confirm-title="@lang('Please Confirm')"
-                data-confirm-text="@lang('Are you sure that you want to delete this application?')"
-                data-confirm-delete="@lang('Yes, delete it!')">
-                    <i class="fas fa-trash"></i>
-                </a>
-                </td>
+                            <td class="text-center">
+                                <!-- View Button -->
+                                <a href="{{ route('student-admissions.show', $application) }}" 
+                                class="btn btn-sm btn-outline-info" 
+                                title="@lang('View Application')" 
+                                data-toggle="tooltip">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                
+                                <!-- Edit Button - NEW -->
+                                <a href="{{ route('student-admissions.edit', $application) }}" 
+                                class="btn btn-sm btn-outline-primary" 
+                                title="@lang('Edit Application')"
+                                data-toggle="tooltip">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                
+                                <!-- Approve Button -->
+                                @if($application->status == 'pending')
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-success" 
+                                            title="@lang('Approve Admission')"
+                                            data-toggle="modal" 
+                                            data-target="#admissionModal"
+                                            data-application-id="{{ $application->id }}"
+                                            data-course-id="{{ $application->course_id }}"
+                                            data-course-fee="{{ $application->course->course_fee ?? 0 }}"
+                                            data-student-name="{{ $application->name }}"
+                                            data-application-number="{{ $application->application_number }}"
+                                            data-course-name="{{ $application->course->course_name ?? 'N/A' }}">
+                                        <i class="fas fa-user-graduate"></i>
+                                    </button>
+                                @endif
+                                
+                                <!-- Delete Button -->
+                                            <!-- Use the new route -->
+                                            <!-- <a href="{{ route('student-admissions.destroy-pending', $application) }}" 
+                                            class="btn btn-icon btn-sm btn-danger" 
+                                            title="@lang('Delete Application')"
+                                            data-toggle="tooltip"
+                                            data-method="DELETE"
+                                            data-confirm-title="@lang('Please Confirm')"
+                                            data-confirm-text="@lang('Are you sure that you want to delete this application?')"
+                                            data-confirm-delete="@lang('Yes, delete it!')">
+                                                <i class="fas fa-trash"></i>
+                                            </a> -->
+
+
+                                                <!-- Delete Button - Only visible to users with role_id = 3 -->
+                                    @if(auth()->user() && auth()->user()->role_id == 3)
+                                        <a href="{{ route('student-admissions.destroy-pending', $application) }}" 
+                                        class="btn btn-sm btn-outline-danger" 
+                                        title="@lang('Delete Application')"
+                                        data-toggle="tooltip"
+                                        data-method="DELETE"
+                                        data-confirm-title="@lang('Please Confirm')"
+                                        data-confirm-text="@lang('Are you sure that you want to delete this application? This action cannot be undone.')"
+                                        data-confirm-delete="@lang('Yes, delete it!')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    @endif
+                                </div>
+
+                                <!-- Show message for users who can't delete (optional) -->
+                                @if(auth()->user() && auth()->user()->role_id != 3 && auth()->user()->role_id != 1)
+                                    <small class="text-muted d-block mt-1">
+                                        <i class="fas fa-lock mr-1"></i>Delete restricted
+                                    </small>
+                                @endif
+                                            
+                                            </td>
                             </tr>
                         @endforeach
                     @else
