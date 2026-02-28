@@ -404,6 +404,42 @@
                     </div>
                 </div>
                 
+                                <!-- Terms & Conditions Section -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">Terms & Conditions</h2>
+                    
+                    <div class="bg-gray-50 rounded-lg border border-gray-200 p-5">
+                        <div class="mb-4 max-h-80 overflow-y-auto pr-2">
+                            <p class="text-sm font-semibold text-gray-700 mb-2">Please read the following terms carefully:</p>
+                            
+                            <div class="space-y-2 text-sm">
+                                <p class="text-red-600 font-semibold">1. All payments made for admission are non-refundable under any circumstances.</p>
+                                <p class="text-red-600 font-semibold">2. The admitted course fee cannot be merged, transferred, or replaced with another course.</p>
+                                <p class="text-gray-700">3. Personal communication, relationships, or direct contact with any of our trainers are strictly prohibited.</p>
+                                <p class="text-gray-700">4. All students must treat fellow students, trainers, and staff respectfully.</p>
+                                <p class="text-gray-700">5. Discrimination based on race, gender, religion, or other characteristics is against our policy.</p>
+                                <p class="text-gray-700">6. Cyberbullying, online harassment, or any threatening behavior is strictly prohibited.</p>
+                                <p class="text-gray-700">7. Students are entitled to a one-year membership to retake the course if needed.</p>
+                                <p class="text-gray-700">8. Recording any part of a class or session in any format is strictly prohibited.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Agreement Checkbox -->
+                        <div class="flex items-start border-t border-gray-200 pt-4">
+                            <div class="flex items-center h-5">
+                                <input type="checkbox" id="agree_terms" name="agree_terms" required 
+                                       class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label for="agree_terms" class="font-medium text-gray-700">
+                                    I have read and agree to the Terms & Conditions <span class="text-red-500">*</span>
+                                </label>
+                                <p class="text-gray-500 text-xs mt-1">You must agree to the terms and conditions before submitting your application.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Submit Button -->
                 <div class="flex justify-end">
                     <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-8 rounded-lg transition flex items-center">
@@ -936,6 +972,16 @@
             }
         });
     });
+
+
+    // In the form submission validation section, add this check:
+
+    // Check if terms are agreed
+    const termsCheckbox = document.getElementById('agree_terms');
+    if (!termsCheckbox || !termsCheckbox.checked) {
+        isValid = false;
+        errorMessage += '• You must agree to the Terms & Conditions.\n';
+    }
 </script>
     
 </body>
