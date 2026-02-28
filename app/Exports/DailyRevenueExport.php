@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports;
+namespace Vanguard\Exports;
 
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -58,7 +58,7 @@ class DailyRevenueExport implements FromCollection, WithHeadings, WithStyles, Wi
     public function headings(): array
     {
         return [
-            ['DAILY REVENUE REPORT'],
+            ['STS- DAILY REVENUE REPORT'],
             ['Period: ' . $this->startDate . ' to ' . $this->endDate],
             ['Generated on: ' . now()->format('d-m-Y H:i:s')],
             [], // Empty row

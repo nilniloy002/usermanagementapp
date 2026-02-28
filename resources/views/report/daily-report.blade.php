@@ -67,10 +67,10 @@
                                    class="btn btn-outline-danger" target="_blank" title="Export PDF">
                                     <i class="fas fa-file-pdf"></i>
                                 </a>
-                                <!-- <a href="{{ route('student-admissions.daily-revenue.excel', request()->all()) }}" 
+                                <a href="{{ route('student-admissions.daily-revenue.excel', request()->all()) }}" 
                                    class="btn btn-outline-success" target="_blank" title="Export Excel">
                                     <i class="fas fa-file-excel"></i>
-                                </a> -->
+                                </a>
                             </div>
                         </div>
                     </div>

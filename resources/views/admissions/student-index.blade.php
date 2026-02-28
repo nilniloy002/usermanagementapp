@@ -243,9 +243,9 @@
                         <i class="fas fa-download mr-1"></i> Export
                     </button>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#" id="exportCSV">
+                        <!-- <a class="dropdown-item" href="#" id="exportCSV">
                             <i class="fas fa-file-csv mr-2"></i> CSV
-                        </a>
+                        </a> -->
                         <a class="dropdown-item" href="#" id="exportPDF">
                             <i class="fas fa-file-pdf mr-2"></i> PDF
                         </a>
@@ -266,7 +266,7 @@
                         <th class="min-width-120">@lang('Course')</th>
                         <th class="min-width-120">@lang('Payment Info')</th>
                         <th class="min-width-80">@lang('Status')</th>
-                        <th class="min-width-100">@lang('Last Updated')</th>
+                        <th class="min-width-100">@lang('Approval Date')</th>
                         <th class="text-center min-width-150">@lang('Actions')</th>
                     </tr>
                     </thead>
@@ -378,7 +378,7 @@
                                         {{ ucfirst($application->status) }}
                                     </span>
                                     @if($application->approved_at)
-                                        <br><small class="text-muted">{{ $application->approved_at->format('d-m-Y') }}</small>
+                                        <br><small class="text-muted">Ad. D: {{ $application->approved_at->format('d-m-Y') }}</small>
                                     @endif
                                 </td>
                                 <td>
@@ -1229,105 +1229,41 @@
             });
         });
     });
+
+        // Export functionality
+    $('#exportCSV').click(function(e) {
+        e.preventDefault();
+        exportData('csv');
+    });
+
+    $('#exportPDF').click(function(e) {
+        e.preventDefault();
+        exportData('pdf');
+    });
+
+    $('#exportExcel').click(function(e) {
+        e.preventDefault();
+        exportData('excel');
+    });
+
+    function exportData(type) {
+        // Get current filter values
+        const form = $('#filterForm');
+        const formData = form.serialize();
+        
+        // Build export URL based on type
+        let exportUrl;
+        if (type === 'csv') {
+            exportUrl = '{{ route("student-admissions.export.csv") }}';
+        } else if (type === 'pdf') {
+            exportUrl = '{{ route("student-admissions.export.pdf") }}';
+        } else if (type === 'excel') {
+            exportUrl = '{{ route("student-admissions.export.excel") }}';
+        }
+        
+        // Append form data to URL
+        window.open(exportUrl + '?' + formData, '_blank');
+    }
 </script>
 
-<style>
-.form-control-plaintext {
-    font-weight: 500;
-    color: #495057;
-    background-color: #f8f9fa;
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.25rem;
-}
-.card-header h6 {
-    font-size: 0.9rem;
-}
-.no-photo {
-    font-size: 0.8rem;
-}
-.badge {
-    font-size: 0.75em;
-}
-.table th {
-    font-weight: 600;
-}
-.btn-group .dropdown-toggle::after {
-    margin-left: 0.2em;
-}
-/* Filter section styles */
-.input-group-append .btn {
-    border-left: 0;
-}
-.select2-container--bootstrap4 .select2-selection--single {
-    height: calc(1.5em + 0.75rem + 2px);
-}
-.select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
-    line-height: calc(1.5em + 0.75rem);
-}
-.badge a {
-    text-decoration: none;
-    opacity: 0.8;
-}
-.badge a:hover {
-    opacity: 1;
-}
-/* Date range styles */
-#date_from, #date_to {
-    background-color: #fff;
-}
-.btn-outline-primary.btn-sm {
-    font-size: 0.8rem;
-    padding: 0.25rem 0.5rem;
-}
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .btn-group-sm {
-        flex-wrap: wrap;
-    }
-    .btn-group-sm .btn {
-        margin-bottom: 2px;
-    }
-    .table td, .table th {
-        padding: 0.5rem;
-        font-size: 0.875rem;
-    }
-    .card-header .btn-link {
-        padding: 0;
-    }
-
-}
-/* Action buttons styling */
-.btn-group-vertical .btn {
-    margin-bottom: 2px;
-    border-radius: 0.25rem !important;
-}
-
-.btn-icon {
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 2px;
-}
-
-/* Tooltip styling */
-.tooltip {
-    font-size: 0.75rem;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .btn-group-vertical {
-        width: 100%;
-    }
-    
-    .btn-icon {
-        width: 28px;
-        height: 28px;
-        font-size: 0.75rem;
-    }
-}
-</style>
 @endsection

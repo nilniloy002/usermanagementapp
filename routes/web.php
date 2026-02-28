@@ -308,12 +308,22 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::post('student-admissions/bulk-id-cards', [StudentAdmissionController::class, 'bulkIdCards'])
             ->name('student-admissions.bulk-id-cards');
 
-    // Student Invoice Routes
-    Route::get('student-admissions/{id}/invoice', [StudentAdmissionController::class, 'generateInvoice'])
-        ->name('student-admissions.invoice');
+        // Student Invoice Routes
+        Route::get('student-admissions/{id}/invoice', [StudentAdmissionController::class, 'generateInvoice'])
+            ->name('student-admissions.invoice');
 
-    Route::get('student-admissions/{id}/download-invoice', [StudentAdmissionController::class, 'downloadInvoicePdf'])
-        ->name('student-admissions.download-invoice');
+        Route::get('student-admissions/{id}/download-invoice', [StudentAdmissionController::class, 'downloadInvoicePdf'])
+            ->name('student-admissions.download-invoice');
+
+            // Export Routes
+    Route::get('student-admissions/export/excel', [StudentAdmissionController::class, 'exportExcel'])
+        ->name('student-admissions.export.excel');
+
+    Route::get('student-admissions/export/csv', [StudentAdmissionController::class, 'exportCsv'])
+        ->name('student-admissions.export.csv');
+
+    Route::get('student-admissions/export/pdf', [StudentAdmissionController::class, 'exportPdf'])
+        ->name('student-admissions.export.pdf');
 
             // Daily Revenue Report Routes
 
