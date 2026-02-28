@@ -125,7 +125,7 @@
                                 <!-- Approve Button -->
                                 @if($application->status == 'pending')
                                     <button type="button" 
-                                            class="btn btn-sm btn-outline-success" 
+                                            class="btn btn-sm btn-success" 
                                             title="@lang('Approve Admission')"
                                             data-toggle="modal" 
                                             data-target="#admissionModal"
