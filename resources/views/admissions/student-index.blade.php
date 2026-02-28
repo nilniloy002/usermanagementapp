@@ -440,7 +440,7 @@
                                         </a> -->
                                     @endif
                                     <!-- Status Update Dropdown -->
-                                    <div class="btn-group">
+                                    <!-- <div class="btn-group">
                                         <button type="button" 
                                                 class="btn btn-sm btn-outline-dark dropdown-toggle" 
                                                 data-toggle="dropdown" 
@@ -474,7 +474,7 @@
                                                 </button>
                                             </form>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <!-- Delete Button -->
                                     <!-- <a href="{{ route('student-admissions.destroy', $application) }}" 
