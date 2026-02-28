@@ -1710,7 +1710,7 @@ class StudentAdmissionController extends Controller
     {
         $payments = StudentPayment::with("studentAdmission")
             ->whereNotNull("payment_category")
-            ->latest()
+            ->orderBy('created_at', 'desc')
             ->paginate(20);
 
         return view("admissions.payment-invoices-index", compact("payments"));
