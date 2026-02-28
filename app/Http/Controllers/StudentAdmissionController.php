@@ -1692,16 +1692,15 @@ class StudentAdmissionController extends Controller
         return view("admissions.payment-invoice-receipt", compact("payment"));
     }
 
-    // Download payment invoice PDF
+   /**
+     * Download payment invoice PDF
+     */
     public function downloadPaymentInvoicePdf($id)
     {
-        $payment = StudentPayment::with("studentAdmission")->findOrFail($id);
-
-        $pdf = Pdf::loadView(
-            "admissions.payment-invoice-pdf",
-            compact("payment")
-        );
-
+        $payment = StudentPayment::with('studentAdmission')->findOrFail($id);
+        
+        $pdf = Pdf::loadView('admissions.payment-invoice-pdf', compact('payment'));
+        
         return $pdf->download("payment-invoice-{$payment->id}.pdf");
     }
 
