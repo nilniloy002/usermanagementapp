@@ -24,12 +24,12 @@
                     <a href="{{ route('student-admissions.download-id-card', $student->id) }}" class="btn btn-success btn-sm">
                         <i class="fas fa-file-pdf"></i> Download PDF
                     </a>
-                    <a href="{{ route('student-admissions.download-id-card-image', $student->id) }}" class="btn btn-info btn-sm">
+                    <!-- <a href="{{ route('student-admissions.download-id-card-image', $student->id) }}" class="btn btn-info btn-sm">
                         <i class="fas fa-image"></i> Download Image
                     </a>
                     <a href="{{ route('student-admissions.show', $student->id) }}" class="btn btn-secondary btn-sm">
                         <i class="fas fa-arrow-left"></i> Back
-                    </a>
+                    </a> -->
                 </div>
                <!-- ID Card -->
                <div class="d-flex justify-content-center">

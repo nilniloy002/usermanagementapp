@@ -387,14 +387,25 @@
                                         <span class="small">{{ $application->updated_at->format('h:i A') }}</span>
                                     </small>
                                 </td>
+
                                 <td class="text-center">
                                     <!-- View Button -->
-                                    <a href="{{ route('student-admissions.show', $application) }}" 
-                                       class="btn btn-icon btn-sm btn-info" 
-                                       title="@lang('View Application')" 
-                                       data-toggle="tooltip">
+                                    <!-- <a href="{{ route('student-admissions.show', $application) }}" 
+                                    class="btn btn-icon btn-sm btn-info" 
+                                    title="@lang('View Application')" 
+                                    data-toggle="tooltip">
                                         <i class="fas fa-eye"></i>
-                                    </a>
+                                    </a> -->
+                                    
+                                    <!-- Invoice Button - NEW -->
+                                    @if($application->status == 'approved')
+                                        <a href="{{ route('student-admissions.invoice', $application->id) }}" 
+                                    class="btn btn-success" 
+                                        title="@lang('View Invoice')"
+                                        data-toggle="tooltip">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </a>
+                                    @endif
                                     
                                     <!-- Approve Button (only for pending applications) -->
                                     @if($application->status == 'pending')
@@ -416,23 +427,22 @@
                                     <!-- ID Card Buttons (only for approved applications) -->
                                     @if($application->status == 'approved')
                                         <a href="{{ route('student-admissions.id-card', $application) }}" 
-                                           class="btn btn-icon btn-sm btn-primary" 
-                                           title="@lang('View ID Card')"
-                                           data-toggle="tooltip">
+                                        class="btn btn-warning" 
+                                        title="@lang('View ID Card')"
+                                        data-toggle="tooltip">
                                             <i class="fas fa-id-card"></i>
                                         </a>
-                                        <a href="{{ route('student-admissions.download-id-card', $application) }}" 
-                                           class="btn btn-icon btn-sm btn-success" 
-                                           title="@lang('Download ID Card')"
-                                           data-toggle="tooltip">
+                                        <!-- <a href="{{ route('student-admissions.download-id-card', $application) }}" 
+                                        class="btn btn-icon btn-sm btn-success" 
+                                        title="@lang('Download ID Card')"
+                                        data-toggle="tooltip">
                                             <i class="fas fa-download"></i>
-                                        </a>
+                                        </a> -->
                                     @endif
-
                                     <!-- Status Update Dropdown -->
                                     <div class="btn-group">
                                         <button type="button" 
-                                                class="btn btn-icon btn-sm btn-secondary dropdown-toggle" 
+                                                class="btn btn-dark dropdown-toggle" 
                                                 data-toggle="dropdown" 
                                                 aria-haspopup="true" 
                                                 aria-expanded="false"
@@ -441,8 +451,8 @@
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <form action="{{ route('student-admissions.update-status', $application) }}" 
-                                                  method="POST" 
-                                                  class="d-inline">
+                                                method="POST" 
+                                                class="d-inline">
                                                 @csrf
                                                 <button type="submit" 
                                                         name="status" 
@@ -467,17 +477,41 @@
                                     </div>
 
                                     <!-- Delete Button -->
-                                    <a href="{{ route('student-admissions.destroy', $application) }}" 
-                                       class="btn btn-icon btn-sm btn-danger" 
-                                       title="@lang('Delete Application')"
-                                       data-toggle="tooltip"
-                                       data-method="DELETE"
-                                       data-confirm-title="@lang('Please Confirm')"
-                                       data-confirm-text="@lang('Are you sure that you want to delete this application?')"
-                                       data-confirm-delete="@lang('Yes, delete it!')">
+                                    <!-- <a href="{{ route('student-admissions.destroy', $application) }}" 
+                                    class="btn btn-icon btn-sm btn-danger" 
+                                    title="@lang('Delete Application')"
+                                    data-toggle="tooltip"
+                                    data-method="DELETE"
+                                    data-confirm-title="@lang('Please Confirm')"
+                                    data-confirm-text="@lang('Are you sure that you want to delete this application?')"
+                                    data-confirm-delete="@lang('Yes, delete it!')">
                                         <i class="fas fa-trash"></i>
-                                    </a>
+                                    </a> -->
+
+                                            <!-- Delete Button - Only visible to users with role_id = 3 -->
+                                    @if(auth()->user() && auth()->user()->role_id == 3)
+                                        <a href="{{ route('student-admissions.destroy', $application) }}" 
+                                        class="btn btn-danger" 
+                                        title="@lang('Delete Application')"
+                                        data-toggle="tooltip"
+                                        data-method="DELETE"
+                                        data-confirm-title="@lang('Please Confirm')"
+                                        data-confirm-text="@lang('Are you sure that you want to delete this application? This action cannot be undone.')"
+                                        data-confirm-delete="@lang('Yes, delete it!')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    @endif
+                                </div>
+
+                                <!-- Show message for users who can't delete (optional) -->
+                                @if(auth()->user() && auth()->user()->role_id != 3 && auth()->user()->role_id != 1)
+                                    <small class="text-muted d-block mt-1">
+                                        <i class="fas fa-lock mr-1"></i>Delete restricted
+                                    </small>
+                                @endif
+
                                 </td>
+                                
                             </tr>
                         @endforeach
                     @else
@@ -1259,6 +1293,40 @@
     }
     .card-header .btn-link {
         padding: 0;
+    }
+
+}
+/* Action buttons styling */
+.btn-group-vertical .btn {
+    margin-bottom: 2px;
+    border-radius: 0.25rem !important;
+}
+
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 2px;
+}
+
+/* Tooltip styling */
+.tooltip {
+    font-size: 0.75rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .btn-group-vertical {
+        width: 100%;
+    }
+    
+    .btn-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
     }
 }
 </style>

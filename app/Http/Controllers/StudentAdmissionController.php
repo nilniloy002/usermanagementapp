@@ -1554,4 +1554,33 @@ class StudentAdmissionController extends Controller
             'daily-revenue-report-' . $startDate . '-to-' . $endDate . '.xlsx');
     }
 
+            /**
+     * Generate and display invoice for a student
+     */
+    public function generateInvoice($id)
+    {
+        $student = StudentAdmission::with(['course', 'batch', 'payment'])
+            ->where('status', 'approved')
+            ->findOrFail($id);
+        
+        return view('admissions.student-invoice', compact('student'));
+    }
+
+    /**
+     * Download invoice as PDF
+     */
+    public function downloadInvoicePdf($id)
+    {
+        $student = StudentAdmission::with(['course', 'batch', 'payment'])
+            ->where('status', 'approved')
+            ->findOrFail($id);
+        
+        $pdf = Pdf::loadView('admissions.student-invoice-pdf', compact('student'));
+        
+        $filename = 'invoice-' . ($student->student_id ?? 'N/A') . '-' . date('Y-m-d') . '.pdf';
+        
+        return $pdf->download($filename);
+    }
+
+
 }

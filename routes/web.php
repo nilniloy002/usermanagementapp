@@ -262,26 +262,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
     Route::get('payment-invoice/{id}/download-pdf', [StudentAdmissionController::class, 'downloadPaymentInvoicePdf'])
         ->name('student-admissions.download-payment-invoice-pdf');    
-    /**
-         * Student Admissions Admin Routes - MOVE THESE INSIDE AUTH
-         */
-        // Route::get('student-admissions', [StudentAdmissionController::class, 'index'])
-        //     ->name('student-admissions.index');
-
-        // Route::get('student-admissions/{id}', [StudentAdmissionController::class, 'show'])
-        //     ->name('student-admissions.show');
-
-        // Route::post('student-admissions/{id}/status', [StudentAdmissionController::class, 'updateStatus'])
-        //     ->name('student-admissions.update-status');
-
-        // Route::delete('student-admissions/{id}', [StudentAdmissionController::class, 'destroy'])
-        //     ->name('student-admissions.destroy');
-
-        // Route::post('student-admissions/{id}/approve', [StudentAdmissionController::class, 'approveAdmission'])
-        //     ->name('student-admissions.approve');
-
-        // Route::get('student-admissions/{id}/batches', [StudentAdmissionController::class, 'getCourseBatches'])
-        //     ->name('student-admissions.course-batches');
+    
 
         // Student Admissions Admin Routes
         Route::get('student-admissions', [StudentAdmissionController::class, 'index'])
@@ -326,6 +307,13 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
         Route::post('student-admissions/bulk-id-cards', [StudentAdmissionController::class, 'bulkIdCards'])
             ->name('student-admissions.bulk-id-cards');
+
+    // Student Invoice Routes
+    Route::get('student-admissions/{id}/invoice', [StudentAdmissionController::class, 'generateInvoice'])
+        ->name('student-admissions.invoice');
+
+    Route::get('student-admissions/{id}/download-invoice', [StudentAdmissionController::class, 'downloadInvoicePdf'])
+        ->name('student-admissions.download-invoice');
 
             // Daily Revenue Report Routes
 
