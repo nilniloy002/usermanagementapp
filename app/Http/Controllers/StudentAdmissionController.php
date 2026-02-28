@@ -1706,14 +1706,56 @@ class StudentAdmissionController extends Controller
     }
 
     // List all payment invoices
-    public function paymentInvoicesIndex()
+    /**
+     * List all payment invoices with filters
+     */
+    public function paymentInvoicesIndex(Request $request)
     {
-        $payments = StudentPayment::with("studentAdmission")
-            ->whereNotNull("payment_category")
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        $query = StudentPayment::with('studentAdmission')
+            ->whereNotNull('payment_category');
 
-        return view("admissions.payment-invoices-index", compact("payments"));
+        // Payment category filter
+        if ($request->filled('payment_category')) {
+            $query->where('payment_category', $request->payment_category);
+        }
+        
+        // Payment method filter
+        if ($request->filled('payment_method')) {
+            $query->where('payment_method', $request->payment_method);
+        }
+        
+        // Received by filter
+        if ($request->filled('received_by')) {
+            $query->where('payment_received_by', 'like', '%' . $request->received_by . '%');
+        }
+        
+        // Search filter (search in student details)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->whereHas('studentAdmission', function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('student_id', 'like', "%{$search}%")
+                    ->orWhere('mobile', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+                })
+                ->orWhere('transaction_id', 'like', "%{$search}%")
+                ->orWhere('serial_number', 'like', "%{$search}%");
+            });
+        }
+        
+        // Date range filter
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+        
+        $payments = $query->orderBy('created_at', 'desc')->paginate(20);
+        
+        return view('admissions.payment-invoices-index', compact('payments'));
     }
 
     public function dailyRevenue(Request $request)

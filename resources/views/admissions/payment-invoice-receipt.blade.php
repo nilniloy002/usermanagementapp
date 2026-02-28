@@ -77,7 +77,8 @@
                                         @endif
                                         <tr class="table-warning">
                                             <td><strong>Balance Due:</strong></td>
-                                            <td class="text-right"><strong>৳{{ number_format(max(0, $payment->due_amount - $payment->deposit_amount), 2) }}</strong></td>
+                                            <!-- <td class="text-right"><strong>৳{{ number_format(max(0, $payment->due_amount - $payment->deposit_amount), 2) }}</strong></td> -->
+                                            <td class="text-right"><strong>৳{{ number_format($payment->due_amount, 2) }}</strong></td>
                                         </tr>
                                     </table>
                                 </div>

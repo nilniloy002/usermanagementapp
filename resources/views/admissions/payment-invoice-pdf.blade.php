@@ -359,7 +359,7 @@
                 </tr>
                 <tr class="due-row">
                     <td><strong>BALANCE DUE</strong></td>
-                    <td class="text-right amount"><strong>{{ number_format(max(0, $payment->due_amount - $payment->deposit_amount), 2) }}</strong></td>
+                    <td class="text-right amount"><strong>{{ number_format($payment->due_amount, 2) }}</strong></td>
                 </tr>
             </tbody>
         </table>
