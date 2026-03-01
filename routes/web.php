@@ -2,6 +2,7 @@
 
 use Vanguard\Http\Controllers\CandidateResultController; 
 use Vanguard\Http\Controllers\StudentAdmissionController;
+use Vanguard\Http\Controllers\ActivityLogController;
 
 // Public route for candidate result page (outside of auth middleware)
 Route::get('/', [CandidateResultController::class, 'view'])->name('home'); // Use correct path for CandidateResultController
@@ -347,6 +348,17 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     // Get all active batches (AJAX)
     Route::get('batches/active', [BatchController::class, 'getActiveBatches'])
         ->name('batches.active');
+
+
+    // Activity Logs Routes
+    Route::get('activity-logs', [ActivityLogController::class, 'index'])
+        ->name('activity-logs.index');
+
+    Route::get('activity-logs/{id}', [ActivityLogController::class, 'show'])
+        ->name('activity-logs.show');
+
+    Route::delete('activity-logs/clear-old', [ActivityLogController::class, 'clearOldLogs'])
+        ->name('activity-logs.clear-old');
 
 /**
      * Courses

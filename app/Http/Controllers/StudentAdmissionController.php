@@ -24,9 +24,34 @@ use DB;
 use Vanguard\Exports\DailyRevenueExport;
 use Vanguard\Exports\StudentsExport;
 use Vanguard\Exports\StudentsCsvExport;
+use Vanguard\Services\ActivityLogger;
+use Vanguard\ActivityLog;
 
 class StudentAdmissionController extends Controller
 {
+
+
+
+    // Add this method to log activities
+    protected function logStudentActivity($action, $student, $details = [])
+    {
+        $properties = array_merge([
+            'student_id' => $student->id,
+            'student_name' => $student->name,
+            'student_application' => $student->application_number,
+            'student_status' => $student->status,
+            'url' => request()->fullUrl(),
+            'method' => request()->method(),
+        ], $details);
+
+        ActivityLogger::make()
+            ->inLog('student_activity')
+            ->withDescription("User {$action} for student: {$student->name} ({$student->application_number})")
+            ->onSubject($student)
+            ->withProperties($properties)
+            ->log();
+    }
+
     /**
      * Display the student admission form
      */
@@ -973,34 +998,48 @@ class StudentAdmissionController extends Controller
     /**
      * Delete an application
      */
-    public function destroy($id)
-    {
-        try {
-            $application = StudentAdmission::findOrFail($id);
+        public function destroy($id)
+        {
+            try {
+                $application = StudentAdmission::findOrFail($id);
+                
+                // Store student info for logging before deletion
+                $studentInfo = [
+                    'id' => $application->id,
+                    'name' => $application->name,
+                    'application_number' => $application->application_number,
+                    'student_id' => $application->student_id,
+                ];
+                
+                // Delete photo if exists
+                if ($application->photo_data && Storage::disk('public')->exists($application->photo_data)) {
+                    Storage::disk('public')->delete($application->photo_data);
+                }
+                
+                $application->delete();
 
-            // Delete photo if exists
-            if (
-                $application->photo_data &&
-                Storage::disk("public")->exists($application->photo_data)
-            ) {
-                Storage::disk("public")->delete($application->photo_data);
+                // Log the deletion activity
+                ActivityLogger::make()
+                    ->inLog('student_activity')
+                    ->withDescription("User deleted student: {$studentInfo['name']} ({$studentInfo['application_number']})")
+                    ->withProperties([
+                        'action' => 'delete_application',
+                        'deleted_student' => $studentInfo,
+                        'ip_address' => request()->ip(),
+                        'user_agent' => request()->userAgent(),
+                        'timestamp' => now()->toDateTimeString(),
+                    ])
+                    ->log();
+
+                return redirect()->route('student-admissions.index')
+                    ->with('success', 'Application deleted successfully.');
+
+            } catch (\Exception $e) {
+                Log::error('Error deleting application: ' . $e->getMessage());
+                return redirect()->route('student-admissions.index')
+                    ->with('error', 'Failed to delete application. Please try again.');
             }
-
-            $application->delete();
-
-            return redirect()
-                ->route("student-admissions.index")
-                ->with("success", "Application deleted successfully.");
-        } catch (\Exception $e) {
-            Log::error("Error deleting application: " . $e->getMessage());
-            return redirect()
-                ->route("student-admissions.index")
-                ->with(
-                    "error",
-                    "Failed to delete application. Please try again."
-                );
         }
-    }
 
     /**
      * Delete an application from pending list
@@ -1054,6 +1093,14 @@ class StudentAdmissionController extends Controller
             ->where("status", "approved")
             ->findOrFail($id);
 
+            
+        // Log the ID card view activity
+        $this->logStudentActivity('viewed ID card', $student, [
+            'action' => 'view_id_card',
+            'timestamp' => now()->toDateTimeString(),
+        ]);
+
+
         return view("admissions.student-id-card", compact("student"));
     }
 
@@ -1065,6 +1112,13 @@ class StudentAdmissionController extends Controller
         $student = StudentAdmission::with(["course", "batch", "payment"])
             ->where("status", "approved")
             ->findOrFail($id);
+
+         // Log the ID card download activity
+        $this->logStudentActivity('downloaded ID card', $student, [
+            'action' => 'download_id_card',
+            'file_type' => 'pdf',
+            'timestamp' => now()->toDateTimeString(),
+        ]);
 
         $pdf = Pdf::loadView("admissions.id-card-pdf", compact("student"));
 
@@ -1956,6 +2010,12 @@ class StudentAdmissionController extends Controller
             ->where("status", "approved")
             ->findOrFail($id);
 
+        // Log the invoice view activity
+        $this->logStudentActivity('viewed invoice', $student, [
+            'action' => 'view_invoice',
+            'timestamp' => now()->toDateTimeString(),
+        ]);
+
         return view("admissions.student-invoice", compact("student"));
     }
 
@@ -1967,6 +2027,13 @@ class StudentAdmissionController extends Controller
         $student = StudentAdmission::with(["course", "batch", "payment"])
             ->where("status", "approved")
             ->findOrFail($id);
+
+        // Log the invoice download activity
+        $this->logStudentActivity('downloaded invoice', $student, [
+            'action' => 'download_invoice',
+            'file_type' => 'pdf',
+            'timestamp' => now()->toDateTimeString(),
+        ]);
 
         $pdf = Pdf::loadView(
             "admissions.student-invoice-pdf",

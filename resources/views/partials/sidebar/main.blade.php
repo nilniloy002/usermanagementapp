@@ -1,3 +1,4 @@
+
 <nav class="col-md-2 sidebar">
    <div class="sidebar-sticky">
       <ul class="nav flex-column">
@@ -62,10 +63,18 @@
                         <span>@lang('Daily Revenue')</span>
                     </a>
                 </li>
+
+                 <!-- Activity Logs Menu -->
+                <li class="nav-item {{ request()->is('activity-logs*') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ route('activity-logs.index') }}">
+                        <i class="fas fa-history nav-icon"></i>
+                        <span>@lang('Logs')<span>
+                
+                    </a>
+                </li>
                 </ul>
             </li>
         @endif
-
 
          <li class="nav-item">
             <a class="nav-link collapsed" href="#course-dropdown" data-toggle="collapse" aria-expanded="false">
