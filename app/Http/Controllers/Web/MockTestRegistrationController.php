@@ -207,7 +207,7 @@ class MockTestRegistrationController extends Controller
                         ->count();
             
                     // Apply all conditions using AND (&&)
-                    return $totalRegistrations <= 12 && $morningSlotCount <= 6 && $eveningSlotCount <= 6;
+                    return $totalRegistrations <= 18 && $morningSlotCount <= 9 && $eveningSlotCount <= 9;
                 });
             
                 $statuses = MockTestStatus::where('status', 'On')->get();
@@ -375,7 +375,7 @@ public function editIoc($id)
             
     
             // Apply all conditions using AND (&&)
-            return $totalRegistrations <= 12 && $morningSlotCount <= 6 && $eveningSlotCount <= 6;
+            return $totalRegistrations <= 18 && $morningSlotCount <= 9 && $eveningSlotCount <= 9;
         });
     
     // Fetch other required data
