@@ -7,7 +7,7 @@
     <style>
         body {
             width: 3in;
-            height: 4in;
+            height: 4.5in;
             margin: 0;
             padding: 10px;
             font-family: 'Arial', sans-serif;
@@ -133,7 +133,8 @@
     <!-- Footer Section -->
     <div class="footer">
                 <p><span class="highlightlate">Be at the venue 30 minutes before your exam begins.</p>
-        <!-- <p>@lang('Please bring this token on your mock test date.')</p> -->
+                <p><strong>@lang('Test Venue Address')</strong></p>
+                <p>@lang('Jamuna Bank (Lift No: 03), South Park Building, C & B Road')</p>
     </div>
 </body>
 </html>
